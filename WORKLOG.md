@@ -8,7 +8,7 @@
 - key_findings:
   - `outputs/known_object_processing.png` 为用户新增流程图，需要直接纳入 git
   - `outputs/` 不再忽略，便于 GPT Pro 读取图像产品
-  - RA/Dec 图需要去标题、colorbar 上限改为 `100`、RA tick label 移到 Dec = -30 deg 附近
+  - RA/Dec 图需要去标题、colorbar 上限改为 `100`、RA tick label 移到 Dec = -15 deg 附近
 - validation:
   - 已重跑 `outputs/asteroid_orbits.png`
   - 已重跑 `outputs/gotta_radec_healpix_nside64.png`
@@ -17,7 +17,7 @@
 - remaining_issues:
   - 无
 - next_step:
-  - 重画图、检查输出后提交推送
+  - 提交并推送本次图像更新
 
 - task: 精简仓库到已知小行星论文主线，并把输出图放回 `outputs/`
 - files_changed: `remote_foundation/`, `smt_known_asteroid/`, `scripts/plot_gotta_asteroids.py`, `scripts/summarize_gotta_asteroids.py`, `scripts/describe_fits_columns.py`, `README.md`, `PLAN.md`, `WORKLOG.md`, `docs/PROCESSING_ORDER.md`, `docs/METHOD_KNOWN_ASTEROID_EXTRACTION.md`

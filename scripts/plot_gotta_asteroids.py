@@ -82,7 +82,7 @@ def set_mollweide_ra_ticks_0_360(ax, center_deg: float = 180.0, step: int = 60) 
     lon_ticks = ra_to_mollweide_lon_rad(ra_labels, center_deg=center_deg)
     ax.set_xticks(lon_ticks)
     ax.set_xticklabels([])
-    label_lat = np.deg2rad(-30.0)
+    label_lat = np.deg2rad(-15.0)
     for value, lon_tick in zip(ra_labels, lon_ticks):
         ax.text(
             lon_tick,
