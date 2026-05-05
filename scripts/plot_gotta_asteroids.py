@@ -81,7 +81,19 @@ def set_mollweide_ra_ticks_0_360(ax, center_deg: float = 180.0, step: int = 60) 
     ra_labels = np.arange(step, 301, step)
     lon_ticks = ra_to_mollweide_lon_rad(ra_labels, center_deg=center_deg)
     ax.set_xticks(lon_ticks)
-    ax.set_xticklabels([f"{value:d}" for value in ra_labels], fontsize=24)
+    ax.set_xticklabels([])
+    label_lat = np.deg2rad(-30.0)
+    for value, lon_tick in zip(ra_labels, lon_ticks):
+        ax.text(
+            lon_tick,
+            label_lat,
+            f"{value:d}",
+            ha="center",
+            va="center",
+            fontsize=24,
+            color="black",
+            zorder=10,
+        )
 
 
 def plot_orbits(columns: dict[str, np.ndarray], out_path: Path) -> None:
@@ -198,7 +210,7 @@ def plot_radec(columns: dict[str, np.ndarray], out_path: Path, nside: int = 64) 
     cmap = plt.get_cmap("rainbow").copy()
     cmap.set_bad(alpha=0.0)
     counts = hp_counts.astype(np.float64)
-    counts_plot = np.clip(counts, 1, 200)
+    counts_plot = np.clip(counts, 1, 100)
     val = np.ma.masked_where(counts == 0, counts_plot)
 
     font = {"family": "Times New Roman", "size": 30, "weight": "normal"}
@@ -213,13 +225,12 @@ def plot_radec(columns: dict[str, np.ndarray], out_path: Path, nside: int = 64) 
         s=8,
         linewidths=0,
         cmap=cmap,
-        norm=LogNorm(vmin=1, vmax=200),
+        norm=LogNorm(vmin=1, vmax=100),
         rasterized=True,
     )
 
     ax.grid(True, alpha=0.3)
     set_mollweide_ra_ticks_0_360(ax, center_deg=180.0, step=60)
-    ax.set_title(r"$\mathrm{RA\!-\!Dec\ density\ (healpix,\ nside=64)}$", fontsize=30, pad=20)
     ax.tick_params(axis="y", labelsize=24)
 
     cax = ax.inset_axes([0.30, 0.09, 0.40, 0.045])

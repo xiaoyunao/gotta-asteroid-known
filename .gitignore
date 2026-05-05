@@ -9,7 +9,6 @@ __pycache__/
 *.py[cod]
 .DS_Store
 
-# Generated plots and runtime outputs
-outputs/
+# Runtime outputs
 plots/
 runtime/

@@ -2,6 +2,23 @@
 
 ## 2026-05-05
 
+- task: 跟踪 `outputs/` 图像产品并调整 RA/Dec 分布图
+- files_changed: `.gitignore`, `scripts/plot_gotta_asteroids.py`, `docs/FIGURES.md`, `README.md`, `docs/PROCESSING_ORDER.md`, `WORKLOG.md`, `outputs/`
+- commands_run: 待重跑 `scripts/plot_gotta_asteroids.py`
+- key_findings:
+  - `outputs/known_object_processing.png` 为用户新增流程图，需要直接纳入 git
+  - `outputs/` 不再忽略，便于 GPT Pro 读取图像产品
+  - RA/Dec 图需要去标题、colorbar 上限改为 `100`、RA tick label 移到 Dec = -30 deg 附近
+- validation:
+  - 已重跑 `outputs/asteroid_orbits.png`
+  - 已重跑 `outputs/gotta_radec_healpix_nside64.png`
+  - 已确认用户新增 `outputs/known_object_processing.png` 将纳入 git
+  - `/Users/island/opt/anaconda3/envs/astro/bin/python -m py_compile scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py`
+- remaining_issues:
+  - 无
+- next_step:
+  - 重画图、检查输出后提交推送
+
 - task: 精简仓库到已知小行星论文主线，并把输出图放回 `outputs/`
 - files_changed: `remote_foundation/`, `smt_known_asteroid/`, `scripts/plot_gotta_asteroids.py`, `scripts/summarize_gotta_asteroids.py`, `scripts/describe_fits_columns.py`, `README.md`, `PLAN.md`, `WORKLOG.md`, `docs/PROCESSING_ORDER.md`, `docs/METHOD_KNOWN_ASTEROID_EXTRACTION.md`
 - commands_run: `rm -rf outputs/gotta outputs/all_radec_distribution.png outputs/asteroid_orbits.png`; `rm -f all_asteroids.fits`; 删除非主线参考脚本和 notebook；后续重跑绘图和统计

@@ -20,6 +20,8 @@ Large FITS data products are kept locally and are not committed to git.
 - `docs/METHOD_KNOWN_ASTEROID_EXTRACTION.md`: method notes from photometric catalog to asteroid photometry
 - `docs/PROCESSING_ORDER.md`: recommended processing order and useful-file notes
 - `docs/FITS_COLUMNS.md`: `gotta_asteroids.fits` column dictionary
+- `docs/FIGURES.md`: figure/output asset descriptions
+- `outputs/`: tracked figure products and figure-support JSON
 
 ## Local Data
 

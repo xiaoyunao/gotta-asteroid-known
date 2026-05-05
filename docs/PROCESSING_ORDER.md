@@ -62,6 +62,7 @@
 4. JPL Horizons 几何和运动信息: `r_AU`, `delta_AU`, `phase_deg`, `RA_rate_arcsec_hour`, `DEC_rate_arcsec_hour`, `ang_rate_arcsec_hour`, `ang_rate_deg_day`, `horizons_failed`
 
 完整逐列说明见 `docs/FITS_COLUMNS.md`。处理方法细节见 `docs/METHOD_KNOWN_ASTEROID_EXTRACTION.md`。
+图像产品说明见 `docs/FIGURES.md`。
 
 ## 6. 常用命令
 
