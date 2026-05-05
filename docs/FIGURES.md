@@ -27,7 +27,7 @@ Sky distribution of GOTTA known-asteroid detections in RA/Dec.
 - Columns: predicted ephemeris `ra`, `dec`
 - Method: HEALPix binning with `nside=64`, plotted in a Mollweide projection
 - Color scale: logarithmic counts per HEALPix pixel, clipped at 100 counts per pixel for readability
-- RA tick labels are manually placed near Dec = -15 deg to avoid overlap with the densest detection band.
+- RA tick labels are manually placed near Dec = -15 deg and include degree symbols to match the Dec labels.
 
 ## `outputs/gotta_stats.json`
 

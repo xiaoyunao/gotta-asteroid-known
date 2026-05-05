@@ -4,11 +4,12 @@
 
 - task: 跟踪 `outputs/` 图像产品并调整 RA/Dec 分布图
 - files_changed: `.gitignore`, `scripts/plot_gotta_asteroids.py`, `docs/FIGURES.md`, `README.md`, `docs/PROCESSING_ORDER.md`, `WORKLOG.md`, `outputs/`
-- commands_run: 待重跑 `scripts/plot_gotta_asteroids.py`
+- commands_run: `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_gotta_asteroids.py gotta_asteroids.fits --outdir outputs`; `/Users/island/opt/anaconda3/envs/astro/bin/python -m py_compile scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py`
 - key_findings:
   - `outputs/known_object_processing.png` 为用户新增流程图，需要直接纳入 git
   - `outputs/` 不再忽略，便于 GPT Pro 读取图像产品
   - RA/Dec 图需要去标题、colorbar 上限改为 `100`、RA tick label 移到 Dec = -15 deg 附近
+  - RA tick label 需要带度符号，和 Dec 坐标单位一致
 - validation:
   - 已重跑 `outputs/asteroid_orbits.png`
   - 已重跑 `outputs/gotta_radec_healpix_nside64.png`

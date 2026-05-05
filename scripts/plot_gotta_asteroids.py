@@ -87,7 +87,7 @@ def set_mollweide_ra_ticks_0_360(ax, center_deg: float = 180.0, step: int = 60) 
         ax.text(
             lon_tick,
             label_lat,
-            f"{value:d}",
+            f"{value:d}°",
             ha="center",
             va="center",
             fontsize=24,
