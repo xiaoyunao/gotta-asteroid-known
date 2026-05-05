@@ -2,6 +2,23 @@
 
 ## 2026-05-05
 
+- task: 生成论文写作 handoff packet
+- files_changed: `paper_handoff/`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `find . -maxdepth 3 -type f`; `git log --oneline --decorate --graph -n 20 --all`; `git rev-parse HEAD`; `git branch --show-current`; `git remote get-url origin`; `cp outputs/* paper_handoff/figures/`; `cp docs/GOTTA_STATS.md docs/FITS_COLUMNS.md outputs/gotta_stats.json paper_handoff/tables/`; `cp scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py paper_handoff/scripts_reference/`
+- key_findings:
+  - 论文主线材料已集中在 `docs/`, `outputs/`, `scripts/`, `smt_known_asteroid/`, `remote_foundation/`
+  - handoff 包以 `gotta_asteroids.fits` 为最终数据源说明，但不复制 FITS
+  - `paper_handoff/` 包含方法、数据、结果、图表说明、限制和复现说明
+- validation:
+  - 已生成 `paper_handoff_gotta-asteroid-known_0a76e4d.zip`
+  - 已生成 `paper_handoff_gotta-asteroid-known_0a76e4d.zip.sha256`
+  - `unzip -l paper_handoff_gotta-asteroid-known_0a76e4d.zip`
+  - `unzip -l paper_handoff_gotta-asteroid-known_0a76e4d.zip | grep -Ei '\\.fits$|\\.fits\\.gz$|\\.fit$|\\.fz$' || true` 无输出，确认 zip 中无 FITS
+- remaining_issues:
+  - FITS 原始数据不在 handoff zip 中，GPT Pro 只能阅读摘要和复制出的图表/脚本
+- next_step:
+  - 提交并推送 handoff packet
+
 - task: 跟踪 `outputs/` 图像产品并调整 RA/Dec 分布图
 - files_changed: `.gitignore`, `scripts/plot_gotta_asteroids.py`, `docs/FIGURES.md`, `README.md`, `docs/PROCESSING_ORDER.md`, `WORKLOG.md`, `outputs/`
 - commands_run: `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_gotta_asteroids.py gotta_asteroids.fits --outdir outputs`; `/Users/island/opt/anaconda3/envs/astro/bin/python -m py_compile scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py`

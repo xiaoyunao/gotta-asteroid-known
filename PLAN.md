@@ -14,11 +14,13 @@
 5. 已读取 `gotta_asteroids.fits`，生成列名、类型和含义说明
 6. 已创建远端仓库并推送 `main`
 7. 已新增论文方法说明、GOTTA 统计摘要和论文图脚本
+8. 正在生成面向 GPT Pro 论文写作的 `paper_handoff/` packet
 
 ## Outstanding issues
 
 - 后续新增统计和图时必须默认使用 `gotta_asteroids.fits`
 - 轨道图 `outputs/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
+- `paper_handoff/` zip 不包含 FITS；如后续要让模型重新算统计，需要另行提供数据或新增摘要表
 
 ## Validation criteria
 
@@ -29,8 +31,11 @@
 - 本地 git 仓库已推送到新建远端：`https://github.com/xiaoyunao/gotta-asteroid-known`
 - `docs/METHOD_KNOWN_ASTEROID_EXTRACTION.md` 说明从测光星表到已知小行星测光信息的处理链
 - `docs/GOTTA_STATS.md` 记录当前 `gotta_asteroids.fits` 基础统计
+- `paper_handoff/` 包含数据、方法、结果、图表、限制、复现说明和脚本引用
+- handoff zip 通过 `unzip -l` 检查，且不包含 FITS 文件
 
 ## Next recommended steps
 
-1. 等论文 prompt 明确后，继续补充额外统计量和图
-2. 如需重新生成字段说明，运行 `python3 scripts/describe_fits_columns.py gotta_asteroids.fits --out docs/FITS_COLUMNS.md`
+1. 把 handoff zip 交给 GPT Pro，从 `HANDOFF.md` 开始写论文草稿
+2. 等论文 prompt 明确后，继续补充额外统计量和图
+3. 如需重新生成字段说明，运行 `python3 scripts/describe_fits_columns.py gotta_asteroids.fits --out docs/FITS_COLUMNS.md`
