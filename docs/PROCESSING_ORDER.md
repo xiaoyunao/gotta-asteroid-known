@@ -5,15 +5,16 @@
 
 ## 1. 输入数据
 
-- 本地数据文件: `all_asteroids.fits`
-- 来源: `xiaoya@159.226.170.185:/data/proc/xiaoyunao/all_asteroids.fits`
-- 当前本地文件规模: `162933` 行、`164` 列
+- 当前论文分析数据文件: `gotta_asteroids.fits`
+- 历史来源文件: `all_asteroids.fits`
+- 注意: 后续统计和分析都不能直接用 `all_asteroids.fits`，因为其中包含其他望远镜数据
+- 当前 GOTTA 筛选表规模: `56230` 行、`164` 列
 - 当前唯一小行星数:
-  - `query_id`: `18123`
-  - `name`: `18123`
-- JPL Horizons 失败行: `309`
+  - `query_id`: `16053`
+  - `name`: `16053`
+- JPL Horizons 失败行: `107`
 
-`all_asteroids.fits` 是大数据产品，保留在工作区但不提交 git。
+`gotta_asteroids.fits` 是筛选后的大数据产品，保留在工作区但不提交 git。
 
 ## 2. 主要处理程序
 
@@ -28,8 +29,9 @@
 | 5 | `smt_known_asteroid/export_ades.py` | 如需提交 MPC，按 ADES PSV 格式导出已匹配 detections。GOTTA 当前整理重点不是提交，可作为后续工具保留。 |
 | 6 | `remote_foundation/asteroids_jpl.py` | 对总表按 `query_id + epoch` 批量查询 JPL Horizons，补 `r_AU`、`delta_AU`、`phase_deg`、RA/Dec 角速度和总角速度。 |
 | 7 | `smt_known_asteroid/make_ppt_known_object_plots.py` | 参考 SMT 项目的汇报绘图入口：补 SBDB/astorb 轨道族，画轨道分布、RA/Dec 密度和探测次数直方图。 |
-| 8 | `scripts/plot_all_asteroids_summary.py` | 当前 GOTTA 总表的轻量画图入口，直接从 `all_asteroids.fits` 画 `asteroid_orbits.png` 和 `all_radec_distribution.png`。 |
-| 9 | `scripts/describe_fits_columns.py` | 读取 FITS header，生成字段说明文档 `docs/FITS_COLUMNS.md`。 |
+| 8 | `scripts/plot_gotta_asteroids.py` | 当前论文图入口，只读 `gotta_asteroids.fits`，输出轨道分布图和 RA/Dec healpix 分布图。 |
+| 9 | `scripts/summarize_gotta_asteroids.py` | 当前统计入口，只读 `gotta_asteroids.fits`，输出 `docs/GOTTA_STATS.md` 和 JSON。 |
+| 10 | `scripts/describe_fits_columns.py` | 读取 FITS header，生成字段说明文档 `docs/FITS_COLUMNS.md`。 |
 
 ## 3. 远端 `/Volumes/Foundation/Asteroid` 中有用的参考程序
 
@@ -59,7 +61,7 @@
 
 ## 5. 当前 FITS 结果概览
 
-`all_asteroids.fits` 是“已匹配已知小行星 detection 总表”，不是 unknown/linking 结果。
+`gotta_asteroids.fits` 是筛选后的“GOTTA 已匹配已知小行星 detection 总表”，不是 unknown/linking 结果。
 它包含四类信息：
 
 1. 已知小行星预测位置: `name`, `number`, `ra`, `dec`, `mag`, `epoch`, `source_file`
@@ -67,16 +69,19 @@
 3. SBDB 小行星/轨道信息: `object_*`, `orbit_*`, `query_id`, `signature_*`
 4. JPL Horizons 几何和运动信息: `r_AU`, `delta_AU`, `phase_deg`, `RA_rate_arcsec_hour`, `DEC_rate_arcsec_hour`, `ang_rate_arcsec_hour`, `ang_rate_deg_day`, `horizons_failed`
 
-完整逐列说明见 `docs/FITS_COLUMNS.md`。
+完整逐列说明见 `docs/FITS_COLUMNS.md`。处理方法细节见 `docs/METHOD_KNOWN_ASTEROID_EXTRACTION.md`。
 
 ## 6. 常用命令
 
 ```bash
 # 生成字段说明
-python3 scripts/describe_fits_columns.py all_asteroids.fits --out docs/FITS_COLUMNS.md
+python3 scripts/describe_fits_columns.py gotta_asteroids.fits --out docs/FITS_COLUMNS.md
 
 # 从总表生成轨道分布和 RA/Dec 分布图
-/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_all_asteroids_summary.py all_asteroids.fits --outdir outputs
+/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_gotta_asteroids.py gotta_asteroids.fits --outdir outputs/gotta
+
+# 生成统计摘要
+/Users/island/opt/anaconda3/envs/astro/bin/python scripts/summarize_gotta_asteroids.py gotta_asteroids.fits --md-out docs/GOTTA_STATS.md --json-out outputs/gotta/gotta_stats.json
 
 # 语法检查
 python3 -m py_compile scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py remote_foundation/astorb/*.py

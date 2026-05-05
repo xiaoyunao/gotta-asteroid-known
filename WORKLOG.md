@@ -2,6 +2,24 @@
 
 ## 2026-05-05
 
+- task: 切换论文分析默认输入到 `gotta_asteroids.fits`，补充方法说明、GOTTA 统计和论文图
+- files_changed: `scripts/plot_gotta_asteroids.py`, `scripts/summarize_gotta_asteroids.py`, `docs/METHOD_KNOWN_ASTEROID_EXTRACTION.md`, `docs/GOTTA_STATS.md`, `docs/FITS_COLUMNS.md`, `docs/PROCESSING_ORDER.md`, `README.md`, `PLAN.md`, `WORKLOG.md`
+- commands_run: `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_gotta_asteroids.py gotta_asteroids.fits --outdir outputs/gotta`; `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/summarize_gotta_asteroids.py gotta_asteroids.fits --md-out docs/GOTTA_STATS.md --json-out outputs/gotta/gotta_stats.json`; `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/describe_fits_columns.py gotta_asteroids.fits --out docs/FITS_COLUMNS.md`
+- key_findings:
+  - 后续统计和分析只用 `gotta_asteroids.fits`，不用混有其他望远镜数据的 `all_asteroids.fits`
+  - `gotta_asteroids.fits` 共有 `56230` 行、`164` 列、`16053` 个唯一 `query_id`
+  - 观测历元覆盖 `2025-01-17T14:00:58.725` 到 `2025-06-04T19:07:21.708`
+  - 已按原 `asteroid_orbits` notebook 格式重画 `outputs/gotta/asteroid_orbits.png`
+  - 已按 `sitian_stats.ipynb` 的 healpix/Mollweide 逻辑重画 `outputs/gotta/gotta_radec_healpix_nside64.png`，字体统一到轨道图风格，colorbar 位于图内中下部
+- validation:
+  - 成功写出 `docs/GOTTA_STATS.md`
+  - 成功写出 `docs/FITS_COLUMNS.md`
+  - 成功写出两张 PNG 图
+- remaining_issues:
+  - 论文后续需要哪些额外图和统计，等待下一轮 prompt
+- next_step:
+  - 根据论文 prompt 增加额外图、统计表和结果描述
+
 - task: 下载 GOTTA 总表、迁移已知小行星处理程序并生成文档
 - files_changed: `remote_foundation/`, `smt_known_asteroid/`, `scripts/describe_fits_columns.py`, `scripts/plot_all_asteroids_summary.py`, `docs/PROCESSING_ORDER.md`, `docs/FITS_COLUMNS.md`, `README.md`, `PLAN.md`, `.gitignore`
 - commands_run: `scp -P 9553 xiaoya@159.226.170.185:/data/proc/xiaoyunao/all_asteroids.fits .`; `ssh yunaoxiao@100.67.138.26 find /Volumes/Foundation/Asteroid -type f`; `scp yunaoxiao@100.67.138.26:/Volumes/Foundation/Asteroid/*.py remote_foundation/`; `scp yunaoxiao@100.67.138.26:/Volumes/Foundation/Asteroid/*.ipynb remote_foundation/`; `python3 scripts/describe_fits_columns.py all_asteroids.fits --out docs/FITS_COLUMNS.md`; `python3 scripts/plot_all_asteroids_summary.py all_asteroids.fits --outdir outputs`; `python3 -m py_compile scripts/describe_fits_columns.py scripts/plot_all_asteroids_summary.py smt_known_asteroid/*.py remote_foundation/*.py remote_foundation/astorb/*.py`; `gh repo create gotta-asteroid-known --private --source=. --remote=origin`; `git push -u origin main`

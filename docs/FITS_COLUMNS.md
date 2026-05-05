@@ -1,7 +1,7 @@
 # FITS Columns
 
-Source file: `all_asteroids.fits`
-Rows: `162933`
+Source file: `gotta_asteroids.fits`
+Rows: `56230`
 Columns: `164`
 
 The table combines predicted known-asteroid ephemerides, the matched source-catalog measurements, SBDB object/orbit metadata, and JPL Horizons geometry/rate columns.
@@ -111,11 +111,11 @@ The table combines predicted known-asteroid ephemerides, the matched source-cata
 | 101 | `object_orbit_class_name` | `24A` | `` | SBDB object metadata | SBDB orbit class name, for example Main-belt Asteroid. |
 | 102 | `object_orbit_id` | `3A` | `` | SBDB object metadata | Column copied from the matched source catalog or upstream enrichment table. |
 | 103 | `object_pha` | `5A` | `` | SBDB object metadata | SBDB potentially hazardous asteroid flag. |
-| 104 | `object_prefix` | `1A` | `` | SBDB object metadata | Column copied from the matched source catalog or upstream enrichment table. |
+| 104 | `object_prefix` | `A` | `` | SBDB object metadata | Column copied from the matched source catalog or upstream enrichment table. |
 | 105 | `object_shortname` | `22A` | `` | SBDB object metadata | Column copied from the matched source catalog or upstream enrichment table. |
 | 106 | `object_spkid` | `8A` | `` | SBDB object metadata | JPL/SPICE small-body identifier. |
 | 107 | `orbit_comment` | `61A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
-| 108 | `orbit_condition_code` | `1A` | `` | SBDB orbit metadata/elements | SBDB orbit uncertainty/condition code. |
+| 108 | `orbit_condition_code` | `A` | `` | SBDB orbit metadata/elements | SBDB orbit uncertainty/condition code. |
 | 109 | `orbit_cov_epoch` | `11A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
 | 110 | `orbit_data_arc` | `5A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
 | 111 | `orbit_elements_a` | `8A` | `` | SBDB orbit metadata/elements | SBDB semimajor axis. |
@@ -146,11 +146,11 @@ The table combines predicted known-asteroid ephemerides, the matched source-cata
 | 136 | `orbit_last_obs` | `10A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
 | 137 | `orbit_moid` | `10A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
 | 138 | `orbit_moid_jup` | `10A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
-| 139 | `orbit_n_del_obs_used` | `1A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
-| 140 | `orbit_n_dop_obs_used` | `1A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
+| 139 | `orbit_n_del_obs_used` | `A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
+| 140 | `orbit_n_dop_obs_used` | `A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
 | 141 | `orbit_n_obs_used` | `5A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
-| 142 | `orbit_not_valid_after` | `1A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
-| 143 | `orbit_not_valid_before` | `1A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
+| 142 | `orbit_not_valid_after` | `A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
+| 143 | `orbit_not_valid_before` | `A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
 | 144 | `orbit_orbit_id` | `3A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
 | 145 | `orbit_pe_used` | `5A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
 | 146 | `orbit_producer` | `17A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
@@ -159,7 +159,7 @@ The table combines predicted known-asteroid ephemerides, the matched source-cata
 | 149 | `orbit_soln_date` | `19A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
 | 150 | `orbit_source` | `3A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
 | 151 | `orbit_t_jup` | `5A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
-| 152 | `orbit_two_body` | `1A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
+| 152 | `orbit_two_body` | `A` | `` | SBDB orbit metadata/elements | Column copied from the matched source catalog or upstream enrichment table. |
 | 153 | `query_failed` | `5A` | `` | SBDB object metadata | String flag from SBDB enrichment indicating whether object metadata query failed. |
 | 154 | `query_id` | `10A` | `` | SBDB object metadata | Object identifier used for SBDB/Horizons queries. |
 | 155 | `signature_source` | `39A` | `` | SBDB object metadata | Column copied from the matched source catalog or upstream enrichment table. |

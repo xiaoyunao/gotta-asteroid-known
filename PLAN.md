@@ -2,8 +2,8 @@
 
 ## Current objective
 
-建立 GOTTA 已知小行星探测处理仓库，收集可复用程序，整理处理顺序和
-`all_asteroids.fits` 结果字段说明，并推送到一个新的远端仓库。
+建立 GOTTA 已知小行星论文分析工作区，收集可复用程序，整理从测光星表到已知小行星测光 detection 的处理说明，并以
+`gotta_asteroids.fits` 为唯一统计和绘图输入。
 
 ## Milestones
 
@@ -11,12 +11,14 @@
 2. 已下载服务器 `/data/proc/xiaoyunao/all_asteroids.fits`
 3. 已检查 `/Volumes/Foundation/Asteroid` 下 `.py` 和 `.ipynb` 文件，并迁移顶层相关脚本
 4. 已参考 `/Users/island/Desktop/smt_asteroid` 迁移已知小行星处理、SBDB/JPL 匹配和绘图程序
-5. 已读取 FITS 文件，生成列名、类型和含义说明
+5. 已读取 `gotta_asteroids.fits`，生成列名、类型和含义说明
 6. 已创建远端仓库并推送 `main`
+7. 已新增论文方法说明、GOTTA 统计摘要和论文图脚本
 
 ## Outstanding issues
 
-- 若需要完全复刻 `sitian_stats.ipynb` 的 healpix 图，可使用 `/Users/island/opt/anaconda3/envs/astro/bin/python` 运行 notebook 或 `sitian_stats_cell_1.py`
+- 后续新增统计和图时必须默认使用 `gotta_asteroids.fits`
+- 轨道图 `outputs/gotta/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
 
 ## Validation criteria
 
@@ -25,8 +27,10 @@
 - Markdown 文档写明处理顺序、脚本用途和最终结果字段：已完成
 - Python 文件至少通过语法检查：已完成
 - 本地 git 仓库已推送到新建远端：`https://github.com/xiaoyunao/gotta-asteroid-known`
+- `docs/METHOD_KNOWN_ASTEROID_EXTRACTION.md` 说明从测光星表到已知小行星测光信息的处理链
+- `docs/GOTTA_STATS.md` 记录当前 `gotta_asteroids.fits` 基础统计
 
 ## Next recommended steps
 
-1. 如需完全复刻 notebook healpix 图，用 `/Users/island/opt/anaconda3/envs/astro/bin/python` 运行 `smt_known_asteroid/sitian_stats_cell_1.py`
-2. 如需重新生成字段说明，运行 `python3 scripts/describe_fits_columns.py all_asteroids.fits --out docs/FITS_COLUMNS.md`
+1. 等论文 prompt 明确后，继续补充额外统计量和图
+2. 如需重新生成字段说明，运行 `python3 scripts/describe_fits_columns.py gotta_asteroids.fits --out docs/FITS_COLUMNS.md`
