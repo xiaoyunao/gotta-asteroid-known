@@ -2,6 +2,25 @@
 
 ## 2026-05-05
 
+- task: 编译论文 v1 并生成本地 v2 草稿
+- files_changed: `paper_draft/`, `scripts/generate_paper_products.py`, `.gitignore`, `PLAN.md`, `WORKLOG.md`; 删除 `paper_handoff/` 和 `paper_handoff_*.zip*`
+- commands_run: `xelatex -interaction=nonstopmode -halt-on-error v1.tex`; `xelatex -interaction=nonstopmode -halt-on-error v2.tex`; `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft`; `/Users/island/opt/anaconda3/envs/astro/bin/python -m py_compile scripts/generate_paper_products.py scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py`
+- key_findings:
+  - `paper_draft/` 中实际目录名为下划线，不是空格
+  - 初初稿 zip 内包含 `raa.cls`/`raa.bst` 和原始图 `1.png`
+  - `v1.tex` 可在本地用抽取出的 `raa.cls` 编译，已生成 `paper_draft/v1.pdf`
+  - GPT 生成图表改为由 `gotta_asteroids.fits` 直接重算，输出到 `paper_draft/figures_v2/` 和 `paper_draft/tables_v2/`
+  - `paper_handoff/` 已不再作为论文修改入口，按用户要求清理
+- validation:
+  - `paper_draft/v1.pdf` 编译成功
+  - `paper_draft/v2.pdf` 编译成功，最终为 16 页
+  - Python 语法检查通过
+- remaining_issues:
+  - `v2.tex` 中作者、单位、致谢、最终硬件参数、匹配半径和星等一致性阈值仍需确认
+  - 光变分析仍为占位，等待协作者数据
+- next_step:
+  - 人工审阅 `paper_draft/v2.pdf`，再根据论文内容继续改正文、图表或统计
+
 - task: 生成论文写作 handoff packet
 - files_changed: `paper_handoff/`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `find . -maxdepth 3 -type f`; `git log --oneline --decorate --graph -n 20 --all`; `git rev-parse HEAD`; `git branch --show-current`; `git remote get-url origin`; `cp outputs/* paper_handoff/figures/`; `cp docs/GOTTA_STATS.md docs/FITS_COLUMNS.md outputs/gotta_stats.json paper_handoff/tables/`; `cp scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py paper_handoff/scripts_reference/`

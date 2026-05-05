@@ -2,8 +2,8 @@
 
 ## Current objective
 
-建立 GOTTA 已知小行星论文分析工作区，收集可复用程序，整理从测光星表到已知小行星测光 detection 的处理说明，并以
-`gotta_asteroids.fits` 为唯一统计和绘图输入。
+在本地继续修改 GOTTA 已知小行星论文草稿，以 `gotta_asteroids.fits` 为唯一统计和绘图输入，生成可编译的
+`paper_draft/v2.tex` 和 `paper_draft/v2.pdf`。
 
 ## Milestones
 
@@ -14,13 +14,17 @@
 5. 已读取 `gotta_asteroids.fits`，生成列名、类型和含义说明
 6. 已创建远端仓库并推送 `main`
 7. 已新增论文方法说明、GOTTA 统计摘要和论文图脚本
-8. 正在生成面向 GPT Pro 论文写作的 `paper_handoff/` packet
+8. 已生成并随后清理不再需要的 `paper_handoff/` packet
+9. 已从 `paper_draft/v1.tex` 编译出 `paper_draft/v1.pdf`
+10. 已新增 `scripts/generate_paper_products.py`，从 FITS 重新生成 v2 图表
+11. 已生成 `paper_draft/v2.tex` 和 `paper_draft/v2.pdf`
 
 ## Outstanding issues
 
 - 后续新增统计和图时必须默认使用 `gotta_asteroids.fits`
 - 轨道图 `outputs/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
-- `paper_handoff/` zip 不包含 FITS；如后续要让模型重新算统计，需要另行提供数据或新增摘要表
+- `paper_draft/v2.tex` 中作者、单位、致谢、最终硬件参数、匹配半径和星等一致性阈值仍需共同作者确认
+- 光变分析仍为占位，等待 60 cm Schmidt 或其他协作数据
 
 ## Validation criteria
 
@@ -31,11 +35,13 @@
 - 本地 git 仓库已推送到新建远端：`https://github.com/xiaoyunao/gotta-asteroid-known`
 - `docs/METHOD_KNOWN_ASTEROID_EXTRACTION.md` 说明从测光星表到已知小行星测光信息的处理链
 - `docs/GOTTA_STATS.md` 记录当前 `gotta_asteroids.fits` 基础统计
-- `paper_handoff/` 包含数据、方法、结果、图表、限制、复现说明和脚本引用
-- handoff zip 通过 `unzip -l` 检查，且不包含 FITS 文件
+- `paper_draft/v1.pdf` 可由 `paper_draft/v1.tex` 编译得到：已完成
+- `paper_draft/v2.pdf` 可由 `paper_draft/v2.tex` 编译得到：已完成
+- `scripts/generate_paper_products.py` 通过 Python 语法检查：已完成
 
 ## Next recommended steps
 
-1. 把 handoff zip 交给 GPT Pro，从 `HANDOFF.md` 开始写论文草稿
-2. 等论文 prompt 明确后，继续补充额外统计量和图
-3. 如需重新生成字段说明，运行 `python3 scripts/describe_fits_columns.py gotta_asteroids.fits --out docs/FITS_COLUMNS.md`
+1. 人工检查 `paper_draft/v2.pdf` 的图表版面和文本内容
+2. 确认作者、单位、致谢、硬件参数、匹配半径和星等一致性阈值
+3. 等光变分析材料到位后替换 `Light-Curve Analysis Placeholder`
+4. 如需重画 v2 图表，运行 `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft`

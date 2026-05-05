@@ -22,6 +22,7 @@ Large FITS data products are kept locally and are not committed to git.
 - `docs/FITS_COLUMNS.md`: `gotta_asteroids.fits` column dictionary
 - `docs/FIGURES.md`: figure/output asset descriptions
 - `outputs/`: tracked figure products and figure-support JSON
+- `paper_draft/`: local manuscript drafts, reference materials, v2 figures/tables, and compiled PDFs
 
 ## Local Data
 
@@ -35,5 +36,6 @@ files are ignored by git.
 python3 scripts/describe_fits_columns.py gotta_asteroids.fits --out docs/FITS_COLUMNS.md
 /Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_gotta_asteroids.py gotta_asteroids.fits --outdir outputs
 /Users/island/opt/anaconda3/envs/astro/bin/python scripts/summarize_gotta_asteroids.py gotta_asteroids.fits --md-out docs/GOTTA_STATS.md --json-out outputs/gotta_stats.json
+/Users/island/opt/anaconda3/envs/astro/bin/python scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft
 python3 -m py_compile scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py
 ```

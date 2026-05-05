@@ -9,6 +9,16 @@ __pycache__/
 *.py[cod]
 .DS_Store
 
+# LaTeX build outputs
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+
 # Runtime outputs
 plots/
 runtime/
+
+# Local manuscript drafts and private reference materials
+paper_draft/
