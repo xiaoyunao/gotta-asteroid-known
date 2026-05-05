@@ -1,0 +1,14 @@
+# Large local data products
+*.fits
+*.fits.gz
+
+# Python/cache outputs
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# Generated plots and runtime outputs
+outputs/
+plots/
+runtime/
+
