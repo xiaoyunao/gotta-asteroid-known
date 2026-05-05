@@ -4,7 +4,7 @@
 
 - task: 下载 GOTTA 总表、迁移已知小行星处理程序并生成文档
 - files_changed: `remote_foundation/`, `smt_known_asteroid/`, `scripts/describe_fits_columns.py`, `scripts/plot_all_asteroids_summary.py`, `docs/PROCESSING_ORDER.md`, `docs/FITS_COLUMNS.md`, `README.md`, `PLAN.md`, `.gitignore`
-- commands_run: `scp -P 9553 xiaoya@159.226.170.185:/data/proc/xiaoyunao/all_asteroids.fits .`; `ssh yunaoxiao@100.67.138.26 find /Volumes/Foundation/Asteroid -type f`; `scp yunaoxiao@100.67.138.26:/Volumes/Foundation/Asteroid/*.py remote_foundation/`; `scp yunaoxiao@100.67.138.26:/Volumes/Foundation/Asteroid/*.ipynb remote_foundation/`; `python3 scripts/describe_fits_columns.py all_asteroids.fits --out docs/FITS_COLUMNS.md`; `python3 scripts/plot_all_asteroids_summary.py all_asteroids.fits --outdir outputs`; `python3 -m py_compile scripts/describe_fits_columns.py scripts/plot_all_asteroids_summary.py smt_known_asteroid/*.py remote_foundation/*.py remote_foundation/astorb/*.py`
+- commands_run: `scp -P 9553 xiaoya@159.226.170.185:/data/proc/xiaoyunao/all_asteroids.fits .`; `ssh yunaoxiao@100.67.138.26 find /Volumes/Foundation/Asteroid -type f`; `scp yunaoxiao@100.67.138.26:/Volumes/Foundation/Asteroid/*.py remote_foundation/`; `scp yunaoxiao@100.67.138.26:/Volumes/Foundation/Asteroid/*.ipynb remote_foundation/`; `python3 scripts/describe_fits_columns.py all_asteroids.fits --out docs/FITS_COLUMNS.md`; `python3 scripts/plot_all_asteroids_summary.py all_asteroids.fits --outdir outputs`; `python3 -m py_compile scripts/describe_fits_columns.py scripts/plot_all_asteroids_summary.py smt_known_asteroid/*.py remote_foundation/*.py remote_foundation/astorb/*.py`; `gh repo create gotta-asteroid-known --private --source=. --remote=origin`; `git push -u origin main`
 - key_findings:
   - `all_asteroids.fits` 已下载到本地，大小约 `183M`
   - FITS 表共有 `162933` 行、`164` 列、`18123` 个唯一 `query_id`
@@ -16,6 +16,7 @@
   - `outputs/asteroid_orbits.png` 和 `outputs/all_radec_distribution.png` 已成功生成（输出目录不提交）
   - Python 语法检查通过
   - 已创建远端仓库 `https://github.com/xiaoyunao/gotta-asteroid-known`
+  - 已推送 `main` 到远端仓库
 - remaining_issues:
   - 本地 `healpy` 不可用；若要完全复刻 notebook healpix 图，需在可用环境运行
 - next_step:

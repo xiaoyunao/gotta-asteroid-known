@@ -12,7 +12,7 @@
 3. 已检查 `/Volumes/Foundation/Asteroid` 下 `.py` 和 `.ipynb` 文件，并迁移顶层相关脚本
 4. 已参考 `/Users/island/Desktop/smt_asteroid` 迁移已知小行星处理、SBDB/JPL 匹配和绘图程序
 5. 已读取 FITS 文件，生成列名、类型和含义说明
-6. 已创建远端仓库并准备推送 `main`
+6. 已创建远端仓库并推送 `main`
 
 ## Outstanding issues
 
@@ -24,7 +24,7 @@
 - 有用脚本已按用途放入当前仓库：已完成
 - Markdown 文档写明处理顺序、脚本用途和最终结果字段：已完成
 - Python 文件至少通过语法检查：已完成
-- 本地 git 仓库已准备推送到新建远端：`https://github.com/xiaoyunao/gotta-asteroid-known`
+- 本地 git 仓库已推送到新建远端：`https://github.com/xiaoyunao/gotta-asteroid-known`
 
 ## Next recommended steps
 
