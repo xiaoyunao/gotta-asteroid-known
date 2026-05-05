@@ -13,14 +13,14 @@
   - SMT 项目中更工程化的主流程位于 `known_asteroid/`，已迁移为 `smt_known_asteroid/`
 - validation:
   - `docs/FITS_COLUMNS.md` 已由实际 FITS header 生成
-  - `outputs/asteroid_orbits.png` 和 `outputs/all_radec_distribution.png` 已成功生成（输出目录不提交）
+  - `outputs/asteroid_orbits.png` 和 `outputs/all_radec_distribution.png` 已成功生成（输出目录不提交）；可用环境为 `/Users/island/opt/anaconda3/envs/astro/bin/python`
   - Python 语法检查通过
   - 已创建远端仓库 `https://github.com/xiaoyunao/gotta-asteroid-known`
   - 已推送 `main` 到远端仓库
 - remaining_issues:
-  - 本地 `healpy` 不可用；若要完全复刻 notebook healpix 图，需在可用环境运行
+  - 默认 `python3` 的 `healpy` 不可用；`astro` conda 环境可用
 - next_step:
-  - 如需完全复刻 notebook healpix 图，在可用 `healpy` 环境运行 `smt_known_asteroid/sitian_stats_cell_1.py`
+  - 如需完全复刻 notebook healpix 图，用 `/Users/island/opt/anaconda3/envs/astro/bin/python` 运行 `smt_known_asteroid/sitian_stats_cell_1.py`
 
 - task: 初始化 GOTTA 小行星处理仓库
 - files_changed: `README.md`, `WORKLOG.md`, `PLAN.md`, `.gitignore`

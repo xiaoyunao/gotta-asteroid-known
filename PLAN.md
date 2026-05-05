@@ -16,7 +16,7 @@
 
 ## Outstanding issues
 
-- 若需要完全复刻 `sitian_stats.ipynb` 的 healpix 图，需要在有可用 `healpy` 的环境运行 notebook 或 `sitian_stats_cell_1.py`
+- 若需要完全复刻 `sitian_stats.ipynb` 的 healpix 图，可使用 `/Users/island/opt/anaconda3/envs/astro/bin/python` 运行 notebook 或 `sitian_stats_cell_1.py`
 
 ## Validation criteria
 
@@ -28,5 +28,5 @@
 
 ## Next recommended steps
 
-1. 如需完全复刻 notebook healpix 图，在有可用 `healpy` 的环境运行 `smt_known_asteroid/sitian_stats_cell_1.py`
+1. 如需完全复刻 notebook healpix 图，用 `/Users/island/opt/anaconda3/envs/astro/bin/python` 运行 `smt_known_asteroid/sitian_stats_cell_1.py`
 2. 如需重新生成字段说明，运行 `python3 scripts/describe_fits_columns.py all_asteroids.fits --out docs/FITS_COLUMNS.md`

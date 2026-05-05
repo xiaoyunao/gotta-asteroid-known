@@ -76,9 +76,10 @@
 python3 scripts/describe_fits_columns.py all_asteroids.fits --out docs/FITS_COLUMNS.md
 
 # 从总表生成轨道分布和 RA/Dec 分布图
-python3 scripts/plot_all_asteroids_summary.py all_asteroids.fits --outdir outputs
+/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_all_asteroids_summary.py all_asteroids.fits --outdir outputs
 
 # 语法检查
 python3 -m py_compile scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py remote_foundation/astorb/*.py
 ```
 
+本机默认 `python3` 的 `matplotlib/healpy` 环境不完整；`astro` conda 环境可用于绘图和 notebook 风格复现。

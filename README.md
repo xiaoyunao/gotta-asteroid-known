@@ -33,6 +33,6 @@ It has `162933` rows and `164` columns. It is ignored by git.
 
 ```bash
 python3 scripts/describe_fits_columns.py all_asteroids.fits --out docs/FITS_COLUMNS.md
-python3 scripts/plot_all_asteroids_summary.py all_asteroids.fits --outdir outputs
+/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_all_asteroids_summary.py all_asteroids.fits --outdir outputs
 python3 -m py_compile scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py remote_foundation/astorb/*.py
 ```
