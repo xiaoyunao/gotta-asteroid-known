@@ -236,7 +236,7 @@ def plot_radec(columns: dict[str, np.ndarray], out_path: Path, nside: int = 64) 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Make publication-style GOTTA known-asteroid plots.")
     parser.add_argument("fits_path", nargs="?", default="gotta_asteroids.fits")
-    parser.add_argument("--outdir", default="outputs/gotta")
+    parser.add_argument("--outdir", default="outputs")
     parser.add_argument("--nside", type=int, default=64)
     args = parser.parse_args()
 

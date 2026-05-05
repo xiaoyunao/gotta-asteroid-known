@@ -174,8 +174,6 @@ gotta_asteroids.fits
 相关参考程序：
 
 - `remote_foundation/asteroids_stats_pre.py`
-- `remote_foundation/test_sbdb.ipynb`
-- `smt_known_asteroid/make_ppt_known_object_plots.py`
 
 主要补充列：
 
@@ -219,14 +217,13 @@ gotta_asteroids.fits
 当前本地分析统一使用：
 
 ```bash
-/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_gotta_asteroids.py gotta_asteroids.fits --outdir outputs/gotta
-/Users/island/opt/anaconda3/envs/astro/bin/python scripts/summarize_gotta_asteroids.py gotta_asteroids.fits --md-out docs/GOTTA_STATS.md --json-out outputs/gotta/gotta_stats.json
+/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_gotta_asteroids.py gotta_asteroids.fits --outdir outputs
+/Users/island/opt/anaconda3/envs/astro/bin/python scripts/summarize_gotta_asteroids.py gotta_asteroids.fits --md-out docs/GOTTA_STATS.md --json-out outputs/gotta_stats.json
 python3 scripts/describe_fits_columns.py gotta_asteroids.fits --out docs/FITS_COLUMNS.md
 ```
 
 其中：
 
-- `outputs/gotta/asteroid_orbits.png` 严格沿用 `sitian_stats_cell_0.py` 的绘图格式
-- `outputs/gotta/gotta_radec_healpix_nside64.png` 沿用 `sitian_stats.ipynb` 的 healpix/Mollweide RA-Dec 密度图逻辑，并统一到轨道图字体风格
+- `outputs/asteroid_orbits.png` 严格沿用原 `asteroid_orbits` 图的绘图格式
+- `outputs/gotta_radec_healpix_nside64.png` 沿用原 notebook 的 healpix/Mollweide RA-Dec 密度图逻辑，并统一到轨道图字体风格
 - `docs/GOTTA_STATS.md` 是当前可直接给论文草稿使用的统计摘要
-

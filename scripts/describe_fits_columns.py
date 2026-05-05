@@ -108,7 +108,7 @@ def description_for(name: str) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate a Markdown column dictionary for a FITS table.")
-    parser.add_argument("fits_path", nargs="?", default="all_asteroids.fits")
+    parser.add_argument("fits_path", nargs="?", default="gotta_asteroids.fits")
     parser.add_argument("--out", default="docs/FITS_COLUMNS.md")
     args = parser.parse_args()
 
@@ -146,4 +146,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

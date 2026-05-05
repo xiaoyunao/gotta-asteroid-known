@@ -48,7 +48,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Summarize GOTTA known-asteroid FITS detections.")
     parser.add_argument("fits_path", nargs="?", default="gotta_asteroids.fits")
     parser.add_argument("--md-out", default="docs/GOTTA_STATS.md")
-    parser.add_argument("--json-out", default="outputs/gotta/gotta_stats.json")
+    parser.add_argument("--json-out", default="outputs/gotta_stats.json")
     args = parser.parse_args()
 
     fits_path = Path(args.fits_path)
@@ -149,4 +149,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

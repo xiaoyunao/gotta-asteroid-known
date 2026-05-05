@@ -19,26 +19,19 @@ Large FITS data products are kept locally and are not committed to git.
 - `scripts/summarize_gotta_asteroids.py`: generate `docs/GOTTA_STATS.md`
 - `docs/METHOD_KNOWN_ASTEROID_EXTRACTION.md`: method notes from photometric catalog to asteroid photometry
 - `docs/PROCESSING_ORDER.md`: recommended processing order and useful-file notes
-- `docs/FITS_COLUMNS.md`: `all_asteroids.fits` column dictionary
+- `docs/FITS_COLUMNS.md`: `gotta_asteroids.fits` column dictionary
 
 ## Local Data
 
-`all_asteroids.fits` was downloaded to this directory from:
-
-```bash
-scp -P 9553 xiaoya@159.226.170.185:/data/proc/xiaoyunao/all_asteroids.fits .
-```
-
-It has `162933` rows and `164` columns. It is ignored by git.
-
 Use `gotta_asteroids.fits` for paper figures and statistics. It is the filtered
-GOTTA-only table and currently has `56230` rows and `164` columns.
+GOTTA-only table and currently has `56230` rows and `164` columns. Large FITS
+files are ignored by git.
 
 ## Useful Commands
 
 ```bash
 python3 scripts/describe_fits_columns.py gotta_asteroids.fits --out docs/FITS_COLUMNS.md
-/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_gotta_asteroids.py gotta_asteroids.fits --outdir outputs/gotta
-/Users/island/opt/anaconda3/envs/astro/bin/python scripts/summarize_gotta_asteroids.py gotta_asteroids.fits --md-out docs/GOTTA_STATS.md --json-out outputs/gotta/gotta_stats.json
-python3 -m py_compile scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py remote_foundation/astorb/*.py
+/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_gotta_asteroids.py gotta_asteroids.fits --outdir outputs
+/Users/island/opt/anaconda3/envs/astro/bin/python scripts/summarize_gotta_asteroids.py gotta_asteroids.fits --md-out docs/GOTTA_STATS.md --json-out outputs/gotta_stats.json
+python3 -m py_compile scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py
 ```

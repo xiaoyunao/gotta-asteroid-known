@@ -2,15 +2,33 @@
 
 ## 2026-05-05
 
+- task: 精简仓库到已知小行星论文主线，并把输出图放回 `outputs/`
+- files_changed: `remote_foundation/`, `smt_known_asteroid/`, `scripts/plot_gotta_asteroids.py`, `scripts/summarize_gotta_asteroids.py`, `scripts/describe_fits_columns.py`, `README.md`, `PLAN.md`, `WORKLOG.md`, `docs/PROCESSING_ORDER.md`, `docs/METHOD_KNOWN_ASTEROID_EXTRACTION.md`
+- commands_run: `rm -rf outputs/gotta outputs/all_radec_distribution.png outputs/asteroid_orbits.png`; `rm -f all_asteroids.fits`; 删除非主线参考脚本和 notebook；后续重跑绘图和统计
+- key_findings:
+  - 已删除本地 `all_asteroids.fits`，后续只保留并使用 `gotta_asteroids.fits`
+  - 已删除 `read_info.py`、marker/cutout/notebook/SLURM/ADES/旧绘图等非主线文件
+  - 保留主线：单夜匹配、按文件合并、历史汇总、SBDB/JPL 补充、统计、论文画图
+  - 输出图不再放在 `outputs/gotta/`，而是直接写入 `outputs/`
+- validation:
+  - 已重跑 `outputs/asteroid_orbits.png`
+  - 已重跑 `outputs/gotta_radec_healpix_nside64.png`
+  - 已重跑 `docs/GOTTA_STATS.md` 和 `outputs/gotta_stats.json`
+  - `/Users/island/opt/anaconda3/envs/astro/bin/python -m py_compile scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py`
+- remaining_issues:
+  - 无
+- next_step:
+  - 重跑 `outputs/asteroid_orbits.png`、`outputs/gotta_radec_healpix_nside64.png` 和 `docs/GOTTA_STATS.md`
+
 - task: 切换论文分析默认输入到 `gotta_asteroids.fits`，补充方法说明、GOTTA 统计和论文图
 - files_changed: `scripts/plot_gotta_asteroids.py`, `scripts/summarize_gotta_asteroids.py`, `docs/METHOD_KNOWN_ASTEROID_EXTRACTION.md`, `docs/GOTTA_STATS.md`, `docs/FITS_COLUMNS.md`, `docs/PROCESSING_ORDER.md`, `README.md`, `PLAN.md`, `WORKLOG.md`
-- commands_run: `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_gotta_asteroids.py gotta_asteroids.fits --outdir outputs/gotta`; `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/summarize_gotta_asteroids.py gotta_asteroids.fits --md-out docs/GOTTA_STATS.md --json-out outputs/gotta/gotta_stats.json`; `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/describe_fits_columns.py gotta_asteroids.fits --out docs/FITS_COLUMNS.md`
+- commands_run: `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_gotta_asteroids.py gotta_asteroids.fits --outdir outputs`; `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/summarize_gotta_asteroids.py gotta_asteroids.fits --md-out docs/GOTTA_STATS.md --json-out outputs/gotta_stats.json`; `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/describe_fits_columns.py gotta_asteroids.fits --out docs/FITS_COLUMNS.md`
 - key_findings:
   - 后续统计和分析只用 `gotta_asteroids.fits`，不用混有其他望远镜数据的 `all_asteroids.fits`
   - `gotta_asteroids.fits` 共有 `56230` 行、`164` 列、`16053` 个唯一 `query_id`
   - 观测历元覆盖 `2025-01-17T14:00:58.725` 到 `2025-06-04T19:07:21.708`
-  - 已按原 `asteroid_orbits` notebook 格式重画 `outputs/gotta/asteroid_orbits.png`
-  - 已按 `sitian_stats.ipynb` 的 healpix/Mollweide 逻辑重画 `outputs/gotta/gotta_radec_healpix_nside64.png`，字体统一到轨道图风格，colorbar 位于图内中下部
+  - 已按原 `asteroid_orbits` notebook 格式重画 `outputs/asteroid_orbits.png`
+  - 已按原 healpix/Mollweide 逻辑重画 `outputs/gotta_radec_healpix_nside64.png`，字体统一到轨道图风格，colorbar 位于图内中下部
 - validation:
   - 成功写出 `docs/GOTTA_STATS.md`
   - 成功写出 `docs/FITS_COLUMNS.md`

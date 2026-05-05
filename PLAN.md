@@ -8,7 +8,7 @@
 ## Milestones
 
 1. 已初始化本地 git 仓库和项目记忆文件
-2. 已下载服务器 `/data/proc/xiaoyunao/all_asteroids.fits`
+2. 已从服务器总表筛选得到本地 `gotta_asteroids.fits`
 3. 已检查 `/Volumes/Foundation/Asteroid` 下 `.py` 和 `.ipynb` 文件，并迁移顶层相关脚本
 4. 已参考 `/Users/island/Desktop/smt_asteroid` 迁移已知小行星处理、SBDB/JPL 匹配和绘图程序
 5. 已读取 `gotta_asteroids.fits`，生成列名、类型和含义说明
@@ -18,11 +18,11 @@
 ## Outstanding issues
 
 - 后续新增统计和图时必须默认使用 `gotta_asteroids.fits`
-- 轨道图 `outputs/gotta/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
+- 轨道图 `outputs/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
 
 ## Validation criteria
 
-- `all_asteroids.fits` 存在于本地工作区但不提交 git：已完成
+- `gotta_asteroids.fits` 存在于本地工作区但不提交 git：已完成
 - 有用脚本已按用途放入当前仓库：已完成
 - Markdown 文档写明处理顺序、脚本用途和最终结果字段：已完成
 - Python 文件至少通过语法检查：已完成

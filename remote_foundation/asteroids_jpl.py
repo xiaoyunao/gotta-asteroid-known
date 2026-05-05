@@ -10,8 +10,8 @@ import time
 import random
 
 # ========== 配置 ==========
-INPUT_FITS  = "/Users/yunaoxiao/Desktop/all_asteroids.fits"
-OUTPUT_FITS = "/Users/yunaoxiao/Desktop/all_asteroids_new.fits"
+INPUT_FITS  = "gotta_asteroids.fits"
+OUTPUT_FITS = "gotta_asteroids_jpl.fits"
 
 XINGLONG_LOC = {"lon": 117.5766, "lat": 40.3925, "elevation": 0.960}
 
