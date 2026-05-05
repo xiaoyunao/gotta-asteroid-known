@@ -1,6 +1,8 @@
 # Large local data products
 *.fits
 *.fits.gz
+*.bsp
+astorb.dat
 
 # Python/cache outputs
 __pycache__/
@@ -11,4 +13,3 @@ __pycache__/
 outputs/
 plots/
 runtime/
-
