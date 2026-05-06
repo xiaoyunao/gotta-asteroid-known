@@ -2,6 +2,24 @@
 
 ## 2026-05-06
 
+- task: 将 v4 图 4/5 密度面板改为按局部密度着色的全量散点
+- files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v4/photometric_statistics.*`, `paper_draft/figures_v4/astrometric_residuals.*`, `paper_draft/v4.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `/opt/anaconda3/bin/python3 -m py_compile scripts/generate_paper_products.py`; `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v4`; `tectonic v4.tex --keep-logs --keep-intermediates`; `rg` check for overfull/undefined references; `mdls -name kMDItemPageWidth -name kMDItemPageHeight -name kMDItemNumberOfPages paper_draft/v4.pdf`
+- key_findings:
+  - 用户要求 Fig. 4/5 不是热力图或六边形 marker，而是画出所有数据点，并用点颜色表示局部密度
+  - Fig. 4 uncertainty--magnitude 面板 y 轴范围应为 `-0.2` 到 `1.2`
+  - Fig. 6 灰度密度图、表格格式和 Fig. 9 residual vectors 本轮不再改动
+- validation:
+  - Python 语法检查通过
+  - v4 图 4/5 已重新生成，右下角面板为全量散点按局部密度着色
+  - `paper_draft/v4.pdf` 编译成功，共 18 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v4.log` 未发现 overfull、undefined references 或 undefined citations
+  - 已目视检查 Fig. 4/5 PNG，密度面板为散点图，Fig. 4 y 轴范围为 `-0.2` 到 `1.2`
+- remaining_issues:
+  - 仍建议人工最终检查 PDF 中散点大小和 colorbar 标注
+- next_step:
+  - 人工审阅更新后的 `paper_draft/v4.pdf`
+
 - task: 按用户截图风格继续小修 v4 密度图、表格和 Fig. 9 residual vectors
 - files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v4/`, `paper_draft/tables_v4/`, `paper_draft/v4.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `/opt/anaconda3/bin/python3 -m py_compile scripts/generate_paper_products.py`; `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v4`; `tectonic v4.tex --keep-logs --keep-intermediates`; `rg` check for overfull/undefined references; `mdls -name kMDItemPageWidth -name kMDItemPageHeight -name kMDItemNumberOfPages paper_draft/v4.pdf`

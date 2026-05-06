@@ -262,6 +262,57 @@ def density_map(
         add_colorbar(ax, mesh, "Detections")
 
 
+def density_colored_scatter(
+    ax,
+    x,
+    y,
+    xlabel,
+    ylabel,
+    xbins=90,
+    ybins=70,
+    xlim=None,
+    ylim=None,
+    cmap="rainbow",
+    point_size=4,
+):
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    mask = np.isfinite(x) & np.isfinite(y)
+    x_plot = x[mask]
+    y_plot = y[mask]
+    if x_plot.size == 0:
+        return
+
+    x_range = xlim if xlim is not None else (np.nanmin(x_plot), np.nanmax(x_plot))
+    y_range = ylim if ylim is not None else (np.nanmin(y_plot), np.nanmax(y_plot))
+    counts, x_edges, y_edges = np.histogram2d(x_plot, y_plot, bins=[xbins, ybins], range=[x_range, y_range])
+    x_idx = np.searchsorted(x_edges, x_plot, side="right") - 1
+    y_idx = np.searchsorted(y_edges, y_plot, side="right") - 1
+    in_range = (x_idx >= 0) & (x_idx < counts.shape[0]) & (y_idx >= 0) & (y_idx < counts.shape[1])
+    density = np.ones_like(x_plot, dtype=float)
+    density[in_range] = counts[x_idx[in_range], y_idx[in_range]]
+    order = np.argsort(density)
+    sc = ax.scatter(
+        x_plot[order],
+        y_plot[order],
+        c=density[order],
+        s=point_size,
+        cmap=cmap,
+        norm=LogNorm(vmin=1, vmax=max(1, float(np.nanmax(density)))),
+        linewidths=0,
+        alpha=0.72,
+        rasterized=True,
+    )
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    if xlim is not None:
+        ax.set_xlim(*xlim)
+    if ylim is not None:
+        ax.set_ylim(*ylim)
+    ax.tick_params(labelsize=22)
+    add_colorbar(ax, sc, "Local density")
+
+
 def running_rate_statistics(rate: pd.Series, sep: pd.Series, nbins: int = 20) -> pd.DataFrame:
     data = pd.DataFrame({"rate": pd.to_numeric(rate, errors="coerce"), "sep": pd.to_numeric(sep, errors="coerce")})
     data = data[np.isfinite(data["rate"]) & np.isfinite(data["sep"]) & (data["rate"] > 0)]
@@ -465,17 +516,18 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
     histogram(axes[0, 1], finite(df[ADOPTED_MAGERR]), np.linspace(0, 1.05, 54), f"{ADOPTED_MAGERR_LABEL} [mag]", logy=True, color="#59a14f")
     histogram(axes[1, 0], finite(df["snr_aper_proxy"]), np.logspace(-0.2, 3.2, 58), "Aperture S/N proxy", logy=True, color="#f28e2b")
     axes[1, 0].set_xscale("log")
-    density_map(
+    density_colored_scatter(
         axes[1, 1],
         df[ADOPTED_MAG],
         df[ADOPTED_MAGERR],
         f"{ADOPTED_MAG_LABEL} [mag]",
         f"{ADOPTED_MAGERR_LABEL} [mag]",
-        xbins=60,
-        ybins=42,
+        xbins=90,
+        ybins=70,
+        ylim=(-0.2, 1.2),
         cmap="rainbow",
+        point_size=4,
     )
-    axes[1, 1].set_ylim(0.0, 1.0)
     axes[1, 1].set_aspect("auto")
     fig.tight_layout()
     save_figure(fig, outdir / "photometric_statistics")
@@ -491,17 +543,18 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
     axes[0, 0].legend(fontsize=18)
     histogram(axes[0, 1], finite(df["dra_cosdec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\alpha\cos\delta$ [arcsec]", logy=True, color="#59a14f")
     histogram(axes[1, 0], finite(df["ddec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\delta$ [arcsec]", logy=True, color="#f28e2b")
-    density_map(
+    density_colored_scatter(
         axes[1, 1],
         df[ADOPTED_MAG],
         df["sep_arcsec"],
         f"{ADOPTED_MAG_LABEL} [mag]",
         "Separation [arcsec]",
-        xbins=60,
-        ybins=42,
+        xbins=90,
+        ybins=70,
+        ylim=(0, 1.5),
         cmap="rainbow",
+        point_size=4,
     )
-    axes[1, 1].set_ylim(0, 1.5)
     fig.tight_layout()
     save_figure(fig, outdir / "astrometric_residuals")
 

@@ -27,6 +27,7 @@ and statistical performance evaluation，当前重点是检查 v4 图表视觉�
 16. 已生成 `paper_draft/v4.tex`，删除 Appendix A，加入 A4 papersize 和 hyperref，重写 Data/Photometry/Discussion 关键段落
 17. 已编译生成 `paper_draft/v4.pdf`，页面尺寸为 A4，共 18 页
 18. 已按用户截图风格小修 v4：Fig. 4/5/6 密度图去掉六边形 marker，表格统一三线表字号/间距，Fig. 9 residual vectors 加粗加长且固定箭头头部
+19. 已按用户进一步要求将 Fig. 4/5 右下角密度面板改为全量散点，点颜色表示局部密度；Fig. 4 y 轴范围为 `-0.2` 到 `1.2`
 
 ## Outstanding issues
 
@@ -59,6 +60,7 @@ and statistical performance evaluation，当前重点是检查 v4 图表视觉�
 - `paper_draft/v4.tex` 无 undefined references/citations：已完成
 - `paper_draft/v4.tex` 不含 `gotta_asteroids.fits`、`Mag_Aper5`、Appendix A 或内部 grant TODO 文本：已完成
 - v4 图 4/5/6 密度图不再使用六边形 marker：已完成
+- v4 图 4/5 右下角密度面板为全量散点，点颜色表示局部密度：已完成
 - v4 表格使用统一字号、`booktabs` 三线表和保留左右列间距：已完成
 - v4 Fig. 9 residual vectors 已明显加粗加长，箭头头部大小固定：已完成
 
