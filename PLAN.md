@@ -2,9 +2,9 @@
 
 ## Current objective
 
-在 `paper_draft/v2.tex` 基础上生成更成熟的 RAA 风格 `paper_draft/v3.tex`，以
-`gotta_asteroids.fits` 为唯一统计和绘图输入，正文定位为 known-asteroid recovery /
-prototype capability evaluation。
+在 `paper_draft/v2.tex` 基础上生成更成熟的 RAA 风格 `paper_draft/v3.tex` 和
+`paper_draft/v3.pdf`，以 `gotta_asteroids.fits` 为唯一统计和绘图输入，正文定位为
+known-asteroid recovery / prototype capability evaluation。
 
 ## Milestones
 
@@ -21,6 +21,7 @@ prototype capability evaluation。
 11. 已生成 `paper_draft/v2.tex` 和 `paper_draft/v2.pdf`
 12. 已新增 v3 图表/表格输出目录，主光度统计切换到 `Mag_Aper5`
 13. 已生成 `paper_draft/v3.tex`，重写 Introduction/Data/Method/Results/Discussion
+14. 已安装 `tectonic` 并编译生成 `paper_draft/v3.pdf`
 
 ## Outstanding issues
 
@@ -29,7 +30,7 @@ prototype capability evaluation。
 - `paper_draft/v3.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者确认
 - 匹配半径和星等一致性阈值未在正文写死；最终提交前需由生产配置确认
 - 光变分析仍需等待协作者数据；v3 只讨论 light-curve potential，不声称 period results
-- 当前本机没有 TeX 引擎，`v3.tex` 尚未在本机编译成 PDF
+- 当前安装的是 `tectonic`，不是完整 TeX Live；如需 VSCode LaTeX Workshop 默认 `xelatex/latexmk` 工作流，仍需用管理员密码安装 BasicTeX/MacTeX
 
 ## Validation criteria
 
@@ -46,11 +47,12 @@ prototype capability evaluation。
 - `paper_draft/v3.tex` 不再包含 report-style 文件名、旧参数和 placeholder light-curve section
 - v3 引用 key 均有对应 bibliography 条目
 - v3 图表路径和 `tables_v3/` 输入均存在
+- `paper_draft/v3.pdf` 已由 `tectonic` 编译生成，共 18 页
 
 ## Next recommended steps
 
-1. 在有 TeX Live / XeLaTeX 的环境中编译 `paper_draft/v3.tex`
-2. 人工检查 `paper_draft/v3.pdf` 的图表版面、表格宽度和引用格式
-3. 确认作者、单位、致谢、硬件参数、匹配半径和星等一致性阈值
-4. 等光变分析材料到位后加入真实 period / phased light-curve 结果
-5. 如需重画 v3 图表，运行 `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v3`
+1. 人工检查 `paper_draft/v3.pdf` 的图表版面、表格宽度和引用格式
+2. 确认作者、单位、致谢、硬件参数、匹配半径和星等一致性阈值
+3. 等光变分析材料到位后加入真实 period / phased light-curve 结果
+4. 如需重画 v3 图表，运行 `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v3`
+5. 如需重编 PDF，运行 `cd paper_draft && tectonic v3.tex --keep-logs --keep-intermediates`

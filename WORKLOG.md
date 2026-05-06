@@ -2,6 +2,24 @@
 
 ## 2026-05-06
 
+- task: 安装可用 LaTeX 编译器并生成 v3 PDF
+- files_changed: `paper_draft/v3.pdf`, `.vscode/settings.json`, `README.md`, `PLAN.md`, `WORKLOG.md`
+- commands_run: `brew install --cask basictex`; `brew install tectonic`; `tectonic v3.tex --keep-logs --keep-intermediates`; `mdls -name kMDItemNumberOfPages paper_draft/v3.pdf`; `qlmanage -t -s 1400 -o /tmp/gotta_v3_preview paper_draft/v3.pdf`
+- key_findings:
+  - VSCode/Cursor LaTeX Workshop extension 只提供编辑和构建入口，不自带 `xelatex`
+  - `basictex` 需要管理员密码，当前非交互终端无法安装
+  - Homebrew `tectonic` 可无 sudo 安装并成功编译 RAA 本地 `raa.cls`
+  - `paper_draft/v3.pdf` 生成成功，18 页，大小约 3.5 MB
+  - 已为 VSCode/LaTeX Workshop 添加本地 `tectonic` recipe
+- validation:
+  - `tectonic` 编译完成，仅有 underfull box 等排版警告，无 fatal error
+  - Quick Look 生成首页预览成功
+- remaining_issues:
+  - 如需 VSCode 默认 `xelatex/latexmk` recipe，仍需用户在终端中用管理员密码安装 BasicTeX/MacTeX
+  - 仍需人工检查 PDF 图表版面和表格宽度
+- next_step:
+  - 人工审阅 `paper_draft/v3.pdf`
+
 - task: 根据 GPT Pro 审稿意见将论文从 v2 改成 v3
 - files_changed: `paper_draft/v3.tex`, `paper_draft/figures_v3/`, `paper_draft/tables_v3/`, `scripts/generate_paper_products.py`, `README.md`, `PLAN.md`, `WORKLOG.md`
 - commands_run: `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `/opt/anaconda3/bin/python3 -m py_compile scripts/generate_paper_products.py`; `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v3`; static checks for forbidden report-style phrases, citation keys, and referenced figure/table paths
