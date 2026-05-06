@@ -2,6 +2,25 @@
 
 ## 2026-05-06
 
+- task: 按用户截图风格继续小修 v4 密度图、表格和 Fig. 9 residual vectors
+- files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v4/`, `paper_draft/tables_v4/`, `paper_draft/v4.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `/opt/anaconda3/bin/python3 -m py_compile scripts/generate_paper_products.py`; `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v4`; `tectonic v4.tex --keep-logs --keep-intermediates`; `rg` check for overfull/undefined references; `mdls -name kMDItemPageWidth -name kMDItemPageHeight -name kMDItemNumberOfPages paper_draft/v4.pdf`
+- key_findings:
+  - 上一版 Fig. 4/5/6 密度图使用六边形 marker，视觉上有明显 marker 感
+  - 改为二维分箱密度图；线性坐标面板用插值显示，Fig. 6 保留灰度密度
+  - v4 表格生成统一为 `\footnotesize`、`booktabs` 三线表、固定列间距和行距，并去掉贴边的 `@{}`
+  - Fig. 9 residual vectors 改用 `FancyArrowPatch`，固定箭头头部大小，只放大残差向量长度
+- validation:
+  - Python 语法检查通过
+  - v4 图表和表格已重新生成
+  - `paper_draft/v4.pdf` 编译成功，共 18 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v4.log` 未发现 overfull、undefined references 或 undefined citations
+  - 已目视检查 Fig. 4/5/6/9 PNG，密度图不再使用六边形 marker，Fig. 9 箭头更明显
+- remaining_issues:
+  - 仍建议人工最终检查 PDF 中表格视觉间距和图例大小
+- next_step:
+  - 人工审阅更新后的 `paper_draft/v4.pdf`
+
 - task: 直接小修 v4 图表和表格排版
 - files_changed: `paper_draft/v4.tex`, `paper_draft/v4.pdf`, `paper_draft/figures_v4/`, `paper_draft/tables_v4/`, `scripts/generate_paper_products.py`, `WORKLOG.md`
 - commands_run: `/opt/anaconda3/bin/python3 -m py_compile scripts/generate_paper_products.py`; `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v4`; `tectonic v4.tex --keep-logs --keep-intermediates`; `rg` check for overfull/undefined references; `mdls -name kMDItemPageWidth -name kMDItemPageHeight -name kMDItemNumberOfPages paper_draft/v4.pdf`

@@ -2,10 +2,10 @@
 
 ## Current objective
 
-在 `paper_draft/v3.tex` 基础上完成第三轮论文修改，生成 RAA 风格
-`paper_draft/v4.tex` 和 `paper_draft/v4.pdf`。保持科学定位为
-GOTTA Prototype known-asteroid extraction and statistical performance evaluation，
-重点修复 A4 页面尺寸、孔径测光逻辑、图表质量、Data 部分和全文论文语气。
+继续在现有 `paper_draft/v4.tex` 和 `paper_draft/v4.pdf` 上做小修，
+不新建 v5。保持科学定位为 GOTTA Prototype known-asteroid extraction
+and statistical performance evaluation，当前重点是检查 v4 图表视觉质量、
+表格三线表格式和最终 PDF 排版。
 
 ## Milestones
 
@@ -26,11 +26,13 @@ GOTTA Prototype known-asteroid extraction and statistical performance evaluation
 15. 已生成 v4 图表/表格，主测光统计改为 basic reduction pipeline optimal aperture 对应的 `Mag_Aper4`
 16. 已生成 `paper_draft/v4.tex`，删除 Appendix A，加入 A4 papersize 和 hyperref，重写 Data/Photometry/Discussion 关键段落
 17. 已编译生成 `paper_draft/v4.pdf`，页面尺寸为 A4，共 18 页
+18. 已按用户截图风格小修 v4：Fig. 4/5/6 密度图去掉六边形 marker，表格统一三线表字号/间距，Fig. 9 residual vectors 加粗加长且固定箭头头部
 
 ## Outstanding issues
 
 - 后续新增统计和图时必须默认使用 `gotta_asteroids.fits`
 - 轨道图 `outputs/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
+- v4 后续小修应直接覆盖 `paper_draft/figures_v4/`、`paper_draft/tables_v4/` 和 `paper_draft/v4.pdf`，不要新建 v5
 - `paper_draft/v4.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者确认
 - 匹配半径和星等一致性阈值未在正文写死；最终提交前需由生产配置确认
 - 光变分析仍需等待协作者数据；v4 只讨论 light-curve potential，不声称 period results
@@ -56,10 +58,13 @@ GOTTA Prototype known-asteroid extraction and statistical performance evaluation
 - `paper_draft/v4.pdf` 已由 `tectonic` 编译生成，共 18 页
 - `paper_draft/v4.tex` 无 undefined references/citations：已完成
 - `paper_draft/v4.tex` 不含 `gotta_asteroids.fits`、`Mag_Aper5`、Appendix A 或内部 grant TODO 文本：已完成
+- v4 图 4/5/6 密度图不再使用六边形 marker：已完成
+- v4 表格使用统一字号、`booktabs` 三线表和保留左右列间距：已完成
+- v4 Fig. 9 residual vectors 已明显加粗加长，箭头头部大小固定：已完成
 
 ## Next recommended steps
 
-1. 人工检查 `paper_draft/v4.pdf` 的图表版面、表格宽度、底部页边距和引用跳转
+1. 人工检查更新后的 `paper_draft/v4.pdf` 的图表版面、表格间距、底部页边距和引用跳转
 2. 确认作者、单位、致谢、硬件参数、匹配半径和星等一致性阈值
 3. 等光变分析材料到位后加入真实 period / phased light-curve 结果
 4. 如需重画 v4 图表，运行 `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v4`

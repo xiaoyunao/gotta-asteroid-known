@@ -193,7 +193,7 @@ def add_colorbar(ax, mappable, label: str) -> None:
     cb.ax.tick_params(labelsize=18)
 
 
-def density_hex_markers(
+def density_map(
     ax,
     x,
     y,
@@ -204,7 +204,6 @@ def density_hex_markers(
     xscale=None,
     yscale=None,
     cmap="rainbow",
-    marker_size=18,
     colorbar=True,
 ):
     x = np.asarray(x, dtype=float)
@@ -224,23 +223,34 @@ def density_hex_markers(
     x_edges = np.linspace(np.nanmin(x_work), np.nanmax(x_work), xbins + 1)
     y_edges = np.linspace(np.nanmin(y_work), np.nanmax(y_work), ybins + 1)
     counts, x_edges, y_edges = np.histogram2d(x_work, y_work, bins=[x_edges, y_edges])
-    yy, xx = np.nonzero(counts.T)
-    c = counts.T[yy, xx]
-    x_centers = 0.5 * (x_edges[xx] + x_edges[xx + 1])
-    y_centers = 0.5 * (y_edges[yy] + y_edges[yy + 1])
-    x_centers = 10**x_centers if xscale == "log" else x_centers
-    y_centers = 10**y_centers if yscale == "log" else y_centers
-    sc = ax.scatter(
-        x_centers,
-        y_centers,
-        c=c,
-        s=marker_size,
-        marker="h",
-        cmap=cmap,
-        norm=LogNorm(vmin=1, vmax=max(1, float(np.nanmax(c)))),
-        linewidths=0,
-        rasterized=True,
-    )
+    counts = counts.T
+    masked_counts = np.ma.masked_where(counts <= 0, counts)
+    cmap_obj = plt.get_cmap(cmap).copy()
+    cmap_obj.set_bad((1, 1, 1, 0))
+    norm = LogNorm(vmin=1, vmax=max(1, float(np.nanmax(counts))))
+    if xscale is None and yscale is None:
+        mesh = ax.imshow(
+            masked_counts,
+            extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]],
+            origin="lower",
+            aspect="auto",
+            cmap=cmap_obj,
+            norm=norm,
+            interpolation="bilinear",
+            rasterized=True,
+        )
+    else:
+        x_draw = 10**x_edges if xscale == "log" else x_edges
+        y_draw = 10**y_edges if yscale == "log" else y_edges
+        mesh = ax.pcolormesh(
+            x_draw,
+            y_draw,
+            masked_counts,
+            cmap=cmap_obj,
+            norm=norm,
+            shading="auto",
+            rasterized=True,
+        )
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     if xscale:
@@ -249,7 +259,7 @@ def density_hex_markers(
         ax.set_yscale(yscale)
     ax.tick_params(labelsize=22)
     if colorbar:
-        add_colorbar(ax, sc, "Detections")
+        add_colorbar(ax, mesh, "Detections")
 
 
 def running_rate_statistics(rate: pd.Series, sep: pd.Series, nbins: int = 20) -> pd.DataFrame:
@@ -285,7 +295,9 @@ def write_csv_and_latex(df: pd.DataFrame, csv_path: Path, caption: str, label: s
         handle.write("\\begin{table*}\n\\centering\n")
         handle.write(f"\\caption{{{caption}}}\n")
         handle.write(f"\\label{{{label}}}\n")
-        handle.write("\\small\n")
+        handle.write("\\footnotesize\n")
+        handle.write("\\setlength{\\tabcolsep}{6pt}\n")
+        handle.write("\\renewcommand{\\arraystretch}{1.12}\n")
         handle.write(f"\\begin{{tabular}}{{{column_format}}}\n")
         handle.write("\\toprule\n")
         handle.write(" & ".join(latex_escape(col) for col in df.columns) + " \\\\\n")
@@ -438,12 +450,12 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
         outdir / "overall_statistics.csv",
         "Statistics for the recovered GOTTA known-asteroid sample.",
         "tab:summary",
-        r"@{}p{0.40\textwidth}p{0.15\textwidth}p{0.33\textwidth}@{}",
+        r"p{0.40\textwidth}p{0.15\textwidth}p{0.33\textwidth}",
     )
-    write_csv_and_latex(orbit, outdir / "orbit_class_statistics.csv", "Orbit-class composition of the recovered known-asteroid sample. Separations are in arcsec.", "tab:orbit_class", r"@{}llrrrr@{}")
-    write_csv_and_latex(mag_ast, outdir / "astrometry_by_magnitude.csv", r"Astrometric residuals as a function of adopted aperture magnitude $g_{\rm aper}$. Separations are in arcsec.", "tab:mag_astrometry", r"@{}lrrrr@{}")
-    write_csv_and_latex(rate_ast, outdir / "astrometry_by_rate.csv", r"Astrometric residuals as a function of apparent angular rate. Rate bins are in arcsec hr$^{-1}$ and separations are in arcsec.", "tab:rate_astrometry", r"@{}lrrrr@{}")
-    write_csv_and_latex(nightly, outdir / "nightly_top5.csv", "Five UTC nights with the largest numbers of accepted known-asteroid associations.", "tab:nightly_top5", r"@{}lrrrrr@{}")
+    write_csv_and_latex(orbit, outdir / "orbit_class_statistics.csv", "Orbit-class composition of the recovered known-asteroid sample. Separations are in arcsec.", "tab:orbit_class", r"llrrrr")
+    write_csv_and_latex(mag_ast, outdir / "astrometry_by_magnitude.csv", r"Astrometric residuals as a function of adopted aperture magnitude $g_{\rm aper}$. Separations are in arcsec.", "tab:mag_astrometry", r"lrrrr")
+    write_csv_and_latex(rate_ast, outdir / "astrometry_by_rate.csv", r"Astrometric residuals as a function of apparent angular rate. Rate bins are in arcsec hr$^{-1}$ and separations are in arcsec.", "tab:rate_astrometry", r"lrrrr")
+    write_csv_and_latex(nightly, outdir / "nightly_top5.csv", "Five UTC nights with the largest numbers of accepted known-asteroid associations.", "tab:nightly_top5", r"lrrrrr")
     return {"overall": overall, "orbit": orbit, "mag_ast": mag_ast, "rate_ast": rate_ast, "nightly": nightly}
 
 
@@ -453,7 +465,7 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
     histogram(axes[0, 1], finite(df[ADOPTED_MAGERR]), np.linspace(0, 1.05, 54), f"{ADOPTED_MAGERR_LABEL} [mag]", logy=True, color="#59a14f")
     histogram(axes[1, 0], finite(df["snr_aper_proxy"]), np.logspace(-0.2, 3.2, 58), "Aperture S/N proxy", logy=True, color="#f28e2b")
     axes[1, 0].set_xscale("log")
-    density_hex_markers(
+    density_map(
         axes[1, 1],
         df[ADOPTED_MAG],
         df[ADOPTED_MAGERR],
@@ -462,7 +474,6 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
         xbins=60,
         ybins=42,
         cmap="rainbow",
-        marker_size=18,
     )
     axes[1, 1].set_ylim(0.0, 1.0)
     axes[1, 1].set_aspect("auto")
@@ -480,7 +491,7 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
     axes[0, 0].legend(fontsize=18)
     histogram(axes[0, 1], finite(df["dra_cosdec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\alpha\cos\delta$ [arcsec]", logy=True, color="#59a14f")
     histogram(axes[1, 0], finite(df["ddec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\delta$ [arcsec]", logy=True, color="#f28e2b")
-    density_hex_markers(
+    density_map(
         axes[1, 1],
         df[ADOPTED_MAG],
         df["sep_arcsec"],
@@ -489,7 +500,6 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
         xbins=60,
         ybins=42,
         cmap="rainbow",
-        marker_size=18,
     )
     axes[1, 1].set_ylim(0, 1.5)
     fig.tight_layout()
@@ -498,7 +508,7 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
     fig, ax = plt.subplots(figsize=(10, 5.3))
     data = df[np.isfinite(df["ang_rate_arcsec_hour"]) & np.isfinite(df["sep_arcsec"]) & (df["ang_rate_arcsec_hour"] > 0)]
     main = data[(data["ang_rate_arcsec_hour"] >= 0.7) & (data["ang_rate_arcsec_hour"] <= 150) & (data["sep_arcsec"] <= 1.5)]
-    density_hex_markers(
+    density_map(
         ax,
         main["ang_rate_arcsec_hour"],
         main["sep_arcsec"],
@@ -508,7 +518,6 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
         xbins=58,
         ybins=34,
         cmap="Greys",
-        marker_size=14,
     )
     stats = running_rate_statistics(data["ang_rate_arcsec_hour"], data["sep_arcsec"])
     if not stats.empty:
@@ -581,23 +590,25 @@ def plot_example(df: pd.DataFrame, outdir: Path) -> None:
     add_colorbar(axes[0, 0], sc, "Separation [arcsec]")
 
     sample = sub.sort_values("sep_arcsec", ascending=False).head(min(35, len(sub)))
-    axes[0, 1].scatter(sample["X_Win"], sample["Y_Win"], s=18, color="#d62728", alpha=0.75, linewidth=0)
-    axes[0, 1].quiver(
-        sample["X_Win"],
-        sample["Y_Win"],
-        sample["dra_cosdec_arcsec"],
-        sample["ddec_arcsec"],
-        angles="xy",
-        scale_units="xy",
-        scale=0.003,
-        color="#d62728",
-        alpha=0.95,
-        width=0.008,
-        headwidth=5.0,
-        headlength=6.5,
-        headaxislength=5.2,
-        pivot="tail",
-    )
+    axes[0, 1].scatter(sample["X_Win"], sample["Y_Win"], s=20, color="#d62728", alpha=0.78, linewidth=0)
+    vector_scale = 1800.0
+    for _, row in sample.iterrows():
+        start = (row["X_Win"], row["Y_Win"])
+        end = (
+            row["X_Win"] + row["dra_cosdec_arcsec"] * vector_scale,
+            row["Y_Win"] + row["ddec_arcsec"] * vector_scale,
+        )
+        axes[0, 1].add_patch(
+            FancyArrowPatch(
+                start,
+                end,
+                arrowstyle="-|>",
+                mutation_scale=15,
+                linewidth=1.8,
+                color="#d62728",
+                alpha=0.95,
+            )
+        )
     axes[0, 1].set_xlabel("X_Win [pixel]")
     axes[0, 1].set_ylabel("Y_Win [pixel]")
     axes[0, 1].set_title("Residual vectors", fontsize=26)
