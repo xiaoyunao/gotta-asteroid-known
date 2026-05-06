@@ -16,12 +16,15 @@ import numpy as np
 import pandas as pd
 from astropy.io import fits
 from matplotlib.patches import Ellipse, FancyArrowPatch, FancyBboxPatch, Polygon
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-ADOPTED_APERTURE_INDEX = 5
+ADOPTED_APERTURE_INDEX = 4
 ADOPTED_MAG = f"Mag_Aper{ADOPTED_APERTURE_INDEX}"
 ADOPTED_MAGERR = f"MagErr_Aper{ADOPTED_APERTURE_INDEX}"
 ADOPTED_FLUX = f"Flux_Aper{ADOPTED_APERTURE_INDEX}"
 ADOPTED_FLUXERR = f"FluxErr_Aper{ADOPTED_APERTURE_INDEX}"
+ADOPTED_MAG_LABEL = r"$g_{\rm aper}$"
+ADOPTED_MAGERR_LABEL = r"$\sigma(g_{\rm aper})$"
 
 
 def as_text(values) -> pd.Series:
@@ -181,7 +184,15 @@ def histogram(ax, values, bins, xlabel, ylabel="Detections", logy=False, color="
     ax.tick_params(labelsize=22)
 
 
-def hexbin(ax, x, y, xlabel, ylabel, gridsize=55, xscale=None, yscale=None) -> None:
+def add_colorbar(ax, mappable, label: str) -> None:
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="4%", pad=0.05)
+    cb = ax.figure.colorbar(mappable, cax=cax)
+    cb.set_label(label, fontsize=22)
+    cb.ax.tick_params(labelsize=18)
+
+
+def hexbin(ax, x, y, xlabel, ylabel, gridsize=55, xscale=None, yscale=None, cmap="Greys", colorbar=True) -> None:
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
     mask = np.isfinite(x) & np.isfinite(y)
@@ -189,7 +200,7 @@ def hexbin(ax, x, y, xlabel, ylabel, gridsize=55, xscale=None, yscale=None) -> N
         mask &= x > 0
     if yscale == "log":
         mask &= y > 0
-    hb = ax.hexbin(x[mask], y[mask], gridsize=gridsize, mincnt=1, cmap="rainbow", linewidths=0.0)
+    hb = ax.hexbin(x[mask], y[mask], gridsize=gridsize, mincnt=1, cmap=cmap, bins="log", linewidths=0.0)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     if xscale:
@@ -197,9 +208,8 @@ def hexbin(ax, x, y, xlabel, ylabel, gridsize=55, xscale=None, yscale=None) -> N
     if yscale:
         ax.set_yscale(yscale)
     ax.tick_params(labelsize=22)
-    cb = ax.figure.colorbar(hb, ax=ax)
-    cb.set_label("Detections", fontsize=22)
-    cb.ax.tick_params(labelsize=18)
+    if colorbar:
+        add_colorbar(ax, hb, "Detections")
 
 
 def running_rate_statistics(rate: pd.Series, sep: pd.Series, nbins: int = 20) -> pd.DataFrame:
@@ -247,31 +257,33 @@ def write_csv_and_latex(df: pd.DataFrame, csv_path: Path, caption: str, label: s
 
 def latex_escape(value) -> str:
     text = str(value)
+    if "$" in text or "\\" in text:
+        return text.replace("%", r"\%")
     return text.replace("_", r"\_").replace("%", r"\%")
 
 
 def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
     overall = pd.DataFrame(
         [
-            ("Accepted asteroid-source associations", f"{len(df):,}", "Detection-level catalog associations"),
-            ("Distinct known objects", f"{df['query_id'].nunique():,}", "Unique minor-planet identifiers"),
-            ("Exposure catalogs represented", f"{df['source_file'].nunique():,}", "Input catalog products with accepted associations"),
+            ("Accepted asteroid-source associations", f"{len(df):,}", "Accepted source-ephemeris matches"),
+            ("Distinct known asteroids", f"{df['query_id'].nunique():,}", "Unique minor-planet identifiers"),
+            ("Exposure catalogs with accepted associations", f"{df['source_file'].nunique():,}", "Per-exposure products"),
             ("UTC nights represented", f"{df['night'].nunique():,}", "Recovered sample date coverage"),
-            ("Inferred field identifiers", f"{df['field_id'].nunique():,}", "Field-level grouping from catalog metadata"),
-            ("Unique NEOs", f"{df.loc[df['object_neo_bool'], 'query_id'].nunique():,}", "SBDB object_neo flag"),
-            ("Unique PHAs", f"{df.loc[df['object_pha_bool'], 'query_id'].nunique():,}", "SBDB object_pha flag"),
-            ("Median predicted magnitude", fmt(q(df["mag"], 50), 4), "Ephemeris magnitude"),
-            (f"Median {ADOPTED_MAG}", fmt(q(df[ADOPTED_MAG], 50), 4), "Adopted aperture magnitude"),
-            (f"Median {ADOPTED_MAGERR}", fmt(q(df[ADOPTED_MAGERR], 50), 4) + " mag", "Adopted aperture uncertainty"),
-            ("Median aperture S/N proxy", fmt(q(df["snr_aper_proxy"], 50), 4), f"{ADOPTED_FLUX} / {ADOPTED_FLUXERR}"),
-            ("Median separation", fmt(q(df["sep_arcsec"], 50), 3) + " arcsec", "Observed minus predicted"),
-            ("84th-percentile separation", fmt(q(df["sep_arcsec"], 84), 3) + " arcsec", "Observed minus predicted"),
+            ("Field groups represented", f"{df['field_id'].nunique():,}", "Grouped by pointing metadata"),
+            ("NEO-class objects", f"{df.loc[df['object_neo_bool'], 'query_id'].nunique():,}", "Identified from small-body metadata"),
+            ("PHA-class objects", f"{df.loc[df['object_pha_bool'], 'query_id'].nunique():,}", "Identified from small-body metadata"),
+            ("Median ephemeris magnitude", fmt(q(df["mag"], 50), 4), "Predicted brightness"),
+            (r"Median $g_{\rm aper}$", fmt(q(df[ADOPTED_MAG], 50), 4), "Adopted aperture magnitude"),
+            (r"Median $\sigma(g_{\rm aper})$", fmt(q(df[ADOPTED_MAGERR], 50), 4) + " mag", "Adopted aperture uncertainty"),
+            ("Median aperture S/N proxy", fmt(q(df["snr_aper_proxy"], 50), 4), "Flux/error in adopted aperture"),
+            ("Median observed-minus-predicted separation", fmt(q(df["sep_arcsec"], 50), 3) + " arcsec", "Accepted associations"),
+            ("84th-percentile observed-minus-predicted separation", fmt(q(df["sep_arcsec"], 84), 3) + " arcsec", "Accepted associations"),
             ("2D residual RMS", fmt(rms(df["sep_arcsec"]), 3) + " arcsec", r"sqrt(mean(sep$^2$))"),
-            ("RMS delta RA cos Dec", fmt(rms(df["dra_cosdec_arcsec"]), 3) + " arcsec", "Coordinate residual"),
-            ("RMS delta Dec", fmt(rms(df["ddec_arcsec"]), 3) + " arcsec", "Coordinate residual"),
-            ("Median angular rate", fmt(q(df["ang_rate_arcsec_hour"], 50), 3) + r" arcsec hr$^{-1}$", "JPL Horizons"),
-            ("Median phase angle", fmt(q(df["phase_deg"], 50), 3) + " deg", "JPL Horizons"),
-            ("Rows without Horizons geometry", f"{int(truthy(df['horizons_failed']).sum()):,}", "Rows excluded from geometry/rate statistics"),
+            (r"RMS in $\Delta\alpha\cos\delta$", fmt(rms(df["dra_cosdec_arcsec"]), 3) + " arcsec", "Coordinate residual"),
+            (r"RMS in $\Delta\delta$", fmt(rms(df["ddec_arcsec"]), 3) + " arcsec", "Coordinate residual"),
+            ("Median angular rate", fmt(q(df["ang_rate_arcsec_hour"], 50), 3) + r" arcsec hr$^{-1}$", "Derived from augmented geometry"),
+            ("Median phase angle", fmt(q(df["phase_deg"], 50), 3) + " deg", "Derived from augmented geometry"),
+            ("Associations without geometry augmentation", f"{int(truthy(df['horizons_failed']).sum()):,}", "Excluded from geometry statistics"),
         ],
         columns=["Quantity", "Value", "Note"],
     )
@@ -282,17 +294,17 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
             Detections=("query_id", "size"),
             **{
                 "Unique objects": ("query_id", "nunique"),
-                f"Median {ADOPTED_MAG}": (ADOPTED_MAG, "median"),
+                r"Median $g_{\rm aper}$": (ADOPTED_MAG, "median"),
                 "Median separation": ("sep_arcsec", "median"),
             },
         )
         .reset_index()
         .sort_values("Detections", ascending=False)
     )
-    orbit.columns = ["Code", "Orbit class", "Detections", "Unique objects", f"Median {ADOPTED_MAG}", "Median separation"]
+    orbit.columns = ["Code", "Orbit class", "Detections", "Unique objects", r"Median $g_{\rm aper}$", "Median separation"]
     orbit["Detections"] = orbit["Detections"].map(lambda x: f"{x:,}")
     orbit["Unique objects"] = orbit["Unique objects"].map(lambda x: f"{x:,}")
-    orbit[f"Median {ADOPTED_MAG}"] = orbit[f"Median {ADOPTED_MAG}"].map(lambda x: fmt(x, 3))
+    orbit[r"Median $g_{\rm aper}$"] = orbit[r"Median $g_{\rm aper}$"].map(lambda x: fmt(x, 3))
     orbit["Median separation"] = orbit["Median separation"].map(lambda x: fmt(x, 3))
 
     work = df.copy()
@@ -325,14 +337,14 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
             **{
                 "Median separation": ("sep_arcsec", "median"),
                 "RMS separation": ("sep_arcsec", rms),
-                f"Median {ADOPTED_MAG}": (ADOPTED_MAG, "median"),
+                r"Median $g_{\rm aper}$": (ADOPTED_MAG, "median"),
             },
         )
         .reset_index()
     )
     rate_ast["Rate bin"] = rate_ast["rate_bin"].map(lambda x: f"$[{x.left:.0f},{x.right:.0f})$")
-    rate_ast = rate_ast[["Rate bin", "Detections", "Median separation", "RMS separation", f"Median {ADOPTED_MAG}"]]
-    for col in ["Median separation", "RMS separation", f"Median {ADOPTED_MAG}"]:
+    rate_ast = rate_ast[["Rate bin", "Detections", "Median separation", "RMS separation", r"Median $g_{\rm aper}$"]]
+    for col in ["Median separation", "RMS separation", r"Median $g_{\rm aper}$"]:
         rate_ast[col] = rate_ast[col].map(lambda x: fmt(x, 3))
     rate_ast["Detections"] = rate_ast["Detections"].map(lambda x: f"{x:,}")
 
@@ -342,8 +354,8 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
             Detections=("query_id", "size"),
             **{
                 "Unique objects": ("query_id", "nunique"),
-                "Source files": ("source_file", "nunique"),
-                f"Median {ADOPTED_MAG}": (ADOPTED_MAG, "median"),
+                "Exposure catalogs": ("source_file", "nunique"),
+                r"Median $g_{\rm aper}$": (ADOPTED_MAG, "median"),
                 "Median separation": ("sep_arcsec", "median"),
             },
         )
@@ -351,10 +363,10 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
         .sort_values("Detections", ascending=False)
         .head(5)
     )
-    nightly.columns = ["UTC date", "Detections", "Unique objects", "Source files", f"Median {ADOPTED_MAG}", "Median separation"]
-    for col in ["Detections", "Unique objects", "Source files"]:
+    nightly.columns = ["UTC date", "Detections", "Unique objects", "Exposure catalogs", r"Median $g_{\rm aper}$", "Median separation"]
+    for col in ["Detections", "Unique objects", "Exposure catalogs"]:
         nightly[col] = nightly[col].map(lambda x: f"{x:,}")
-    for col in [f"Median {ADOPTED_MAG}", "Median separation"]:
+    for col in [r"Median $g_{\rm aper}$", "Median separation"]:
         nightly[col] = nightly[col].map(lambda x: fmt(x, 3))
 
     obj = (
@@ -366,7 +378,7 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
                 "Distinct nights": ("night", "nunique"),
                 "First epoch": ("epoch", "min"),
                 "Last epoch": ("epoch", "max"),
-                f"Median {ADOPTED_MAG}": (ADOPTED_MAG, "median"),
+                r"Median $g_{\rm aper}$": (ADOPTED_MAG, "median"),
                 "Median separation": ("sep_arcsec", "median"),
                 "Orbit class": ("object_orbit_class_code", "first"),
             },
@@ -376,45 +388,28 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
         .head(5)
     )
     obj["Baseline days"] = obj["Last epoch"] - obj["First epoch"]
-    obj = obj[["query_id", "Name", "Detections", "Distinct nights", "First epoch", "Last epoch", "Baseline days", f"Median {ADOPTED_MAG}", "Median separation", "Orbit class"]]
-    obj.columns = ["Object ID", "Name", "Detections", "Distinct nights", "First MJD", "Last MJD", "Baseline days", f"Median {ADOPTED_MAG}", "Median separation", "Orbit class"]
-    for col in ["First MJD", "Last MJD", "Baseline days", f"Median {ADOPTED_MAG}", "Median separation"]:
+    obj = obj[["query_id", "Name", "Detections", "Distinct nights", "First epoch", "Last epoch", "Baseline days", r"Median $g_{\rm aper}$", "Median separation", "Orbit class"]]
+    obj.columns = ["Object ID", "Name", "Detections", "Distinct nights", "First MJD", "Last MJD", "Baseline days", r"Median $g_{\rm aper}$", "Median separation", "Orbit class"]
+    for col in ["First MJD", "Last MJD", "Baseline days", r"Median $g_{\rm aper}$", "Median separation"]:
         obj[col] = obj[col].map(lambda x: fmt(x, 3))
 
-    write_csv_and_latex(overall, outdir / "overall_statistics.csv", "Catalog-level statistics for the recovered GOTTA known-asteroid sample.", "tab:summary", "lll")
+    write_csv_and_latex(overall, outdir / "overall_statistics.csv", "Statistics for the recovered GOTTA known-asteroid sample.", "tab:summary", "lll")
     write_csv_and_latex(orbit, outdir / "orbit_class_statistics.csv", "Orbit-class composition of the recovered known-asteroid sample. Separations are in arcsec.", "tab:orbit_class", "llrrrr")
-    write_csv_and_latex(mag_ast, outdir / "astrometry_by_magnitude.csv", rf"Astrometric residuals as a function of the adopted aperture magnitude \texttt{{Mag\_Aper{ADOPTED_APERTURE_INDEX}}}. Separations are in arcsec.", "tab:mag_astrometry", "lrrrr")
+    write_csv_and_latex(mag_ast, outdir / "astrometry_by_magnitude.csv", r"Astrometric residuals as a function of adopted aperture magnitude $g_{\rm aper}$. Separations are in arcsec.", "tab:mag_astrometry", "lrrrr")
     write_csv_and_latex(rate_ast, outdir / "astrometry_by_rate.csv", r"Astrometric residuals as a function of apparent angular rate. Rate bins are in arcsec hr$^{-1}$ and separations are in arcsec.", "tab:rate_astrometry", "lrrrr")
     write_csv_and_latex(nightly, outdir / "nightly_top5.csv", "Five UTC nights with the largest numbers of accepted known-asteroid associations.", "tab:nightly_top5", "lrrrrr")
-    write_csv_and_latex(obj, outdir / "most_observed_objects_top5.csv", "Five most frequently observed known asteroids in the recovered sample.", "tab:most_observed", "llrrrrrrrl")
-    return {"overall": overall, "orbit": orbit, "mag_ast": mag_ast, "rate_ast": rate_ast, "nightly": nightly, "objects": obj}
+    return {"overall": overall, "orbit": orbit, "mag_ast": mag_ast, "rate_ast": rate_ast, "nightly": nightly}
 
 
 def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
     fig, axes = plt.subplots(2, 2, figsize=(18, 14))
-    aper_cols = [f"Mag_Aper{i}" for i in range(1, 13) if f"Mag_Aper{i}" in df]
-    ref = aper_cols[-1]
-    bright = np.isfinite(df[ref]) & (df[ref] > 10) & (df[ref] < 17) & np.isfinite(df[f"MagErr_Aper{len(aper_cols)}"]) & (df[f"MagErr_Aper{len(aper_cols)}"] < 0.1)
-    x = np.arange(1, len(aper_cols) + 1)
-    med = []
-    p16 = []
-    p84 = []
-    for col in aper_cols:
-        diff = df[col] - df[ref]
-        vals = diff[bright & np.isfinite(diff)]
-        med.append(np.nanmedian(vals))
-        p16.append(np.nanpercentile(vals, 16))
-        p84.append(np.nanpercentile(vals, 84))
-    axes[0, 0].plot(x, med, color="black", marker="o", linewidth=2.0)
-    axes[0, 0].fill_between(x, p16, p84, color="#4c78a8", alpha=0.25, linewidth=0)
-    axes[0, 0].axvline(ADOPTED_APERTURE_INDEX, color="#e15759", linestyle="--", linewidth=1.8)
-    axes[0, 0].set_xlabel("Aperture index")
-    axes[0, 0].set_ylabel(r"$m_{\rm aper}-m_{\rm aper12}$ [mag]")
-    axes[0, 0].tick_params(labelsize=22)
-    histogram(axes[0, 1], finite(df[ADOPTED_MAG]), np.linspace(10, 22, 49), f"{ADOPTED_MAG} [mag]", color="#59a14f")
-    histogram(axes[1, 0], finite(df[ADOPTED_MAGERR]), np.linspace(0, 1.1, 56), f"{ADOPTED_MAGERR} [mag]", logy=True, color="#f28e2b")
-    hexbin(axes[1, 1], df[ADOPTED_MAG], df[ADOPTED_MAGERR], f"{ADOPTED_MAG} [mag]", f"{ADOPTED_MAGERR} [mag]", gridsize=50)
-    axes[1, 1].set_ylim(-0.1, 1.1)
+    histogram(axes[0, 0], finite(df[ADOPTED_MAG]), np.linspace(10, 22, 49), f"{ADOPTED_MAG_LABEL} [mag]", color="#4c78a8")
+    histogram(axes[0, 1], finite(df[ADOPTED_MAGERR]), np.linspace(0, 1.05, 54), f"{ADOPTED_MAGERR_LABEL} [mag]", logy=True, color="#59a14f")
+    histogram(axes[1, 0], finite(df["snr_aper_proxy"]), np.logspace(-0.2, 3.2, 58), "Aperture S/N proxy", logy=True, color="#f28e2b")
+    axes[1, 0].set_xscale("log")
+    hexbin(axes[1, 1], df[ADOPTED_MAG], df[ADOPTED_MAGERR], f"{ADOPTED_MAG_LABEL} [mag]", f"{ADOPTED_MAGERR_LABEL} [mag]", gridsize=55)
+    axes[1, 1].set_ylim(0.0, 1.0)
+    axes[1, 1].set_aspect("auto")
     fig.tight_layout()
     save_figure(fig, outdir / "photometric_statistics")
 
@@ -429,26 +424,34 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
     axes[0, 0].legend(fontsize=18)
     histogram(axes[0, 1], finite(df["dra_cosdec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\alpha\cos\delta$ [arcsec]", logy=True, color="#59a14f")
     histogram(axes[1, 0], finite(df["ddec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\delta$ [arcsec]", logy=True, color="#f28e2b")
-    hexbin(axes[1, 1], df[ADOPTED_MAG], df["sep_arcsec"], f"{ADOPTED_MAG} [mag]", "Separation [arcsec]", gridsize=55)
+    hexbin(axes[1, 1], df[ADOPTED_MAG], df["sep_arcsec"], f"{ADOPTED_MAG_LABEL} [mag]", "Separation [arcsec]", gridsize=55)
     axes[1, 1].set_ylim(0, 1.5)
     fig.tight_layout()
     save_figure(fig, outdir / "astrometric_residuals")
 
     fig, ax = plt.subplots(figsize=(10, 8))
     data = df[np.isfinite(df["ang_rate_arcsec_hour"]) & np.isfinite(df["sep_arcsec"]) & (df["ang_rate_arcsec_hour"] > 0)]
-    if len(data) > 15000:
-        plot_data = data.sample(15000, random_state=3)
-    else:
-        plot_data = data
-    ax.scatter(plot_data["ang_rate_arcsec_hour"], plot_data["sep_arcsec"], s=5, alpha=0.08, color="#4c78a8", linewidths=0)
+    main = data[(data["ang_rate_arcsec_hour"] >= 0.7) & (data["ang_rate_arcsec_hour"] <= 150) & (data["sep_arcsec"] <= 1.5)]
+    hb = ax.hexbin(
+        main["ang_rate_arcsec_hour"],
+        main["sep_arcsec"],
+        xscale="log",
+        gridsize=60,
+        mincnt=1,
+        cmap="Greys",
+        bins="log",
+        linewidths=0.0,
+    )
+    add_colorbar(ax, hb, "Detections")
     stats = running_rate_statistics(data["ang_rate_arcsec_hour"], data["sep_arcsec"])
     if not stats.empty:
         ax.plot(stats["rate"], stats["median"], color="black", linewidth=2.2, label="running median")
-        ax.fill_between(stats["rate"], stats["p16"], stats["p84"], color="#e15759", alpha=0.25, label="16--84 percentile")
+        ax.fill_between(stats["rate"], stats["p16"], stats["p84"], color="gray", alpha=0.3, label="16--84 percentile")
         ax.legend(fontsize=18, loc="upper left")
     ax.set_xlabel(r"Angular rate [arcsec hr$^{-1}$]")
     ax.set_ylabel("Separation [arcsec]")
     ax.set_xscale("log")
+    ax.set_xlim(0.7, 150)
     ax.set_ylim(0, 1.5)
     ax.tick_params(labelsize=22)
     fig.tight_layout()
@@ -510,9 +513,7 @@ def plot_example(df: pd.DataFrame, outdir: Path) -> None:
     axes[0, 0].set_xlabel("X_Win [pixel]")
     axes[0, 0].set_ylabel("Y_Win [pixel]")
     axes[0, 0].set_title("Accepted matches", fontsize=26)
-    cb = fig.colorbar(sc, ax=axes[0, 0])
-    cb.set_label("Separation [arcsec]", fontsize=20)
-    cb.ax.tick_params(labelsize=18)
+    add_colorbar(axes[0, 0], sc, "Separation [arcsec]")
 
     sample = sub.sort_values("sep_arcsec", ascending=False).head(min(35, len(sub)))
     axes[0, 1].quiver(
@@ -533,9 +534,8 @@ def plot_example(df: pd.DataFrame, outdir: Path) -> None:
     histogram(axes[1, 0], sub["sep_arcsec"], np.linspace(0, max(0.2, float(sub["sep_arcsec"].max()) * 1.05), 25), "Separation [arcsec]", color="#59a14f")
     axes[1, 1].scatter(sub["mag"], sub[ADOPTED_MAG], s=55, alpha=0.8, color="#4c78a8", edgecolor="black", linewidth=0.3)
     axes[1, 1].set_xlabel("Predicted magnitude [mag]")
-    axes[1, 1].set_ylabel(f"{ADOPTED_MAG} [mag]")
+    axes[1, 1].set_ylabel(f"{ADOPTED_MAG_LABEL} [mag]")
     axes[1, 1].tick_params(labelsize=22)
-    fig.suptitle(f"Matched-only diagnostic: {source_file}", fontsize=28)
     fig.tight_layout()
     save_figure(fig, outdir / "example_crossmatch_diagnostic")
 
@@ -592,7 +592,7 @@ def plot_flowchart(outdir: Path) -> None:
         "unmatched": ((7.0, 4.3), 2.4, 0.7, "Reject unmatched\nrows", "reject"),
         "merge": ((3.4, 2.8), 3.2, 0.8, "Merge ephemeris\nand catalog row", "process"),
         "augment": ((3.4, 1.55), 3.2, 0.8, "SBDB + Horizons\naugmentation", "process"),
-        "final": ((3.1, 0.3), 3.8, 0.8, "gotta_asteroids.fits\nstatistics + figures", "output"),
+        "final": ((3.1, 0.3), 3.8, 0.8, "Recovered sample\nstatistics + figures", "output"),
     }
     for xy, w, h, text, kind in nodes.values():
         add_box(ax, xy, w, h, text, kind)
@@ -633,7 +633,7 @@ def write_mermaid(outdir: Path) -> None:
     N([Merge prediction row with catalog source row]):::process
     O([Merge exposure/night products]):::process
     P([SBDB and Horizons augmentation]):::process
-    Q[/Final gotta_asteroids.fits/]:::output
+    Q[/Recovered known-asteroid sample/]:::output
     R[/Statistics, figures, light-curve inputs/]:::output
     X1([Reject faint candidates]):::reject
     X2([Reject off-CCD predictions]):::reject
@@ -660,7 +660,7 @@ def write_mermaid(outdir: Path) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate paper figures and tables from gotta_asteroids.fits.")
+    parser = argparse.ArgumentParser(description="Generate paper figures and tables from the recovered known-asteroid sample.")
     parser.add_argument("fits_path", nargs="?", default="gotta_asteroids.fits")
     parser.add_argument("--outdir", default="paper_draft")
     parser.add_argument("--paper-version", default="v3")

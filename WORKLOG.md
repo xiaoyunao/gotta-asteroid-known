@@ -2,6 +2,32 @@
 
 ## 2026-05-06
 
+- task: 按第三轮意见生成论文 v4
+- files_changed: `paper_draft/v4.tex`, `paper_draft/v4.pdf`, `paper_draft/figures_v4/`, `paper_draft/tables_v4/`, `scripts/generate_paper_products.py`, `PLAN.md`, `WORKLOG.md`
+- commands_run: `pdfinfo paper_draft/v3.pdf | grep 'Page size'`（本机无 `pdfinfo`）；`/opt/anaconda3/bin/python3 -m py_compile scripts/generate_paper_products.py`; `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v4`; `tectonic v4.tex --keep-logs --keep-intermediates`; Python/PyPDF page-size check; `mdls -name kMDItemPageWidth -name kMDItemPageHeight -name kMDItemNumberOfPages paper_draft/v4.pdf`; forbidden-phrase `rg` checks; `qlmanage -t -s 1400`
+- key_findings:
+  - 本机未安装 `pdfinfo`，改用 Python/PyPDF 和 macOS `mdls` 检查 PDF 页面尺寸
+  - 当前可用 FITS 孔径列为 `Mag_Aper1`--`Mag_Aper12`；按 basic reduction paper 的 `radius = 2n pixels` 逻辑，8 pixel optimal aperture 对应 `Mag_Aper4`
+  - v4 正文不再声称 asteroid sample 重新决定最佳孔径，主文统一写作 adopted aperture magnitude `$g_{\rm aper}$`
+  - v4 删除 Appendix A 和 most-observed top-5 表输入
+  - Fig. 4 删除 growth curve，改为 adopted magnitude、uncertainty、S/N proxy、uncertainty-vs-magnitude density map
+  - Fig. 5 和 Fig. 4 的 colorbar 改用 `axes_grid1.make_axes_locatable`
+  - Fig. 6 改为灰度密度图加 running median 和 16--84 percentile
+  - Data/Discussion/Conclusions 已按论文语气重写，并加入 Zhengyang Li / Niu Li in-preparation references
+- validation:
+  - `scripts/generate_paper_products.py` 语法检查通过
+  - v4 图表和表格成功生成到 `paper_draft/figures_v4/` 和 `paper_draft/tables_v4/`
+  - `paper_draft/v4.pdf` 编译成功，共 18 页
+  - PDF 页面尺寸为 A4：`595.28 x 841.89 pts`
+  - `v4.log` 未发现 undefined references/citations
+  - `v4.tex` 和 v4 表格未发现 `Mag_Aper5`、`gotta_asteroids.fits`、Appendix A、内部 grant TODO 文本或指定 report-style 残留短语
+  - Quick Look 首页预览生成成功
+- remaining_issues:
+  - 仍需人工检查 PDF 中 Fig. 2 缩小后的可读性、所有图表版面和 citation 跳转
+  - 作者、单位、致谢、硬件参数、匹配半径和星等一致性阈值仍需共同作者确认
+- next_step:
+  - 人工审阅 `paper_draft/v4.pdf`
+
 - task: 安装可用 LaTeX 编译器并生成 v3 PDF
 - files_changed: `paper_draft/v3.pdf`, `.vscode/settings.json`, `README.md`, `PLAN.md`, `WORKLOG.md`
 - commands_run: `brew install --cask basictex`; `brew install tectonic`; `tectonic v3.tex --keep-logs --keep-intermediates`; `mdls -name kMDItemNumberOfPages paper_draft/v3.pdf`; `qlmanage -t -s 1400 -o /tmp/gotta_v3_preview paper_draft/v3.pdf`

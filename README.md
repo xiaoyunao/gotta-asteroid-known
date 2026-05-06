@@ -36,7 +36,7 @@ files are ignored by git.
 python3 scripts/describe_fits_columns.py gotta_asteroids.fits --out docs/FITS_COLUMNS.md
 /Users/island/opt/anaconda3/envs/astro/bin/python scripts/plot_gotta_asteroids.py gotta_asteroids.fits --outdir outputs
 /Users/island/opt/anaconda3/envs/astro/bin/python scripts/summarize_gotta_asteroids.py gotta_asteroids.fits --md-out docs/GOTTA_STATS.md --json-out outputs/gotta_stats.json
-/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v3
-cd paper_draft && tectonic v3.tex --keep-logs --keep-intermediates
+/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v4
+cd paper_draft && tectonic v4.tex --keep-logs --keep-intermediates
 python3 -m py_compile scripts/*.py smt_known_asteroid/*.py remote_foundation/*.py
 ```
