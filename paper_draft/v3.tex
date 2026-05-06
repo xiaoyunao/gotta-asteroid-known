@@ -1,0 +1,369 @@
+%! TeX program = xelatex
+\documentclass[referee]{raa}
+
+\usepackage{graphicx,times}
+\usepackage{natbib}
+\usepackage{amssymb,amsmath}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{url}
+
+\bibpunct{(}{)}{;}{a}{}{,}
+
+\begin{document}
+
+\title{GOTTA Prototype: Known-Asteroid Extraction and Statistical Performance Evaluation}
+
+\volnopage{Vol.0 (20xx) No.0, 000--000}
+\setcounter{page}{1}
+
+\author{
+Yun-Ao Xiao\inst{1,2}
+\and Hu Zou\inst{1}
+\and Feiyang Tian\inst{3,4}
+\and Zhaoxing Liu\inst{3,4}
+\and Jian Gao\inst{3,4}
+\and The GOTTA Collaboration
+}
+
+\institute{
+National Astronomical Observatories, Chinese Academy of Sciences, Beijing 100101, China; {\it xiaoyunao@nao.cas.cn}\\
+\and
+School of Astronomy and Space Science, University of Chinese Academy of Sciences, Beijing 101408, China\\
+\and
+Department of Astronomy, Beijing Normal University, Beijing 100875, China\\
+\and
+Institute of Frontier Sciences in Astronomy and Astrophysics, Beijing Normal University, Beijing 100875, China\\
+\vs\no
+{\small Received 20xx month day; accepted 20xx month day}
+}
+
+\abstract{
+The GOTTA Prototype is a wide-field, high-cadence pathfinder for the full Global Open Transient Telescope Array. Its repeated survey imaging naturally records large numbers of Solar System small bodies, providing an opportunity to validate moving-object processing before the full array is deployed. We present a catalog-level pipeline for recovering known asteroids from GOTTA Prototype photometric catalogs. For each exposure, the pipeline determines the CCD footprint and mid-exposure epoch, predicts known-object ephemerides, filters candidates within the detector footprint, associates predicted positions with calibrated catalog detections, and augments the accepted matches with orbital and observing-geometry information from external small-body databases. The resulting recovered sample contains 56,230 detections of 16,053 unique known asteroids over 73 UTC nights, including 77 near-Earth objects and 19 potentially hazardous asteroids. The sample is dominated by main-belt asteroids. The observed-minus-predicted positional residual has a median separation of 0.220 arcsec and a two-dimensional RMS of 0.355 arcsec. We characterize the recovered sample in sky position, orbital class, aperture photometry, astrometric residual, angular rate, observing geometry, and repeated temporal sampling. These results demonstrate that the GOTTA Prototype has established a reliable known-object recovery layer and provide a practical baseline for future moving-object association, NEO monitoring, and asteroid light-curve studies with the full GOTTA array.
+\keywords{surveys --- minor planets, asteroids: general --- techniques: photometric --- techniques: astrometric --- methods: data analysis}
+}
+
+\authorrunning{Xiao et al.}
+\titlerunning{GOTTA Prototype Known Asteroids}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+Near-Earth objects (NEOs) and potentially hazardous asteroids (PHAs) have long motivated systematic searches for small bodies in the Solar System. The Spaceguard Survey emphasized that the first step toward mitigating impact hazards is a comprehensive search for Earth-crossing asteroids and comets, followed by reliable orbit determination and long-term tracking \citep{Morrison1992}. During the past three decades, wide-field CCD surveys have transformed this task from targeted searches into survey-scale operations. Programs such as Spacewatch, LINEAR, the Catalina Sky Survey, Pan-STARRS, and ATLAS have greatly increased the inventory of known minor planets and have established the basic observing and processing framework for modern moving-object surveys \citep[e.g.][]{Stokes2000,Larsen2007,Larson2003,Denneau2013,Tonry2018}.
+
+Moving-object science in time-domain surveys depends not only on single-image depth, but also on cadence, sky coverage, astrometric precision, and the ability to associate detections across time. A discovery-oriented pipeline generally starts from transient or non-stationary detections, forms same-night tracklets, and links tracklets obtained on different nights to determine preliminary orbits \citep{Kubica2007,Denneau2013,Veres2017}. The same data stream also supports attribution and precovery of known objects, which are essential for orbit refinement, survey validation, and physical characterization. This distinction is particularly important for prototype surveys: even before a full discovery pipeline is finalized, the recovery of cataloged asteroids can be used to evaluate astrometric performance, photometric behavior, source extraction quality, and temporal sampling under real observing conditions.
+
+Several recent and forthcoming surveys illustrate the range of strategies relevant to Solar System time-domain work. ATLAS was designed as a high-cadence all-sky system optimized for the discovery of dangerous near-Earth asteroids and other rapidly varying sources \citep{Tonry2018}. ZTF combines a 47 deg$^2$ camera with near-real-time reduction and alert distribution for transients, variables, and moving objects \citep{Bellm2019,Patterson2019}. The Rubin Observatory Legacy Survey of Space and Time will provide much deeper multi-epoch imaging and is expected to substantially expand the number of Solar System detections \citep{Ivezic2019,Jones2018,Schwamb2023}. In parallel, the NEO Surveyor mission will search in the infrared from space and is optimized for discovering and characterizing NEOs, especially objects difficult to observe from the ground \citep{Mainzer2023}. These facilities show that cadence, depth, wavelength, and sky coverage are complementary rather than interchangeable survey properties.
+
+High-cadence survey data are also valuable for asteroid physical characterization. Time-series photometry constrains rotation periods and amplitudes, and multi-geometry light curves can be used to infer spin states and shapes through light-curve inversion \citep{Kaasalainen2001a,Kaasalainen2001b,Warner2009}. Sparse survey photometry further enlarges the statistical sample of asteroid light curves when sufficient temporal and phase-angle coverage is available. Accurate photometry and observing geometry are therefore necessary not only for detection and orbit association, but also for studying asteroid rotation, shape, surface properties, and activity. Phase-angle effects must also be treated explicitly when survey photometry is interpreted physically, for example through the $H,G_1,G_2$ phase-function formalism \citep{Muinonen2010}.
+
+The SiTian/GOTTA program is designed to provide high-cadence, wide-field optical monitoring with a distributed array of telescopes \citep{Liu2021}. Its pathfinder, the Mini-SiTian Array at Xinglong Observatory, has already demonstrated the scientific value of high-cadence, multi-band observations for time-domain astronomy. The Mini-SiTian Array consists of three 30 cm telescopes, has operated at Xinglong since 2022, and provides large-field photometric monitoring that informs both observation strategy and data processing for the full SiTian/GOTTA system \citep{Han2025}. These pathfinder data and procedures are directly relevant to the development of Solar System analysis tools for future high-cadence survey operations.
+
+For asteroid science specifically, \citet{LiuZhaoxing2025} developed an asteroid photometry and period-analysis pipeline using Mini-SiTian data from the f02 region. They derived rotation periods for 22 asteroids, including 14 objects without periods listed in ALCDEF, and found agreement with existing results for several objects with sufficiently dense photometric sampling. This work demonstrates the feasibility of asteroid photometry with SiTian pathfinder observations and provides an important motivation for building the corresponding known-object association and validation layer for the GOTTA Prototype.
+
+The GOTTA Prototype extends this pathfinder context to a larger-aperture wide-field system. Mini-SiTian has shown that small pathfinder facilities can deliver useful asteroid light curves, while the GOTTA Prototype provides a testbed for survey-scale source catalogs, exposure geometry, and small-body database augmentation. The present work does not attempt to report unknown asteroid discoveries, measure formal completeness, or operate a full moving-object linking system. Instead, it focuses on known-object recovery, a necessary precursor to tracklet construction, moving-object alert filtering, orbit refinement, and light-curve preparation.
+
+In this paper we present a known-asteroid extraction pipeline for GOTTA Prototype photometric catalogs. We use cataloged minor planets as a controlled sample to validate the end-to-end association between survey catalogs and known-object ephemerides. This approach allows us to evaluate astrometric residuals, photometric measurement behavior, angular-rate coverage, orbital-class distribution, and repeated-observation statistics. The recovered sample contains 56,230 matched detections of 16,053 unique known asteroids, including a small but useful subset of NEOs and PHAs.
+
+The paper is organized as follows. Section~\ref{sec:data} describes the GOTTA Prototype data and the recovered known-asteroid sample. Section~\ref{sec:method} presents the ephemeris-based extraction and augmentation method. Section~\ref{sec:results} analyzes the recovered sample and evaluates catalog-level performance. Section~\ref{sec:discussion} discusses the implications for the future GOTTA moving-object pipeline and summarizes the main conclusions.
+
+\section{Observations and Catalog Data}
+\label{sec:data}
+
+\subsection{GOTTA Prototype Survey Data}
+
+The analysis in this work is based on GOTTA Prototype observations obtained during the original four-CMOS test campaign from 2025 January to June. The telescope is a 1 m-class wide-field Ring Schmidt system located at Xinglong Observatory and operated in this phase with a single SDSS-like $g$ filter. The detailed optical design, detector configuration, calibration strategy, and image-quality assessment are presented in the companion GOTTA Prototype data-reduction paper. Here we summarize only the information relevant to known-asteroid recovery.
+
+The basic reduction pipeline produces calibrated images and source catalogs for each exposure. The processing includes calibration-frame construction, bias subtraction, flat-field correction, bad-pixel masking, astrometric calibration, photometric calibration, and source extraction. The astrometric solution is tied to Gaia DR3 \citep{Gaia2023}, while the photometric calibration uses a system-specific reference catalog derived from Gaia XP spectra and the measured instrumental response. Source extraction and astrometric calibration use established wide-field catalog-processing tools in the same general class as SExtractor, SCAMP, and astrometry.net \citep{Bertin1996,Bertin2006,Lang2010}; related CMOS wide-field reduction strategies have also been developed for Mini-SiTian \citep{Xiao2025}. For static stellar sources, the companion reduction analysis shows that the astrometric residuals are typically below the sub-arcsecond level and that bright-source photometry reaches percent-level precision. These performance properties provide the foundation for the moving-object association described in this paper, although asteroid measurements include additional uncertainties from motion, centroiding at low signal-to-noise ratio, ephemeris errors, and possible trailing.
+
+\subsection{Photometric Catalogs Used for Known-Object Recovery}
+
+The input to the present pipeline is the per-exposure photometric source catalog rather than the raw image. For each exposure, the catalog provides measured celestial and detector coordinates, aperture photometry, Kron-like photometry, photometric uncertainties, and source-quality flags. The FITS header provides the WCS, image dimensions, exposure time, and observing epoch required to compute the exposure footprint and mid-exposure time. The known-object recovery pipeline associates these calibrated source detections with predicted asteroid ephemerides and then augments the accepted matches with orbit and observing-geometry information.
+
+\subsection{Recovered Known-Asteroid Sample}
+
+The analysis is based on a GOTTA-only catalog of accepted associations between predicted positions of known asteroids and calibrated source detections. Each row corresponds to one accepted association in one exposure. In addition to the measured source position and photometry, the catalog records the predicted ephemeris, observing epoch, object identifier, orbit class, and selected observing-geometry quantities.
+
+The final sample analyzed here consists of 56,230 detections of 16,053 unique known asteroids over 73 UTC nights. The sample is dominated by main-belt asteroids, as expected for a wide-field optical survey operating near typical opposition geometries, but it also contains Mars-crossing objects, Jupiter Trojans, and small subsets of NEOs and PHAs. This recovered sample is used below to evaluate the catalog-level performance of the prototype known-object pipeline.
+
+Figure~\ref{fig:example_image} shows representative known-asteroid detections and image cutouts from the pilot-survey material. This figure is illustrative; the quantitative analysis in the remainder of the paper uses the recovered catalog-level associations.
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.95\textwidth]{figures_v3/sitian_pilot_asteroid_statistics.pdf}
+\caption{Representative known-asteroid detections and image cutouts from the pilot-survey material. Green labels and circles identify catalog-associated known asteroids. The figure illustrates the type of image-level detections represented by the catalog-level associations analyzed in this work.}
+\label{fig:example_image}
+\end{figure*}
+
+\section{Known-Asteroid Extraction Method}
+\label{sec:method}
+
+\subsection{Catalog-Level Association Strategy}
+
+The goal of the pipeline is to identify detections of cataloged asteroids in calibrated GOTTA Prototype source catalogs. The procedure is designed as a known-object association workflow rather than an unknown-object discovery pipeline. For each exposure, the pipeline reads the calibrated photometric catalog and the corresponding FITS header. The WCS solution is used to determine the sky footprint of the detector, while the exposure midpoint is computed from the start time and exposure duration. Known-asteroid candidates are predicted for this epoch and for the Xinglong observer location. Objects outside the padded field region, outside the CCD footprint, or fainter than the adopted ephemeris-magnitude limit are removed before cross-matching. The remaining predictions are associated with catalog detections using an angular nearest-neighbor criterion. Accepted associations are then merged with the source photometry and augmented with orbit and observing-geometry quantities from external small-body databases.
+
+Figure~\ref{fig:flowchart} summarizes the workflow. The present analysis uses only accepted associations. It is therefore appropriate for evaluating the quality and content of the recovered known-object sample, but not for measuring a formal detection efficiency, which would require the full set of predicted but unrecovered objects.
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.95\textwidth]{figures_v3/known_object_processing.png}
+\caption{Workflow of the known-asteroid extraction procedure. The pipeline starts from calibrated per-exposure photometric catalogs and exposure metadata, computes exposure geometry and observing time, predicts known-object positions, applies field and footprint filters, matches surviving predictions to catalog detections, and augments accepted associations with external small-body information.}
+\label{fig:flowchart}
+\end{figure*}
+
+\subsection{Ephemeris Prediction and Exposure Geometry}
+
+For a cataloged asteroid, the starting point of the ephemeris calculation is its osculating orbit at a reference epoch. The orbit can be expressed by the standard elements $(a,e,i,\Omega,\omega,M)$, where $a$ is the semi-major axis, $e$ is the eccentricity, $i$ is the inclination, $\Omega$ is the longitude of the ascending node, $\omega$ is the argument of perihelion, and $M$ is the mean anomaly. In the two-body limit, the mean anomaly evolves as
+\begin{equation}
+M(t)=M_0+n(t-t_0),
+\end{equation}
+where $n$ is the mean motion. Kepler's equation,
+\begin{equation}
+M=E-e\sin E,
+\end{equation}
+is solved for the eccentric anomaly $E$, from which the heliocentric position is obtained. For survey applications, the apparent topocentric direction also depends on the observer location, time scale, light-time correction, and perturbations from Solar System bodies. The pipeline therefore uses a fast ephemeris-screening step to identify plausible in-field candidates and then augments the accepted matches with refined information from the JPL Small-Body Database\footnote{\url{https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html}} and Horizons\footnote{\url{https://ssd.jpl.nasa.gov/horizons/}} systems. The Minor Planet Center\footnote{\url{https://minorplanetcenter.net/}} provides the broader astrometric-observation infrastructure and reporting context for Solar System small-body work. The Lowell Observatory astorb database\footnote{\url{https://asteroid.lowell.edu/main/astorb/}} is used as an orbit-catalog resource for fast screening.
+
+The exposure footprint is computed directly from the WCS of each calibrated catalog. The detector corners are projected from pixel coordinates to the sky, and the search radius is initialized from the maximum angular distance between the field center and the projected corners, with an additional padding term to avoid edge losses. The exposure midpoint is
+\begin{equation}
+t_{\rm mid}=t_{\rm start}+\frac{1}{2}t_{\rm exp}.
+\end{equation}
+This midpoint is used for ephemeris evaluation because even modest sky-plane motion can lead to measurable offsets if the start time is used instead. After the initial sky-coordinate query, predicted positions are transformed back to detector coordinates, and only candidates falling within the valid pixel range are retained.
+
+\subsection{Catalog Matching and Small-Body Augmentation}
+
+The filtered predictions are associated with the GOTTA source catalog using their angular separation from detected sources. The residual between a measured source position and a predicted ephemeris is defined as
+\begin{equation}
+\Delta\theta =
+\left[
+(\Delta\alpha\cos\delta)^2 + (\Delta\delta)^2
+\right]^{1/2},
+\end{equation}
+where $\Delta\alpha$ and $\Delta\delta$ are the right ascension and declination differences. A match is accepted only when the nearest-neighbor separation is below the adopted arcsecond-level threshold. The threshold is chosen to be larger than the expected astrometric and centroiding uncertainties for faint moving sources, but sufficiently small to reduce chance associations in crowded fields.
+
+For each accepted association, the measured catalog quantities are merged with the predicted ephemeris. The photometric measurements include aperture magnitudes and their uncertainties; Kron-like measurements are retained for comparison but are not used as the primary photometric statistic in the final analysis. The predicted asteroid magnitude is used only as a consistency diagnostic, because it is not necessarily defined in the same photometric system as the GOTTA $g$-band measurement and is also affected by asteroid color, phase behavior, and rotational variability.
+
+The matched detections are further associated with small-body database entries to obtain object identifiers, orbit classes, orbital elements, and observer-dependent geometry. The latter includes heliocentric distance, topocentric distance, phase angle, and sky-plane angular rates. These quantities are used in the statistical analysis below to interpret the recovered sample in terms of orbital population, observing geometry, and apparent motion.
+
+The statistical calculations and figure generation use the standard Python scientific stack and Astropy for astronomical table and coordinate handling \citep{Astropy2013,Astropy2018,Astropy2022}. These software citations are included for reproducibility of the catalog-level analysis products.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Recovered Sample and Orbital Populations}
+
+The recovered sample contains 56,230 accepted asteroid-source associations for 16,053 unique known asteroids. These detections are distributed over 13,253 exposure catalogs and 73 UTC nights. The sample includes 77 unique NEOs and 19 unique PHAs, but the dominant population is composed of main-belt asteroids. Table~\ref{tab:summary} summarizes the main catalog-level statistics.
+
+\input{tables_v3/overall_statistics.tex}
+
+The orbit-class composition is shown in Table~\ref{tab:orbit_class}. Main-belt asteroids account for 51,058 detections and 14,674 unique objects. Outer main-belt asteroids, Jupiter Trojans, inner main-belt asteroids, and Mars-crossing asteroids make up most of the remaining sample. The NEO classes are represented by Amor, Apollo, and Aten objects. The small NEO/PHA subset is useful for validating the association path, but it should not be interpreted as a measure of NEO discovery efficiency.
+
+\input{tables_v3/orbit_class_statistics.tex}
+
+Figure~\ref{fig:sky_orbit} shows the detection-level sky distribution and the orbital-element distribution of the recovered objects. The sky distribution is shaped jointly by the prototype survey footprint, seasonal visibility, and the instantaneous distribution of known minor planets during the observing campaign. The orbital-element panel confirms that the recovered sample is dominated by main-belt objects, with smaller contributions from inner and outer main-belt objects, Jupiter Trojans, Mars-crossers, and NEOs.
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.48\textwidth]{figures_v3/gotta_radec_healpix_nside64.pdf}
+\includegraphics[width=0.48\textwidth]{figures_v3/asteroid_orbits.pdf}
+\caption{Left: detection-level sky distribution of recovered known asteroids in equatorial coordinates, binned with HEALPix nside 64. The color scale is clipped at 100 detections per pixel for readability. Right: orbital-element distribution of the recovered known-object sample.}
+\label{fig:sky_orbit}
+\end{figure*}
+
+\subsection{Photometric Properties of the Recovered Asteroids}
+
+For the photometric analysis we adopt aperture photometry rather than Kron-like magnitudes. This choice is motivated by the relatively faint nature of many asteroid detections and by the need for a homogeneous measurement aperture across the sample. Kron photometry is retained in the catalog, but its adaptive aperture can respond differently to background noise, source elongation, and faint-source segmentation, making it less suitable as the primary statistic for this catalog-level asteroid analysis.
+
+We examined the aperture growth curves using the set of aperture magnitudes provided by the basic photometry pipeline. The catalog contains aperture indices 1--12. For bright detections, the median magnitude difference relative to aperture 12 changes rapidly at small aperture index and becomes nearly stable by intermediate apertures. We adopt \texttt{Mag\_Aper5}, denoted below as $g_{\rm aper}$, as a compromise between enclosing most of the stable aperture flux and avoiding the larger noise increase seen in the widest apertures. The median $g_{\rm aper}$ is 18.100 mag, and the median uncertainty is 0.140 mag.
+
+Figure~\ref{fig:phot} shows the aperture photometry diagnostics. The growth-curve panel shows that the adopted aperture is already within about 0.02 mag of the widest-aperture median for the bright subsample. The magnitude and uncertainty distributions show that most recovered asteroids are faint catalog-level detections rather than high signal-to-noise calibration sources. The uncertainty--magnitude panel confirms the expected increase in photometric uncertainty toward the faint end.
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.95\textwidth]{figures_v3/photometric_statistics.pdf}
+\caption{Aperture photometry diagnostics for the recovered known-asteroid detections. The panels show the median aperture growth curve for bright detections relative to aperture 12, the adopted \texttt{Mag\_Aper5} distribution, the \texttt{MagErr\_Aper5} distribution, and the dependence of \texttt{MagErr\_Aper5} on \texttt{Mag\_Aper5}. The vertical line in the growth-curve panel marks the adopted aperture index.}
+\label{fig:phot}
+\end{figure*}
+
+The difference between predicted magnitude and measured GOTTA $g$-band aperture magnitude should be treated as a diagnostic quantity rather than a calibrated photometric residual. The predicted ephemeris magnitude and the measured GOTTA magnitude are not necessarily defined in the same photometric system, and asteroid color, phase behavior, rotation, shape, and ephemeris-magnitude uncertainties can all contribute to the difference.
+
+\subsection{Astrometric Residuals and Apparent Motion}
+
+The observed-minus-predicted positional residual has a median separation of 0.220 arcsec and a two-dimensional RMS of 0.355 arcsec. The RMS values of $\Delta\alpha\cos\delta$ and $\Delta\delta$ are 0.250 arcsec and 0.252 arcsec, respectively. The small median offsets in the two coordinates suggest that there is no large global systematic displacement between measured and predicted positions in the accepted associations.
+
+Figure~\ref{fig:astro} shows the residual distribution and its dependence on the adopted aperture magnitude. The residual generally increases toward fainter magnitudes, consistent with centroiding uncertainty and decreasing signal-to-noise ratio. Table~\ref{tab:mag_astrometry} summarizes the same behavior in magnitude bins: the median separation increases from about 0.09--0.11 arcsec for relatively bright objects to about 0.27 arcsec near $g_{\rm aper}\simeq18$--19 mag.
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.95\textwidth]{figures_v3/astrometric_residuals.pdf}
+\caption{Astrometric residual diagnostics. The panels show the observed-minus-predicted separation, $\Delta\alpha\cos\delta$, $\Delta\delta$, and separation as a function of the adopted aperture magnitude \texttt{Mag\_Aper5}.}
+\label{fig:astro}
+\end{figure*}
+
+\input{tables_v3/astrometry_by_magnitude.tex}
+
+The dependence on sky-plane angular rate is shown in Figure~\ref{fig:sep_rate} and summarized in Table~\ref{tab:rate_astrometry}. Most recovered objects have moderate angular rates, with a median of 29.276 arcsec hr$^{-1}$. Over this dominant part of the sample, the residual distribution is similar to that of the full recovered catalog. The sparsely populated high-rate tail shows larger scatter and should be interpreted with caution because it contains few detections and may be more affected by trailing, centroiding biases, or matching ambiguity.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.95\columnwidth]{figures_v3/separation_vs_rate.pdf}
+\caption{Observed-minus-predicted separation as a function of sky-plane angular rate. The scatter plot is shown in logarithmic rate space, and the running median with the 16th--84th percentile range is overplotted. Most recovered objects have moderate angular rates, for which the residual distribution is similar to that of the full sample. The sparsely populated high-rate tail shows larger scatter and should be interpreted with caution.}
+\label{fig:sep_rate}
+\end{figure}
+
+\input{tables_v3/astrometry_by_rate.tex}
+
+\subsection{Temporal Sampling and Light-Curve Potential}
+
+The median heliocentric distance is 2.581 AU, and the median topocentric distance is 1.840 AU. The median phase angle is 13.245 deg. These values are consistent with a sample dominated by main-belt asteroids observed in typical survey geometry. Figure~\ref{fig:rate_geom} shows the angular-rate, phase-angle, heliocentric-distance, and topocentric-distance distributions for rows with successful geometry augmentation.
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.95\textwidth]{figures_v3/motion_geometry.pdf}
+\caption{Observing-geometry diagnostics for recovered known asteroids with successful geometry augmentation. The panels show apparent angular rate, phase angle, heliocentric distance, and topocentric distance. Vertical dashed lines mark the corresponding medians.}
+\label{fig:rate_geom}
+\end{figure*}
+
+Repeated observations are essential for future light-curve analysis. In the present recovered sample, the median number of detections per object is two, while the mean is 3.50 and the 84th percentile is six. A small number of objects have many repeated detections, with the maximum count reaching 317. The temporal baseline distribution indicates that many objects are sampled over multiple nights, but the prototype-only sample is still sparse for robust period determination for most objects.
+
+Figure~\ref{fig:cadence} shows nightly matched detections, the detection-count distribution per object, the cumulative distribution of detections per object, and the cumulative distribution of object time baseline. These diagnostics quantify not only how many objects were recovered, but also how often they were revisited. Table~\ref{tab:nightly_top5} lists the five UTC nights with the largest numbers of accepted associations.
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.95\textwidth]{figures_v3/temporal_sampling.pdf}
+\caption{Temporal sampling diagnostics. The panels show nightly accepted known-asteroid associations, the detection-count distribution per object, the cumulative distribution of detections per object, and the cumulative distribution of object time baseline.}
+\label{fig:cadence}
+\end{figure*}
+
+\input{tables_v3/nightly_top5.tex}
+
+Figure~\ref{fig:example} shows an example cross-matching diagnostic for one exposure. The panels show the detector distribution of accepted known-asteroid associations, residual vectors between predicted and measured positions, the separation distribution, and the relation between predicted ephemeris magnitude and measured aperture magnitude. Only accepted associations are shown because the full candidate and rejection lists are not required for the catalog-level analysis presented in this work.
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.95\textwidth]{figures_v3/example_crossmatch_diagnostic.pdf}
+\caption{Example cross-matching diagnostic for one exposure. The panels show the detector distribution of accepted known-asteroid associations, residual vectors between predicted and measured positions, the separation distribution, and the relation between predicted ephemeris magnitude and measured aperture magnitude. Only accepted associations are shown because the full candidate and rejection lists are not required for the catalog-level analysis presented in this work.}
+\label{fig:example}
+\end{figure*}
+
+\section{Discussion and Conclusions}
+\label{sec:discussion}
+
+The recovered known-asteroid sample demonstrates that the GOTTA Prototype has reached the stage at which moving-object information can be extracted from routine survey catalogs in a systematic way. The essential result is not only the number of recovered objects, but the closure of the full catalog-level association chain: calibrated source catalogs are connected to exposure geometry, mid-exposure timing, known-object ephemerides, CCD-footprint filtering, source matching, and external small-body database augmentation. This chain is a necessary precursor to more ambitious moving-object products, including same-night tracklet construction and unknown-object discovery.
+
+Known-object recovery is a particularly useful validation mode for a prototype survey. Because the expected positions of cataloged asteroids can be predicted independently, the recovered detections provide direct diagnostics of WCS consistency, timing accuracy, source-catalog photometry, and matching behavior. The median observed-minus-predicted separation of 0.220 arcsec and the two-dimensional RMS of 0.355 arcsec indicate that the current catalog-level association is well within the scale required for reliable known-object recovery. The residual increases toward fainter magnitudes, suggesting that centroiding and signal-to-noise ratio are important contributors to the error budget. By contrast, most of the recovered sample lies at moderate angular rates, and the rate-dependent degradation is limited except in the sparsely populated high-rate tail.
+
+The photometric analysis should be interpreted with appropriate caution. The adopted aperture magnitude provides a homogeneous measurement for catalog-level statistics, but the predicted asteroid magnitude is not a direct calibrated reference in the GOTTA $g$ band. Differences between predicted and measured magnitudes may reflect asteroid color, phase-angle dependence, rotational modulation, shape effects, and uncertainties in the ephemeris magnitude model. A more physical photometric analysis will require phase-function modeling and, for selected objects, light-curve fitting over sufficient time and viewing geometry. The present work therefore uses photometry primarily to characterize the brightness range and measurement uncertainties of the recovered sample, rather than to infer asteroid physical parameters.
+
+The current analysis also defines the limitations of the prototype data product. Since only accepted associations are analyzed, the catalog cannot by itself provide a formal recovery efficiency or false-match rate. Such measurements require the full set of predicted in-field objects, unrecovered candidates, rejected matches, and the original source catalogs. Future processing should therefore preserve candidate-level information and perform random-shift or time-scrambling tests to quantify chance associations. Similarly, a formal trailing analysis requires exposure time, seeing, and angular-rate information for each detection, so that the trail length can be compared with astrometric and photometric residuals. A useful diagnostic for future work is
+\begin{equation}
+L_{\rm trail}=\mu t_{\rm exp},
+\end{equation}
+where $\mu$ is the apparent angular rate and $t_{\rm exp}$ is the exposure time.
+
+Despite these limitations, the results provide a practical baseline for the full GOTTA array. A distributed, high-cadence, wide-field survey will naturally produce many repeated observations of known asteroids, while also enabling rapid follow-up of NEOs and unusual objects. Compared with deeper but lower-cadence surveys, the strength of GOTTA will lie in frequent temporal sampling over large sky areas. The prototype known-object catalog shows that the required association and augmentation framework can be implemented on GOTTA data. When combined with candidate-level bookkeeping, tracklet formation, and the light-curve pipeline being developed with auxiliary observations, this framework will support both survey validation and Solar System science with the future array.
+
+In summary, we have developed and tested a known-asteroid extraction workflow for GOTTA Prototype photometric catalogs. The recovered sample contains 56,230 detections of 16,053 unique known asteroids over 73 UTC nights, including small subsets of NEOs and PHAs. The sample is dominated by main-belt asteroids, as expected, and provides statistically useful distributions in sky position, orbital class, aperture magnitude, angular rate, observing geometry, astrometric residual, and repeated observations. The sub-arcsecond observed-minus-predicted residuals demonstrate that the current catalog products are suitable for known-object association. This work establishes the first moving-object validation layer for the GOTTA Prototype and provides the foundation for future candidate-level detection, tracklet construction, and asteroid light-curve analysis.
+
+\begin{acknowledgements}
+The authors acknowledge support from the Strategic Priority Research Program of the Chinese Academy of Sciences with Grant Nos. XDB0550103, the National Key R\&D Program of China, the National Natural Science Foundation of China, and China Manned Space Project. The GOTTA Prototype Telescope is the pioneering unit of the global network dedicated to discovering and studying astronomical transients. The development and operation of the telescope are supported by the National Astronomical Observatories, Chinese Academy of Sciences and the University of Chinese Academy of Sciences. The final grant list should be checked against the companion GOTTA Prototype papers and the requirements of all co-authors.
+\end{acknowledgements}
+
+\appendix
+\section{Additional Tables}
+
+\input{tables_v3/most_observed_objects_top5.tex}
+
+\begin{thebibliography}{99}
+
+\bibitem[Astropy Collaboration et al.(2013)]{Astropy2013}
+Astropy Collaboration, Robitaille, T. P., Tollerud, E. J., et al. 2013, A\&A, 558, A33
+
+\bibitem[Astropy Collaboration et al.(2018)]{Astropy2018}
+Astropy Collaboration, Price-Whelan, A. M., Sipocz, B. M., et al. 2018, AJ, 156, 123
+
+\bibitem[Astropy Collaboration et al.(2022)]{Astropy2022}
+Astropy Collaboration, Price-Whelan, A. M., Lim, P. L., et al. 2022, ApJ, 935, 167
+
+\bibitem[Bellm et al.(2019)]{Bellm2019}
+Bellm, E. C., Kulkarni, S. R., Graham, M. J., et al. 2019, PASP, 131, 018002
+
+\bibitem[Bertin \& Arnouts(1996)]{Bertin1996}
+Bertin, E., \& Arnouts, S. 1996, A\&AS, 117, 393
+
+\bibitem[Bertin(2006)]{Bertin2006}
+Bertin, E. 2006, in ASP Conf. Ser., Vol. 351, Astronomical Data Analysis Software and Systems XV, ed. C. Gabriel, C. Arviset, D. Ponz, \& S. Enrique, 112
+
+\bibitem[Denneau et al.(2013)]{Denneau2013}
+Denneau, L., Jedicke, R., Grav, T., et al. 2013, PASP, 125, 357
+
+\bibitem[Gaia Collaboration et al.(2023)]{Gaia2023}
+Gaia Collaboration, Vallenari, A., Brown, A. G. A., et al. 2023, A\&A, 674, A1
+
+\bibitem[Han et al.(2025)]{Han2025}
+Han, H., Huang, Y., Wang, B., et al. 2025, Research in Astronomy and Astrophysics, 25, 044001
+
+\bibitem[Ivezi\'c et al.(2019)]{Ivezic2019}
+Ivezi\'c, Z., Kahn, S. M., Tyson, J. A., et al. 2019, ApJ, 873, 111
+
+\bibitem[Jones et al.(2018)]{Jones2018}
+Jones, R. L., Slater, C. T., Moeyens, J., et al. 2018, Icarus, 303, 181
+
+\bibitem[Kaasalainen \& Torppa(2001)]{Kaasalainen2001a}
+Kaasalainen, M., \& Torppa, J. 2001, Icarus, 153, 24
+
+\bibitem[Kaasalainen et al.(2001)]{Kaasalainen2001b}
+Kaasalainen, M., Torppa, J., \& Muinonen, K. 2001, Icarus, 153, 37
+
+\bibitem[Kubica et al.(2007)]{Kubica2007}
+Kubica, J., Denneau, L., Grav, T., et al. 2007, Icarus, 189, 151
+
+\bibitem[Lang et al.(2010)]{Lang2010}
+Lang, D., Hogg, D. W., Mierle, K., Blanton, M., \& Roweis, S. 2010, AJ, 139, 1782
+
+\bibitem[Larsen(2007)]{Larsen2007}
+Larsen, J. A. 2007, AJ, 133, 1247
+
+\bibitem[Larson et al.(2003)]{Larson2003}
+Larson, S., Beshore, E., Hill, R., et al. 2003, BAAS, 35, 982
+
+\bibitem[Liu et al.(2021)]{Liu2021}
+Liu, J., Soria, R., Wu, X.-F., Wu, H., \& Shang, Z. 2021, Anais da Academia Brasileira de Ciencias, 93, 20200628
+
+\bibitem[Liu et al.(2025)]{LiuZhaoxing2025}
+Liu, Z., Gao, J., Gu, H., et al. 2025, Research in Astronomy and Astrophysics, 25, 044010
+
+\bibitem[Mainzer et al.(2023)]{Mainzer2023}
+Mainzer, A. K., Masiero, J. R., Abell, P. A., et al. 2023, PSJ, 4, 224
+
+\bibitem[Morrison(1992)]{Morrison1992}
+Morrison, D. 1992, The Spaceguard Survey: Report of the NASA International Near-Earth-Object Detection Workshop, NASA Technical Memorandum 107979
+
+\bibitem[Muinonen et al.(2010)]{Muinonen2010}
+Muinonen, K., Belskaya, I. N., Cellino, A., et al. 2010, Icarus, 209, 542
+
+\bibitem[Patterson et al.(2019)]{Patterson2019}
+Patterson, M. T., Bellm, E. C., Rusholme, B., et al. 2019, PASP, 131, 018001
+
+\bibitem[Schwamb et al.(2023)]{Schwamb2023}
+Schwamb, M. E., Jones, R. L., Yoachim, P., et al. 2023, ApJS, 266, 22
+
+\bibitem[Stokes et al.(2000)]{Stokes2000}
+Stokes, G. H., Evans, J. B., Viggh, H. E. M., Shelly, F. C., \& Pearce, E. C. 2000, Icarus, 148, 21
+
+\bibitem[Tonry et al.(2018)]{Tonry2018}
+Tonry, J. L., Denneau, L., Heinze, A. N., et al. 2018, PASP, 130, 064505
+
+\bibitem[Vere\v{s} \& Chesley(2017)]{Veres2017}
+Vere\v{s}, P., \& Chesley, S. R. 2017, Icarus, 296, 139
+
+\bibitem[Warner et al.(2009)]{Warner2009}
+Warner, B. D., Harris, A. W., \& Pravec, P. 2009, Icarus, 202, 134
+
+\bibitem[Xiao et al.(2025)]{Xiao2025}
+Xiao, K., Li, Z., Huang, Y., et al. 2025, Research in Astronomy and Astrophysics, 25, 044006
+
+\end{thebibliography}
+
+\end{document}

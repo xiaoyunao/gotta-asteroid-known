@@ -1,0 +1,20 @@
+Quantity,Value,Note
+Accepted asteroid-source associations,"56,230",Detection-level catalog associations
+Distinct known objects,"16,053",Unique minor-planet identifiers
+Exposure catalogs represented,"13,253",Input catalog products with accepted associations
+UTC nights represented,73,Recovered sample date coverage
+Inferred field identifiers,588,Field-level grouping from catalog metadata
+Unique NEOs,77,SBDB object_neo flag
+Unique PHAs,19,SBDB object_pha flag
+Median predicted magnitude,18.2215,Ephemeris magnitude
+Median Mag_Aper5,18.0994,Adopted aperture magnitude
+Median MagErr_Aper5,0.1399 mag,Adopted aperture uncertainty
+Median aperture S/N proxy,7.7630,Flux_Aper5 / FluxErr_Aper5
+Median separation,0.220 arcsec,Observed minus predicted
+84th-percentile separation,0.484 arcsec,Observed minus predicted
+2D residual RMS,0.355 arcsec,sqrt(mean(sep$^2$))
+RMS delta RA cos Dec,0.250 arcsec,Coordinate residual
+RMS delta Dec,0.252 arcsec,Coordinate residual
+Median angular rate,29.276 arcsec hr$^{-1}$,JPL Horizons
+Median phase angle,13.245 deg,JPL Horizons
+Rows without Horizons geometry,107,Rows excluded from geometry/rate statistics

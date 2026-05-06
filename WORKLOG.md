@@ -1,5 +1,29 @@
 # WORKLOG
 
+## 2026-05-06
+
+- task: 根据 GPT Pro 审稿意见将论文从 v2 改成 v3
+- files_changed: `paper_draft/v3.tex`, `paper_draft/figures_v3/`, `paper_draft/tables_v3/`, `scripts/generate_paper_products.py`, `README.md`, `PLAN.md`, `WORKLOG.md`
+- commands_run: `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `/opt/anaconda3/bin/python3 -m py_compile scripts/generate_paper_products.py`; `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v3`; static checks for forbidden report-style phrases, citation keys, and referenced figure/table paths
+- key_findings:
+  - 当前本机可用 Python 为 `/opt/anaconda3/bin/python3`，包含 `astropy`, `numpy`, `pandas`, `matplotlib`
+  - 旧记录中的 `/Users/island/opt/anaconda3/envs/astro/bin/python` 在本机不存在
+  - 本机未发现 `xelatex`, `pdflatex`, `lualatex`, `latexmk`, `tectonic`
+  - FITS 中有 `Mag_Aper1`--`Mag_Aper12` 与对应误差列；v3 采用 `Mag_Aper5` 作为主光度量
+  - v3 删除了正文中的具体 FITS 文件名、旧脚本参数、run-configuration 语言和 light-curve placeholder section
+- validation:
+  - Python 语法检查通过
+  - v3 图表和表格成功生成到 `paper_draft/figures_v3/` 和 `paper_draft/tables_v3/`
+  - `v3.tex` 引用 key 均有 bibliography 条目
+  - `v3.tex` 引用的 figure/table 路径均存在
+  - 禁用短语检查无残留
+  - 本机无法编译 PDF，因为缺少 TeX 引擎
+- remaining_issues:
+  - 需要在有 XeLaTeX 的环境中编译并人工检查 `v3.pdf`
+  - Received/accepted 日期、grant list、完整作者列表和最终生产参数仍需确认
+- next_step:
+  - 安装或切换到 TeX Live 环境后编译 `paper_draft/v3.tex`
+
 ## 2026-05-05
 
 - task: 编译论文 v1 并生成本地 v2 草稿

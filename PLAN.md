@@ -2,8 +2,9 @@
 
 ## Current objective
 
-在本地继续修改 GOTTA 已知小行星论文草稿，以 `gotta_asteroids.fits` 为唯一统计和绘图输入，生成可编译的
-`paper_draft/v2.tex` 和 `paper_draft/v2.pdf`。
+在 `paper_draft/v2.tex` 基础上生成更成熟的 RAA 风格 `paper_draft/v3.tex`，以
+`gotta_asteroids.fits` 为唯一统计和绘图输入，正文定位为 known-asteroid recovery /
+prototype capability evaluation。
 
 ## Milestones
 
@@ -18,13 +19,17 @@
 9. 已从 `paper_draft/v1.tex` 编译出 `paper_draft/v1.pdf`
 10. 已新增 `scripts/generate_paper_products.py`，从 FITS 重新生成 v2 图表
 11. 已生成 `paper_draft/v2.tex` 和 `paper_draft/v2.pdf`
+12. 已新增 v3 图表/表格输出目录，主光度统计切换到 `Mag_Aper5`
+13. 已生成 `paper_draft/v3.tex`，重写 Introduction/Data/Method/Results/Discussion
 
 ## Outstanding issues
 
 - 后续新增统计和图时必须默认使用 `gotta_asteroids.fits`
 - 轨道图 `outputs/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
-- `paper_draft/v2.tex` 中作者、单位、致谢、最终硬件参数、匹配半径和星等一致性阈值仍需共同作者确认
-- 光变分析仍为占位，等待 60 cm Schmidt 或其他协作数据
+- `paper_draft/v3.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者确认
+- 匹配半径和星等一致性阈值未在正文写死；最终提交前需由生产配置确认
+- 光变分析仍需等待协作者数据；v3 只讨论 light-curve potential，不声称 period results
+- 当前本机没有 TeX 引擎，`v3.tex` 尚未在本机编译成 PDF
 
 ## Validation criteria
 
@@ -38,10 +43,14 @@
 - `paper_draft/v1.pdf` 可由 `paper_draft/v1.tex` 编译得到：已完成
 - `paper_draft/v2.pdf` 可由 `paper_draft/v2.tex` 编译得到：已完成
 - `scripts/generate_paper_products.py` 通过 Python 语法检查：已完成
+- `paper_draft/v3.tex` 不再包含 report-style 文件名、旧参数和 placeholder light-curve section
+- v3 引用 key 均有对应 bibliography 条目
+- v3 图表路径和 `tables_v3/` 输入均存在
 
 ## Next recommended steps
 
-1. 人工检查 `paper_draft/v2.pdf` 的图表版面和文本内容
-2. 确认作者、单位、致谢、硬件参数、匹配半径和星等一致性阈值
-3. 等光变分析材料到位后替换 `Light-Curve Analysis Placeholder`
-4. 如需重画 v2 图表，运行 `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft`
+1. 在有 TeX Live / XeLaTeX 的环境中编译 `paper_draft/v3.tex`
+2. 人工检查 `paper_draft/v3.pdf` 的图表版面、表格宽度和引用格式
+3. 确认作者、单位、致谢、硬件参数、匹配半径和星等一致性阈值
+4. 等光变分析材料到位后加入真实 period / phased light-curve 结果
+5. 如需重画 v3 图表，运行 `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v3`
