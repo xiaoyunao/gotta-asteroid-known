@@ -2,6 +2,23 @@
 
 ## 2026-05-06
 
+- task: 直接小修 v4 图表和表格排版
+- files_changed: `paper_draft/v4.tex`, `paper_draft/v4.pdf`, `paper_draft/figures_v4/`, `paper_draft/tables_v4/`, `scripts/generate_paper_products.py`, `WORKLOG.md`
+- commands_run: `/opt/anaconda3/bin/python3 -m py_compile scripts/generate_paper_products.py`; `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v4`; `tectonic v4.tex --keep-logs --keep-intermediates`; `rg` check for overfull/undefined references; `mdls -name kMDItemPageWidth -name kMDItemPageHeight -name kMDItemNumberOfPages paper_draft/v4.pdf`
+- key_findings:
+  - Fig. 4/5 density map 应与 Fig. 3 left 保持 `rainbow` 色标，Fig. 6 背景保留灰度
+  - Matplotlib 原生 `hexbin` 在当前坐标比例下会产生视觉拉伸；改为二维分箱后用屏幕坐标正六边形 marker 绘制密度
+  - 去掉表格 `resizebox` 后需要给长文本表设置固定段落列宽，否则 Table 1 会 overfull
+- validation:
+  - v4 图表和表格已重新生成
+  - `paper_draft/v4.pdf` 编译成功，共 18 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v4.log` 未发现 overfull、undefined references 或 undefined citations
+  - 已目视检查 Fig. 4/5/6/9 PNG，密度 marker 为正六边形，Fig. 9 residual vectors 更明显
+- remaining_issues:
+  - 仍建议人工检查最终 PDF 中表格跨页位置和 Fig. 6 在版面中的实际大小
+- next_step:
+  - 人工审阅更新后的 `paper_draft/v4.pdf`
+
 - task: 按第三轮意见生成论文 v4
 - files_changed: `paper_draft/v4.tex`, `paper_draft/v4.pdf`, `paper_draft/figures_v4/`, `paper_draft/tables_v4/`, `scripts/generate_paper_products.py`, `PLAN.md`, `WORKLOG.md`
 - commands_run: `pdfinfo paper_draft/v3.pdf | grep 'Page size'`（本机无 `pdfinfo`）；`/opt/anaconda3/bin/python3 -m py_compile scripts/generate_paper_products.py`; `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v4`; `tectonic v4.tex --keep-logs --keep-intermediates`; Python/PyPDF page-size check; `mdls -name kMDItemPageWidth -name kMDItemPageHeight -name kMDItemNumberOfPages paper_draft/v4.pdf`; forbidden-phrase `rg` checks; `qlmanage -t -s 1400`

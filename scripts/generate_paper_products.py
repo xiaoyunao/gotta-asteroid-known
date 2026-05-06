@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from astropy.io import fits
+from matplotlib.colors import LogNorm
 from matplotlib.patches import Ellipse, FancyArrowPatch, FancyBboxPatch, Polygon
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -192,7 +193,20 @@ def add_colorbar(ax, mappable, label: str) -> None:
     cb.ax.tick_params(labelsize=18)
 
 
-def hexbin(ax, x, y, xlabel, ylabel, gridsize=55, xscale=None, yscale=None, cmap="Greys", colorbar=True) -> None:
+def density_hex_markers(
+    ax,
+    x,
+    y,
+    xlabel,
+    ylabel,
+    xbins=60,
+    ybins=42,
+    xscale=None,
+    yscale=None,
+    cmap="rainbow",
+    marker_size=18,
+    colorbar=True,
+):
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
     mask = np.isfinite(x) & np.isfinite(y)
@@ -200,7 +214,33 @@ def hexbin(ax, x, y, xlabel, ylabel, gridsize=55, xscale=None, yscale=None, cmap
         mask &= x > 0
     if yscale == "log":
         mask &= y > 0
-    hb = ax.hexbin(x[mask], y[mask], gridsize=gridsize, mincnt=1, cmap=cmap, bins="log", linewidths=0.0)
+    x_plot = x[mask]
+    y_plot = y[mask]
+    if x_plot.size == 0:
+        return
+
+    x_work = np.log10(x_plot) if xscale == "log" else x_plot
+    y_work = np.log10(y_plot) if yscale == "log" else y_plot
+    x_edges = np.linspace(np.nanmin(x_work), np.nanmax(x_work), xbins + 1)
+    y_edges = np.linspace(np.nanmin(y_work), np.nanmax(y_work), ybins + 1)
+    counts, x_edges, y_edges = np.histogram2d(x_work, y_work, bins=[x_edges, y_edges])
+    yy, xx = np.nonzero(counts.T)
+    c = counts.T[yy, xx]
+    x_centers = 0.5 * (x_edges[xx] + x_edges[xx + 1])
+    y_centers = 0.5 * (y_edges[yy] + y_edges[yy + 1])
+    x_centers = 10**x_centers if xscale == "log" else x_centers
+    y_centers = 10**y_centers if yscale == "log" else y_centers
+    sc = ax.scatter(
+        x_centers,
+        y_centers,
+        c=c,
+        s=marker_size,
+        marker="h",
+        cmap=cmap,
+        norm=LogNorm(vmin=1, vmax=max(1, float(np.nanmax(c)))),
+        linewidths=0,
+        rasterized=True,
+    )
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     if xscale:
@@ -209,7 +249,7 @@ def hexbin(ax, x, y, xlabel, ylabel, gridsize=55, xscale=None, yscale=None, cmap
         ax.set_yscale(yscale)
     ax.tick_params(labelsize=22)
     if colorbar:
-        add_colorbar(ax, hb, "Detections")
+        add_colorbar(ax, sc, "Detections")
 
 
 def running_rate_statistics(rate: pd.Series, sep: pd.Series, nbins: int = 20) -> pd.DataFrame:
@@ -245,14 +285,14 @@ def write_csv_and_latex(df: pd.DataFrame, csv_path: Path, caption: str, label: s
         handle.write("\\begin{table*}\n\\centering\n")
         handle.write(f"\\caption{{{caption}}}\n")
         handle.write(f"\\label{{{label}}}\n")
-        handle.write("\\resizebox{\\textwidth}{!}{%\n")
+        handle.write("\\small\n")
         handle.write(f"\\begin{{tabular}}{{{column_format}}}\n")
         handle.write("\\toprule\n")
         handle.write(" & ".join(latex_escape(col) for col in df.columns) + " \\\\\n")
         handle.write("\\midrule\n")
         for _, row in df.iterrows():
             handle.write(" & ".join(latex_escape(x) for x in row.to_list()) + " \\\\\n")
-        handle.write("\\bottomrule\n\\end{tabular}%\n}\n\\end{table*}\n")
+        handle.write("\\bottomrule\n\\end{tabular}\n\\end{table*}\n")
 
 
 def latex_escape(value) -> str:
@@ -393,11 +433,17 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
     for col in ["First MJD", "Last MJD", "Baseline days", r"Median $g_{\rm aper}$", "Median separation"]:
         obj[col] = obj[col].map(lambda x: fmt(x, 3))
 
-    write_csv_and_latex(overall, outdir / "overall_statistics.csv", "Statistics for the recovered GOTTA known-asteroid sample.", "tab:summary", "lll")
-    write_csv_and_latex(orbit, outdir / "orbit_class_statistics.csv", "Orbit-class composition of the recovered known-asteroid sample. Separations are in arcsec.", "tab:orbit_class", "llrrrr")
-    write_csv_and_latex(mag_ast, outdir / "astrometry_by_magnitude.csv", r"Astrometric residuals as a function of adopted aperture magnitude $g_{\rm aper}$. Separations are in arcsec.", "tab:mag_astrometry", "lrrrr")
-    write_csv_and_latex(rate_ast, outdir / "astrometry_by_rate.csv", r"Astrometric residuals as a function of apparent angular rate. Rate bins are in arcsec hr$^{-1}$ and separations are in arcsec.", "tab:rate_astrometry", "lrrrr")
-    write_csv_and_latex(nightly, outdir / "nightly_top5.csv", "Five UTC nights with the largest numbers of accepted known-asteroid associations.", "tab:nightly_top5", "lrrrrr")
+    write_csv_and_latex(
+        overall,
+        outdir / "overall_statistics.csv",
+        "Statistics for the recovered GOTTA known-asteroid sample.",
+        "tab:summary",
+        r"@{}p{0.40\textwidth}p{0.15\textwidth}p{0.33\textwidth}@{}",
+    )
+    write_csv_and_latex(orbit, outdir / "orbit_class_statistics.csv", "Orbit-class composition of the recovered known-asteroid sample. Separations are in arcsec.", "tab:orbit_class", r"@{}llrrrr@{}")
+    write_csv_and_latex(mag_ast, outdir / "astrometry_by_magnitude.csv", r"Astrometric residuals as a function of adopted aperture magnitude $g_{\rm aper}$. Separations are in arcsec.", "tab:mag_astrometry", r"@{}lrrrr@{}")
+    write_csv_and_latex(rate_ast, outdir / "astrometry_by_rate.csv", r"Astrometric residuals as a function of apparent angular rate. Rate bins are in arcsec hr$^{-1}$ and separations are in arcsec.", "tab:rate_astrometry", r"@{}lrrrr@{}")
+    write_csv_and_latex(nightly, outdir / "nightly_top5.csv", "Five UTC nights with the largest numbers of accepted known-asteroid associations.", "tab:nightly_top5", r"@{}lrrrrr@{}")
     return {"overall": overall, "orbit": orbit, "mag_ast": mag_ast, "rate_ast": rate_ast, "nightly": nightly}
 
 
@@ -407,7 +453,17 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
     histogram(axes[0, 1], finite(df[ADOPTED_MAGERR]), np.linspace(0, 1.05, 54), f"{ADOPTED_MAGERR_LABEL} [mag]", logy=True, color="#59a14f")
     histogram(axes[1, 0], finite(df["snr_aper_proxy"]), np.logspace(-0.2, 3.2, 58), "Aperture S/N proxy", logy=True, color="#f28e2b")
     axes[1, 0].set_xscale("log")
-    hexbin(axes[1, 1], df[ADOPTED_MAG], df[ADOPTED_MAGERR], f"{ADOPTED_MAG_LABEL} [mag]", f"{ADOPTED_MAGERR_LABEL} [mag]", gridsize=55)
+    density_hex_markers(
+        axes[1, 1],
+        df[ADOPTED_MAG],
+        df[ADOPTED_MAGERR],
+        f"{ADOPTED_MAG_LABEL} [mag]",
+        f"{ADOPTED_MAGERR_LABEL} [mag]",
+        xbins=60,
+        ybins=42,
+        cmap="rainbow",
+        marker_size=18,
+    )
     axes[1, 1].set_ylim(0.0, 1.0)
     axes[1, 1].set_aspect("auto")
     fig.tight_layout()
@@ -424,32 +480,41 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
     axes[0, 0].legend(fontsize=18)
     histogram(axes[0, 1], finite(df["dra_cosdec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\alpha\cos\delta$ [arcsec]", logy=True, color="#59a14f")
     histogram(axes[1, 0], finite(df["ddec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\delta$ [arcsec]", logy=True, color="#f28e2b")
-    hexbin(axes[1, 1], df[ADOPTED_MAG], df["sep_arcsec"], f"{ADOPTED_MAG_LABEL} [mag]", "Separation [arcsec]", gridsize=55)
+    density_hex_markers(
+        axes[1, 1],
+        df[ADOPTED_MAG],
+        df["sep_arcsec"],
+        f"{ADOPTED_MAG_LABEL} [mag]",
+        "Separation [arcsec]",
+        xbins=60,
+        ybins=42,
+        cmap="rainbow",
+        marker_size=18,
+    )
     axes[1, 1].set_ylim(0, 1.5)
     fig.tight_layout()
     save_figure(fig, outdir / "astrometric_residuals")
 
-    fig, ax = plt.subplots(figsize=(10, 8))
+    fig, ax = plt.subplots(figsize=(10, 5.3))
     data = df[np.isfinite(df["ang_rate_arcsec_hour"]) & np.isfinite(df["sep_arcsec"]) & (df["ang_rate_arcsec_hour"] > 0)]
     main = data[(data["ang_rate_arcsec_hour"] >= 0.7) & (data["ang_rate_arcsec_hour"] <= 150) & (data["sep_arcsec"] <= 1.5)]
-    hb = ax.hexbin(
+    density_hex_markers(
+        ax,
         main["ang_rate_arcsec_hour"],
         main["sep_arcsec"],
+        r"Angular rate [arcsec hr$^{-1}$]",
+        "Separation [arcsec]",
         xscale="log",
-        gridsize=60,
-        mincnt=1,
+        xbins=58,
+        ybins=34,
         cmap="Greys",
-        bins="log",
-        linewidths=0.0,
+        marker_size=14,
     )
-    add_colorbar(ax, hb, "Detections")
     stats = running_rate_statistics(data["ang_rate_arcsec_hour"], data["sep_arcsec"])
     if not stats.empty:
-        ax.plot(stats["rate"], stats["median"], color="black", linewidth=2.2, label="running median")
-        ax.fill_between(stats["rate"], stats["p16"], stats["p84"], color="gray", alpha=0.3, label="16--84 percentile")
+        ax.plot(stats["rate"], stats["median"], color="#d62728", linewidth=2.2, label="running median")
+        ax.fill_between(stats["rate"], stats["p16"], stats["p84"], color="#d62728", alpha=0.22, label="16--84 percentile")
         ax.legend(fontsize=18, loc="upper left")
-    ax.set_xlabel(r"Angular rate [arcsec hr$^{-1}$]")
-    ax.set_ylabel("Separation [arcsec]")
     ax.set_xscale("log")
     ax.set_xlim(0.7, 150)
     ax.set_ylim(0, 1.5)
@@ -516,6 +581,7 @@ def plot_example(df: pd.DataFrame, outdir: Path) -> None:
     add_colorbar(axes[0, 0], sc, "Separation [arcsec]")
 
     sample = sub.sort_values("sep_arcsec", ascending=False).head(min(35, len(sub)))
+    axes[0, 1].scatter(sample["X_Win"], sample["Y_Win"], s=18, color="#d62728", alpha=0.75, linewidth=0)
     axes[0, 1].quiver(
         sample["X_Win"],
         sample["Y_Win"],
@@ -523,9 +589,14 @@ def plot_example(df: pd.DataFrame, outdir: Path) -> None:
         sample["ddec_arcsec"],
         angles="xy",
         scale_units="xy",
-        scale=0.05,
-        color="black",
-        width=0.004,
+        scale=0.003,
+        color="#d62728",
+        alpha=0.95,
+        width=0.008,
+        headwidth=5.0,
+        headlength=6.5,
+        headaxislength=5.2,
+        pivot="tail",
     )
     axes[0, 1].set_xlabel("X_Win [pixel]")
     axes[0, 1].set_ylabel("Y_Win [pixel]")
