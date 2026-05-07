@@ -28,13 +28,14 @@ and statistical performance evaluation，当前重点是检查 v4 图表视觉�
 17. 已编译生成 `paper_draft/v4.pdf`，页面尺寸为 A4，共 18 页
 18. 已按用户截图风格小修 v4：Fig. 4/5/6 密度图去掉六边形 marker，表格统一三线表字号/间距，Fig. 9 residual vectors 加粗加长且固定箭头头部
 19. 已按用户进一步要求将 Fig. 4/5 右下角密度面板改为全量散点，点颜色表示局部密度；Fig. 4 y 轴范围为 `-0.2` 到 `1.2`
+20. 已更新 v4 作者列表：前 5 位顺序不变，后续按姓氏首字母加入 Shuai Feng、Bo Zhang、Yuyi Zhuang，并新增山东大学威海单位
 
 ## Outstanding issues
 
 - 后续新增统计和图时必须默认使用 `gotta_asteroids.fits`
 - 轨道图 `outputs/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
 - v4 后续小修应直接覆盖 `paper_draft/figures_v4/`、`paper_draft/tables_v4/` 和 `paper_draft/v4.pdf`，不要新建 v5
-- `paper_draft/v4.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者确认
+- `paper_draft/v4.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者最终确认
 - 匹配半径和星等一致性阈值未在正文写死；最终提交前需由生产配置确认
 - 光变分析仍需等待协作者数据；v4 只讨论 light-curve potential，不声称 period results
 - 当前安装的是 `tectonic`，不是完整 TeX Live；如需 VSCode LaTeX Workshop 默认 `xelatex/latexmk` 工作流，仍需用管理员密码安装 BasicTeX/MacTeX
@@ -63,10 +64,11 @@ and statistical performance evaluation，当前重点是检查 v4 图表视觉�
 - v4 图 4/5 右下角密度面板为全量散点，点颜色表示局部密度：已完成
 - v4 表格使用统一字号、`booktabs` 三线表和保留左右列间距：已完成
 - v4 Fig. 9 residual vectors 已明显加粗加长，箭头头部大小固定：已完成
+- v4 作者列表已加入 Shuai Feng、Bo Zhang、Yuyi Zhuang 和山东大学威海单位：已完成
 
 ## Next recommended steps
 
-1. 人工检查更新后的 `paper_draft/v4.pdf` 的图表版面、表格间距、底部页边距和引用跳转
+1. 人工检查更新后的 `paper_draft/v4.pdf` 首页作者、单位、图表版面、表格间距、底部页边距和引用跳转
 2. 确认作者、单位、致谢、硬件参数、匹配半径和星等一致性阈值
 3. 等光变分析材料到位后加入真实 period / phased light-curve 结果
 4. 如需重画 v4 图表，运行 `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v4`

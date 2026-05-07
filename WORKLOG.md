@@ -1,5 +1,22 @@
 # WORKLOG
 
+## 2026-05-07
+
+- task: 更新 v4 作者列表和单位
+- files_changed: `paper_draft/v4.tex`, `paper_draft/v4.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `tectonic v4.tex --keep-logs --keep-intermediates`; `rg` check for overfull/undefined references; `mdls -name kMDItemPageWidth -name kMDItemPageHeight -name kMDItemNumberOfPages paper_draft/v4.pdf`
+- key_findings:
+  - 前 5 位作者顺序保持不变
+  - 第 6 位以后按姓氏首字母排列新增 Shuai Feng、Bo Zhang、Yuyi Zhuang，协作组保持最后
+  - Bo Zhang 和 Shuai Feng 使用新增山东大学威海单位 `\inst{5}`；Yuyi Zhuang 使用 `\inst{3,4}`
+- validation:
+  - `paper_draft/v4.pdf` 编译成功，共 18 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v4.log` 未发现 overfull、undefined references 或 undefined citations
+- remaining_issues:
+  - Received/accepted 日期、最终 grant list 和完整 co-author list 仍需最终确认
+- next_step:
+  - 人工检查 PDF 首页作者和单位显示
+
 ## 2026-05-06
 
 - task: 将 v4 图 4/5 密度面板改为按局部密度着色的全量散点
