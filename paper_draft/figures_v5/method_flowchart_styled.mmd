@@ -1,0 +1,42 @@
+flowchart TD
+    A[/Per-exposure photometric catalog/]:::input
+    B[/FITS header metadata: WCS, DATE-OBS, EXPTIME/]:::input
+    C[/External orbit resources: Lowell astorb, SBDB, JPL Horizons/]:::input
+    D([Read source table and header]):::process
+    E([Build WCS and project CCD corners]):::process
+    F([Compute mid-exposure epoch]):::process
+    G([Estimate padded field search radius]):::process
+    H([Ephemeris screening]):::process
+    I{{Predicted magnitude within limit?}}:::decision
+    J([Transform predictions to pixel coordinates]):::process
+    K{{Inside CCD footprint?}}:::decision
+    L([Nearest-neighbor angular cross-match]):::process
+    M{{Separation threshold and optional magnitude check?}}:::decision
+    G1([Gaia stationary-source check]):::process
+    N([Merge prediction row with catalog source row]):::process
+    O([Merge exposure/night products]):::process
+    P([SBDB and Horizons augmentation]):::process
+    Q[/Recovered known-asteroid sample/]:::output
+    R[/Statistics, figures, light-curve inputs/]:::output
+    X1([Reject faint candidates]):::reject
+    X2([Reject off-CCD predictions]):::reject
+    X3([Reject unmatched rows]):::reject
+    X4([Reject likely stellar contaminants]):::reject
+    A --> D
+    B --> D
+    C --> H
+    D --> E --> G --> H
+    D --> F --> H
+    H --> I
+    I -- yes --> J --> K
+    I -- no --> X1
+    K -- yes --> L --> M
+    K -- no --> X2
+    M -- yes --> G1 --> N --> O --> P --> Q --> R
+    M -- no --> X3
+    G1 -- flagged --> X4
+    classDef input fill:#dceeff,stroke:#4f81bd,stroke-width:2px;
+    classDef process fill:#d9ead3,stroke:#6aa84f,stroke-width:2px;
+    classDef decision fill:#fff2cc,stroke:#bf9000,stroke-width:2px;
+    classDef reject fill:#f4cccc,stroke:#cc0000,stroke-width:2px;
+    classDef output fill:#eadcf8,stroke:#8e7cc3,stroke-width:2px;

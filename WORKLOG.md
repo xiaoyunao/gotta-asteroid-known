@@ -2,6 +2,28 @@
 
 ## 2026-05-07
 
+- task: 根据 v4 人工审阅意见生成论文 v5
+- files_changed: `paper_draft/v5.tex`, `paper_draft/v5.pdf`, `paper_draft/figures_v5/`, `paper_draft/tables_v5/`, `scripts/generate_paper_products.py`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `rg` inspect Gaia/software/figure references; RAA official page checks for Mini-SiTian DOI/page data; `/opt/anaconda3/bin/python3 -m py_compile scripts/generate_paper_products.py`; `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v5`; `tectonic v5.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemPageWidth -name kMDItemPageHeight -name kMDItemNumberOfPages paper_draft/v5.pdf`
+- key_findings:
+  - 本地 `gotta_asteroids.fits` 没有 Gaia 标记列，当前无法用本地文件重新执行 Gaia 剔除；v5 将 Gaia stationary-source check 写作 accepted sample 形成前的上游验证步骤
+  - RAA 官网核对：Huang pathfinder 为 RAA 25, 044001, DOI `10.1088/1674-4527/adc795`
+  - RAA 官网核对：Han white paper 为 RAA 25, 044009, DOI `10.1088/1674-4527/adc791`
+  - RAA 官网核对：Liu asteroid light-curve 为 RAA 25, 044010, DOI `10.1088/1674-4527/adc793`
+  - Fig. 3 已拆成 sky distribution 和 orbit distribution 两张图；Fig. 9 residual vectors 加粗加长
+  - Section 5 新增正式 light-curve analysis 章节，Section 4.4 改为向 60 cm Schmidt auxiliary observations 过渡
+  - top-5 most frequently recovered asteroid 表按当前 `Mag_Aper4`/`g_{\rm aper}` 重新计算
+- validation:
+  - Python 语法检查通过
+  - v5 图表和表格已生成到 `paper_draft/figures_v5/` 和 `paper_draft/tables_v5/`
+  - `paper_draft/v5.pdf` 编译成功，共 20 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v5.log` 未发现 undefined references、undefined citations 或 overfull
+- remaining_issues:
+  - 需要共同作者确认 Gaia stationary-source rejection 的上游实现细节和最终剔除计数
+  - Received/accepted 日期、最终 grant list、完整 co-author list、硬件参数和匹配阈值仍需最终确认
+- next_step:
+  - 人工审阅 `paper_draft/v5.pdf`，重点检查新增 Section 5、Fig. 3 拆图、Fig. 9 和新表格版面
+
 - task: 更新 v4 作者列表和单位
 - files_changed: `paper_draft/v4.tex`, `paper_draft/v4.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `tectonic v4.tex --keep-logs --keep-intermediates`; `rg` check for overfull/undefined references; `mdls -name kMDItemPageWidth -name kMDItemPageHeight -name kMDItemNumberOfPages paper_draft/v4.pdf`

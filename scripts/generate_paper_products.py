@@ -336,7 +336,15 @@ def running_rate_statistics(rate: pd.Series, sep: pd.Series, nbins: int = 20) ->
     return pd.DataFrame(rows)
 
 
-def write_csv_and_latex(df: pd.DataFrame, csv_path: Path, caption: str, label: str, column_format: str | None = None) -> None:
+def write_csv_and_latex(
+    df: pd.DataFrame,
+    csv_path: Path,
+    caption: str,
+    label: str,
+    column_format: str | None = None,
+    font_size: str = r"\footnotesize",
+    tabcolsep_pt: float = 6,
+) -> None:
     csv_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(csv_path, index=False)
     tex_path = csv_path.with_suffix(".tex")
@@ -346,8 +354,8 @@ def write_csv_and_latex(df: pd.DataFrame, csv_path: Path, caption: str, label: s
         handle.write("\\begin{table*}\n\\centering\n")
         handle.write(f"\\caption{{{caption}}}\n")
         handle.write(f"\\label{{{label}}}\n")
-        handle.write("\\footnotesize\n")
-        handle.write("\\setlength{\\tabcolsep}{6pt}\n")
+        handle.write(f"{font_size}\n")
+        handle.write(f"\\setlength{{\\tabcolsep}}{{{tabcolsep_pt:g}pt}}\n")
         handle.write("\\renewcommand{\\arraystretch}{1.12}\n")
         handle.write(f"\\begin{{tabular}}{{{column_format}}}\n")
         handle.write("\\toprule\n")
@@ -368,9 +376,9 @@ def latex_escape(value) -> str:
 def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
     overall = pd.DataFrame(
         [
-            ("Accepted asteroid-source associations", f"{len(df):,}", "Accepted source-ephemeris matches"),
+            ("Accepted source-ephemeris associations", f"{len(df):,}", "Accepted source-ephemeris associations"),
             ("Distinct known asteroids", f"{df['query_id'].nunique():,}", "Unique minor-planet identifiers"),
-            ("Exposure catalogs with accepted associations", f"{df['source_file'].nunique():,}", "Per-exposure products"),
+            ("Exposure catalogs with accepted associations", f"{df['source_file'].nunique():,}", "Per-exposure catalog products"),
             ("UTC nights represented", f"{df['night'].nunique():,}", "Recovered sample date coverage"),
             ("Field groups represented", f"{df['field_id'].nunique():,}", "Grouped by pointing metadata"),
             ("NEO-class objects", f"{df.loc[df['object_neo_bool'], 'query_id'].nunique():,}", "Identified from small-body metadata"),
@@ -379,8 +387,8 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
             (r"Median $g_{\rm aper}$", fmt(q(df[ADOPTED_MAG], 50), 4), "Adopted aperture magnitude"),
             (r"Median $\sigma(g_{\rm aper})$", fmt(q(df[ADOPTED_MAGERR], 50), 4) + " mag", "Adopted aperture uncertainty"),
             ("Median aperture S/N proxy", fmt(q(df["snr_aper_proxy"], 50), 4), "Flux/error in adopted aperture"),
-            ("Median observed-minus-predicted separation", fmt(q(df["sep_arcsec"], 50), 3) + " arcsec", "Accepted associations"),
-            ("84th-percentile observed-minus-predicted separation", fmt(q(df["sep_arcsec"], 84), 3) + " arcsec", "Accepted associations"),
+            ("Median observed-minus-predicted separation", fmt(q(df["sep_arcsec"], 50), 3) + " arcsec", "Recovered detections"),
+            ("84th-percentile observed-minus-predicted separation", fmt(q(df["sep_arcsec"], 84), 3) + " arcsec", "Recovered detections"),
             ("2D residual RMS", fmt(rms(df["sep_arcsec"]), 3) + " arcsec", r"sqrt(mean(sep$^2$))"),
             (r"RMS in $\Delta\alpha\cos\delta$", fmt(rms(df["dra_cosdec_arcsec"]), 3) + " arcsec", "Coordinate residual"),
             (r"RMS in $\Delta\delta$", fmt(rms(df["ddec_arcsec"]), 3) + " arcsec", "Coordinate residual"),
@@ -478,12 +486,11 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
             Name=("name", "first"),
             Detections=("query_id", "size"),
             **{
-                "Distinct nights": ("night", "nunique"),
+                "Nights": ("night", "nunique"),
                 "First epoch": ("epoch", "min"),
                 "Last epoch": ("epoch", "max"),
                 r"Median $g_{\rm aper}$": (ADOPTED_MAG, "median"),
-                "Median separation": ("sep_arcsec", "median"),
-                "Orbit class": ("object_orbit_class_code", "first"),
+                "Class": ("object_orbit_class_code", "first"),
             },
         )
         .reset_index()
@@ -491,10 +498,14 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
         .head(5)
     )
     obj["Baseline days"] = obj["Last epoch"] - obj["First epoch"]
-    obj = obj[["query_id", "Name", "Detections", "Distinct nights", "First epoch", "Last epoch", "Baseline days", r"Median $g_{\rm aper}$", "Median separation", "Orbit class"]]
-    obj.columns = ["Object ID", "Name", "Detections", "Distinct nights", "First MJD", "Last MJD", "Baseline days", r"Median $g_{\rm aper}$", "Median separation", "Orbit class"]
-    for col in ["First MJD", "Last MJD", "Baseline days", r"Median $g_{\rm aper}$", "Median separation"]:
-        obj[col] = obj[col].map(lambda x: fmt(x, 3))
+    obj = obj[["query_id", "Name", "Detections", "Nights", "First epoch", "Last epoch", "Baseline days", r"Median $g_{\rm aper}$", "Class"]]
+    obj.columns = ["Object ID", "Name", "Detections", "Nights", "First MJD", "Last MJD", "Baseline (days)", r"Median $g_{\rm aper}$", "Class"]
+    for col in ["First MJD", "Last MJD"]:
+        obj[col] = obj[col].map(lambda x: f"{x:.1f}")
+    for col in ["Baseline (days)", r"Median $g_{\rm aper}$"]:
+        obj[col] = obj[col].map(lambda x: f"{x:.3f}")
+    for col in ["Detections", "Nights"]:
+        obj[col] = obj[col].map(lambda x: f"{x:,}")
 
     write_csv_and_latex(
         overall,
@@ -505,9 +516,18 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
     )
     write_csv_and_latex(orbit, outdir / "orbit_class_statistics.csv", "Orbit-class composition of the recovered known-asteroid sample. Separations are in arcsec.", "tab:orbit_class", r"llrrrr")
     write_csv_and_latex(mag_ast, outdir / "astrometry_by_magnitude.csv", r"Astrometric residuals as a function of adopted aperture magnitude $g_{\rm aper}$. Separations are in arcsec.", "tab:mag_astrometry", r"lrrrr")
-    write_csv_and_latex(rate_ast, outdir / "astrometry_by_rate.csv", r"Astrometric residuals as a function of apparent angular rate. Rate bins are in arcsec hr$^{-1}$ and separations are in arcsec.", "tab:rate_astrometry", r"lrrrr")
+    write_csv_and_latex(rate_ast, outdir / "astrometry_by_rate.csv", r"Astrometric residuals as a function of sky-plane angular rate. Rate bins are in arcsec hr$^{-1}$ and separations are in arcsec.", "tab:rate_astrometry", r"lrrrr")
     write_csv_and_latex(nightly, outdir / "nightly_top5.csv", "Five UTC nights with the largest numbers of accepted known-asteroid associations.", "tab:nightly_top5", r"lrrrrr")
-    return {"overall": overall, "orbit": orbit, "mag_ast": mag_ast, "rate_ast": rate_ast, "nightly": nightly}
+    write_csv_and_latex(
+        obj,
+        outdir / "most_observed_objects.csv",
+        "Five most frequently recovered known asteroids in the GOTTA Prototype sample.",
+        "tab:most_observed_objects",
+        r"llrrrrrrl",
+        font_size=r"\scriptsize",
+        tabcolsep_pt=3.5,
+    )
+    return {"overall": overall, "orbit": orbit, "mag_ast": mag_ast, "rate_ast": rate_ast, "nightly": nightly, "objects": obj}
 
 
 def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
@@ -642,9 +662,9 @@ def plot_example(df: pd.DataFrame, outdir: Path) -> None:
     axes[0, 0].set_title("Accepted matches", fontsize=26)
     add_colorbar(axes[0, 0], sc, "Separation [arcsec]")
 
-    sample = sub.sort_values("sep_arcsec", ascending=False).head(min(35, len(sub)))
-    axes[0, 1].scatter(sample["X_Win"], sample["Y_Win"], s=20, color="#d62728", alpha=0.78, linewidth=0)
-    vector_scale = 1800.0
+    sample = sub.sort_values("sep_arcsec", ascending=False).head(min(45, len(sub)))
+    axes[0, 1].scatter(sample["X_Win"], sample["Y_Win"], s=24, color="#b2182b", alpha=0.85, linewidth=0)
+    vector_scale = 2600.0
     for _, row in sample.iterrows():
         start = (row["X_Win"], row["Y_Win"])
         end = (
@@ -656,9 +676,9 @@ def plot_example(df: pd.DataFrame, outdir: Path) -> None:
                 start,
                 end,
                 arrowstyle="-|>",
-                mutation_scale=15,
-                linewidth=1.8,
-                color="#d62728",
+                mutation_scale=19,
+                linewidth=2.6,
+                color="#b2182b",
                 alpha=0.95,
             )
         )
@@ -704,49 +724,54 @@ def arrow(ax, start, end) -> None:
 
 
 def plot_flowchart(outdir: Path) -> None:
-    fig, ax = plt.subplots(figsize=(15, 18))
+    fig, ax = plt.subplots(figsize=(15, 20))
     ax.set_xlim(0, 10)
-    ax.set_ylim(0, 18)
+    ax.set_ylim(0, 20)
     ax.axis("off")
 
     nodes = {
-        "catalog": ((3.2, 16.8), 3.6, 0.7, "Photometric\ncatalog", "input"),
-        "header": ((0.4, 15.3), 3.0, 0.8, "FITS header\nWCS + time", "input"),
-        "orbit": ((6.6, 15.3), 3.0, 0.8, "Lowell astorb\nSBDB / Horizons", "input"),
-        "read": ((3.4, 15.1), 3.2, 0.8, "Read table\nand header", "process"),
-        "wcs": ((3.4, 13.8), 3.2, 0.8, "WCS footprint\nfrom CCD corners", "process"),
-        "epoch": ((3.4, 12.5), 3.2, 0.8, "Mid-exposure\nepoch", "process"),
-        "query": ((3.4, 11.2), 3.2, 0.8, "Ephemeris\nscreening", "process"),
-        "mag": ((3.55, 9.75), 2.9, 1.0, "Magnitude\npre-filter?", "decision"),
-        "faint": ((7.0, 9.9), 2.4, 0.7, "Reject faint\ncandidates", "reject"),
-        "pixel": ((3.4, 8.4), 3.2, 0.8, "Predicted RA/Dec\ninto pixels", "process"),
-        "inside": ((3.55, 6.95), 2.9, 1.0, "Inside CCD\nfootprint?", "decision"),
-        "offccd": ((7.0, 7.1), 2.4, 0.7, "Reject off-CCD\npredictions", "reject"),
-        "match": ((3.4, 5.6), 3.2, 0.8, "Nearest-neighbor\nangular match", "process"),
-        "accept": ((3.55, 4.15), 2.9, 1.0, "Separation\nthreshold?", "decision"),
-        "unmatched": ((7.0, 4.3), 2.4, 0.7, "Reject unmatched\nrows", "reject"),
-        "merge": ((3.4, 2.8), 3.2, 0.8, "Merge ephemeris\nand catalog row", "process"),
-        "augment": ((3.4, 1.55), 3.2, 0.8, "SBDB + Horizons\naugmentation", "process"),
-        "final": ((3.1, 0.3), 3.8, 0.8, "Recovered sample\nstatistics + figures", "output"),
+        "catalog": ((3.2, 18.6), 3.6, 0.7, "Photometric\ncatalog", "input"),
+        "header": ((0.4, 17.1), 3.0, 0.8, "FITS header\nWCS + time", "input"),
+        "orbit": ((6.6, 17.1), 3.0, 0.8, "Lowell astorb\nSBDB / Horizons", "input"),
+        "read": ((3.4, 16.9), 3.2, 0.8, "Read table\nand header", "process"),
+        "wcs": ((3.4, 15.6), 3.2, 0.8, "WCS footprint\nfrom CCD corners", "process"),
+        "epoch": ((3.4, 14.3), 3.2, 0.8, "Mid-exposure\nepoch", "process"),
+        "query": ((3.4, 13.0), 3.2, 0.8, "Ephemeris\nscreening", "process"),
+        "mag": ((3.55, 11.55), 2.9, 1.0, "Magnitude\npre-filter?", "decision"),
+        "faint": ((7.0, 11.7), 2.4, 0.7, "Reject faint\ncandidates", "reject"),
+        "pixel": ((3.4, 10.2), 3.2, 0.8, "Predicted RA/Dec\ninto pixels", "process"),
+        "inside": ((3.55, 8.75), 2.9, 1.0, "Inside CCD\nfootprint?", "decision"),
+        "offccd": ((7.0, 8.9), 2.4, 0.7, "Reject off-CCD\npredictions", "reject"),
+        "match": ((3.4, 7.4), 3.2, 0.8, "Nearest-neighbor\nangular match", "process"),
+        "accept": ((3.55, 5.95), 2.9, 1.0, "Separation\nthreshold?", "decision"),
+        "unmatched": ((7.0, 6.1), 2.4, 0.7, "Reject unmatched\nrows", "reject"),
+        "gaia": ((3.4, 4.6), 3.2, 0.8, "Gaia stationary-\nsource check", "process"),
+        "stellar": ((7.0, 4.75), 2.4, 0.7, "Reject likely\nstellar contaminants", "reject"),
+        "merge": ((3.4, 3.25), 3.2, 0.8, "Merge ephemeris\nand catalog row", "process"),
+        "augment": ((3.4, 2.0), 3.2, 0.8, "SBDB + Horizons\naugmentation", "process"),
+        "final": ((3.1, 0.6), 3.8, 0.8, "Recovered sample\nstatistics + figures", "output"),
     }
     for xy, w, h, text, kind in nodes.values():
         add_box(ax, xy, w, h, text, kind)
 
-    arrow(ax, (5.0, 16.8), (5.0, 15.9))
-    arrow(ax, (3.4, 15.7), (3.4, 15.5))
-    arrow(ax, (6.6, 15.7), (6.6, 15.5))
-    for y0, y1 in [(15.1, 14.6), (13.8, 13.3), (12.5, 12.0), (11.2, 10.75), (9.75, 9.2), (8.4, 7.95), (6.95, 6.4), (5.6, 5.15), (4.15, 3.6), (2.8, 2.35), (1.55, 1.1)]:
+    arrow(ax, (5.0, 18.6), (5.0, 17.7))
+    arrow(ax, (3.4, 17.5), (3.4, 17.3))
+    arrow(ax, (6.6, 17.5), (6.6, 17.3))
+    for y0, y1 in [(16.9, 16.4), (15.6, 15.1), (14.3, 13.8), (13.0, 12.55), (11.55, 11.0), (10.2, 9.75), (8.75, 8.2), (7.4, 6.95), (5.95, 5.4), (4.6, 4.05), (3.25, 2.8), (2.0, 1.4)]:
         arrow(ax, (5.0, y0), (5.0, y1))
-    arrow(ax, (6.45, 10.25), (7.0, 10.25))
-    arrow(ax, (6.45, 7.45), (7.0, 7.45))
-    arrow(ax, (6.45, 4.65), (7.0, 4.65))
-    ax.text(6.62, 10.48, "no", fontsize=16)
-    ax.text(6.62, 7.68, "no", fontsize=16)
-    ax.text(6.62, 4.88, "no", fontsize=16)
-    ax.text(4.65, 9.45, "yes", fontsize=16)
-    ax.text(4.65, 6.65, "yes", fontsize=16)
-    ax.text(4.65, 3.85, "yes", fontsize=16)
-    ax.text(5.0, 17.75, "Known-object processing", ha="center", va="center", fontsize=30)
+    arrow(ax, (6.45, 12.05), (7.0, 12.05))
+    arrow(ax, (6.45, 9.25), (7.0, 9.25))
+    arrow(ax, (6.45, 6.45), (7.0, 6.45))
+    arrow(ax, (6.6, 5.0), (7.0, 5.1))
+    ax.text(6.62, 12.28, "no", fontsize=16)
+    ax.text(6.62, 9.48, "no", fontsize=16)
+    ax.text(6.62, 6.68, "no", fontsize=16)
+    ax.text(6.62, 5.3, "flagged", fontsize=16)
+    ax.text(4.65, 11.25, "yes", fontsize=16)
+    ax.text(4.65, 8.45, "yes", fontsize=16)
+    ax.text(4.65, 5.65, "yes", fontsize=16)
+    ax.text(4.65, 4.3, "clean", fontsize=16)
+    ax.text(5.0, 19.55, "Known-object processing", ha="center", va="center", fontsize=30)
     save_figure(fig, outdir / "method_flowchart_styled")
 
 
@@ -765,6 +790,7 @@ def write_mermaid(outdir: Path) -> None:
     K{{Inside CCD footprint?}}:::decision
     L([Nearest-neighbor angular cross-match]):::process
     M{{Separation threshold and optional magnitude check?}}:::decision
+    G1([Gaia stationary-source check]):::process
     N([Merge prediction row with catalog source row]):::process
     O([Merge exposure/night products]):::process
     P([SBDB and Horizons augmentation]):::process
@@ -773,6 +799,7 @@ def write_mermaid(outdir: Path) -> None:
     X1([Reject faint candidates]):::reject
     X2([Reject off-CCD predictions]):::reject
     X3([Reject unmatched rows]):::reject
+    X4([Reject likely stellar contaminants]):::reject
     A --> D
     B --> D
     C --> H
@@ -783,8 +810,9 @@ def write_mermaid(outdir: Path) -> None:
     I -- no --> X1
     K -- yes --> L --> M
     K -- no --> X2
-    M -- yes --> N --> O --> P --> Q --> R
+    M -- yes --> G1 --> N --> O --> P --> Q --> R
     M -- no --> X3
+    G1 -- flagged --> X4
     classDef input fill:#dceeff,stroke:#4f81bd,stroke-width:2px;
     classDef process fill:#d9ead3,stroke:#6aa84f,stroke-width:2px;
     classDef decision fill:#fff2cc,stroke:#bf9000,stroke-width:2px;
@@ -812,6 +840,16 @@ def main() -> None:
     workflow_src = Path("outputs/known_object_processing.png")
     if workflow_src.exists():
         shutil.copy2(workflow_src, figdir / "known_object_processing.png")
+    previous_figdir = root / "figures_v4"
+    for static_name in [
+        "sitian_pilot_asteroid_statistics",
+        "gotta_radec_healpix_nside64",
+        "asteroid_orbits",
+    ]:
+        for suffix in [".png", ".pdf"]:
+            src = previous_figdir / f"{static_name}{suffix}"
+            if src.exists():
+                shutil.copy2(src, figdir / src.name)
     plot_photometry(df, figdir)
     plot_astrometry(df, figdir)
     plot_geometry(df, figdir)
