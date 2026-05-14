@@ -1,5 +1,46 @@
 # WORKLOG
 
+## 2026-05-14
+
+- task: 小修 v6 浮动体位置、Software 清单并加入光变图
+- files_changed: `paper_draft/v6.tex`, `paper_draft/v6.pdf`, `paper_draft/figures_v6/lightcurve.png`, `paper_draft/tables_v6/`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `rg` inspect RAA float settings and software references; `sips -g pixelWidth -g pixelHeight /Users/yunaoxiao/Desktop/lightcurve.png`; `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemPageWidth -name kMDItemPageHeight -name kMDItemNumberOfPages paper_draft/v6.pdf`; `pypdf` text extraction to locate figure captions by page
+- key_findings:
+  - RAA class default float placement is `tbp`; v6 上一版缺少局部浮动体屏障，容易让多张大图积压到后文
+  - `lightcurve.png` 为 4500 x 4800 px，已作为 11 个高可信源的 phase-folded light-curve summary figure 加入 Section 5
+  - Software 清单已删除未实际使用的 SExtractor、SCAMP、astrometry.net，并保留实际使用的 Astropy、NumPy、SciPy、Matplotlib、pandas、astroquery、healpy/HEALPix、PyAstronomy
+- validation:
+  - `paper_draft/v6.pdf` 编译成功，共 24 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v6.log` 未发现 undefined references、undefined citations、overfull 或 float-too-large
+  - PDF 文本抽取显示 figure captions 分布在正文页内，Fig. 11 光变图位于 Section 5 附近而非文末参考文献后
+- remaining_issues:
+  - `tables_v6/period_reliable_objects.tex` 仍缺 11 个高可信对象的最终行数据
+  - 需要最终确认外部周期数据库来源是否为 MPC、LCDB、ALCDEF 或其他数据库
+- next_step:
+  - 补齐 period reliable table 行数据后重编并人工检查 `paper_draft/v6.pdf`
+
+- task: 按 GPT Pro 建议生成论文 v6 并整合同事光变分析框架
+- files_changed: `paper_draft/v6.tex`, `paper_draft/v6.pdf`, `paper_draft/figures_v6/`, `paper_draft/tables_v6/`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `git log --oneline --decorate -n 15`; `unzip -p /Users/yunaoxiao/Downloads/文章段落.docx word/document.xml`; `rg` inspect `paper_draft/v5.tex` and `/Users/yunaoxiao/Downloads/period_ana_update.py`; `/opt/anaconda3/bin/python3 -m py_compile /Users/yunaoxiao/Downloads/period_ana_update.py`; `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemPageWidth -name kMDItemPageHeight -name kMDItemNumberOfPages paper_draft/v6.pdf`
+- key_findings:
+  - 同事脚本使用 LS、PDM、插值 FFT、aperture/PSF/Kron 三类测光、10% 周期聚类、P/2P Fourier+BIC 判定和局部周期扫描
+  - `/Users/yunaoxiao/Downloads` 当前只提供中文段落和 `period_ana_update.py`，没有最终 vetted 周期结果表或代表性 phase-folded figure
+  - v6 将 Section 5 从占位改为正式 pilot light-curve application，并谨慎写作 26 double-peaked candidates / 11 high-confidence measurements
+  - `nightly_top5` 表移入 Section 4.1，example cross-match diagnostic 移到 Section 4.3 末尾
+  - workflow figure 已换回原始 `known_object_processing.png`
+- validation:
+  - `period_ana_update.py` 语法检查通过
+  - `paper_draft/v6.pdf` 编译成功，共 25 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v6.log` 未发现 undefined references、undefined citations、overfull 或 float-too-large
+  - `v6.tex` 未发现 `figures_v5`、`tables_v5`、placeholder light-curve text 或 Fig. 10 解释句位置残留
+- remaining_issues:
+  - `tables_v6/period_reliable_objects.tex` 只有主文表结构，仍需同事导出 11 个高可信对象的最终行数据
+  - 尚未提供代表性 period-search / folded-light-curve figure，Section 5 目前没有真实光变图
+  - 需要最终确认外部周期数据库来源是否为 MPC、LCDB、ALCDEF 或其他数据库
+  - Gaia stationary-source rejection 剔除计数、作者单位、致谢、硬件参数、匹配半径和星等一致性阈值仍需共同作者确认
+- next_step:
+  - 让同事从 `period_ana_update.py` 最终输出生成 `period_reliable_objects.tex` 和 `period_example.pdf`，再重编 `paper_draft/v6.pdf`
+
 ## 2026-05-07
 
 - task: 根据 v4 人工审阅意见生成论文 v5
