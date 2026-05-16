@@ -1,19 +1,36 @@
 \begin{table}[!htbp]
 \centering
-\caption{High-confidence asteroid rotation-period measurements selected from the combined GOTTA Prototype and 60 cm Schmidt data by the consistency and visual-inspection criteria.}
+\caption{Final period-analysis table for the combined GOTTA Prototype and 60 cm Schmidt validation sample. $N_{\rm GOTTA}$ and $N_{\rm 60cm}$ are counted from the unique source files in the matched FITS table, while $N_{\rm eff}$ is the effective number of photometric points retained by the period-analysis quality cuts.}
 \label{tab:period_results}
 \scriptsize
-\setlength{\tabcolsep}{3.2pt}
+\setlength{\tabcolsep}{2.6pt}
 \renewcommand{\arraystretch}{1.12}
-\begin{tabular}{llrrrrrrll}
+\begin{tabular}{rlrrrrrrrccl}
 \toprule
-Object ID & Name & $N_{\rm GOTTA}$ & $N_{\rm 60cm}$ & $N_{\rm total}$ & Span & $P_{\rm rot}$ & $\Delta P$ & Model & Quality \\
- & & & & & (hr) & (hr) & (hr) & & \\
+Object ID & Name & $H$ & $N_{\rm GOTTA}$ & $N_{\rm 60cm}$ & $N_{\rm eff}$ & Span & $P_{\rm rot}$ & $\Delta P$ & Model & Phot. & Final quality \\
+ & & (mag) & & & & (d) & (hr) & (hr) & & & \\
 \midrule
-% Final object rows should be inserted from the collaborator-vetted period output.
-% Suggested source columns: object identifier, name, GOTTA points, 60 cm points,
-% total points, observing span, refined adopted rotation period, period uncertainty,
-% adopted P/2P model, photometry used or quality flag.
+2175 & Andrea Doria & 14.22 & 2 & 298 & 161 & 4.71 & 5.272 & 0.209 & $P$ & PSF & Questionable \\
+4479 & Charlieparker & 13.26 & 1 & 285 & 200 & 4.65 & 3.006 & 0.020 & $P$ & aper. & Reliable \\
+7531 & Pecorelli & 14.28 & 6 & 197 & 189 & 4.00 & 3.373 & 0.017 & $2P$ & aper. & Reliable \\
+11382 & Juliasitu & 15.22 & 0 & 281 & 121 & 2.97 & 3.715 & 0.577 & $P$ & PSF & Questionable \\
+19376 & 1998 BE1 & 15.05 & 0 & 310 & 184 & 5.06 & 2.841 & 0.026 & $P$ & Kron & Reliable \\
+22623 & Fisico & 15.44 & 0 & 402 & 285 & 5.76 & 3.715 & 0.073 & $2P$ & PSF & Reliable \\
+25745 & Schimmelpenninck & 13.10 & 0 & 285 & 130 & 2.98 & 2.899 & 0.086 & $P$ & Kron & Reliable \\
+37712 & 1996 RD14 & 15.77 & 0 & 226 & 210 & 4.73 & 3.054 & 0.050 & $P$ & Kron & Reliable \\
+43916 & 1996 AP2 & 14.24 & 2 & 283 & 185 & 4.63 & 3.225 & 0.037 & $2P$ & PSF & Reliable \\
+54005 & 2000 GJ93 & 14.44 & 0 & 278 & 184 & 4.62 & 3.259 & 0.107 & $P$ & Kron & Reliable \\
+56658 & 2000 KJ55 & 15.72 & 0 & 290 & 230 & 5.29 & 5.962 & 0.158 & $P$ & Kron & Questionable \\
+72918 & 2001 RB134 & 16.51 & 0 & 406 & 289 & 5.74 & 6.066 & 0.122 & $2P$ & Kron & Questionable \\
+79015 & 9548 P-L & 15.46 & 0 & 381 & 242 & 4.96 & 4.440 & 0.042 & $P$ & aper. & Reliable \\
+79589 & 1998 RF19 & 16.25 & 0 & 267 & 254 & 5.01 & 3.363 & 0.010 & $2P$ & aper. & Reliable \\
+84232 & 2002 SC20 & 15.51 & 0 & 339 & 146 & 5.58 & 3.836 & 0.083 & $P$ & aper. & Reliable \\
+97776 & 2000 KY10 & 15.31 & 0 & 310 & 301 & 5.99 & 3.537 & 0.042 & $2P$ & PSF & Reliable \\
+105186 & 2000 OO31 & 15.17 & 0 & 212 & 131 & 3.94 & 4.032 & 0.376 & $P$ & aper. & Questionable \\
+171725 & 2000 WW15 & 16.94 & 0 & 235 & 219 & 4.99 & 5.008 & 0.068 & $P$ & aper. & Questionable \\
+183071 & 2002 RO21 & 16.19 & 0 & 257 & 239 & 4.99 & 4.857 & 0.115 & $P$ & Kron & Reliable \\
+299137 & 2005 EV239 & 16.75 & 0 & 222 & 115 & 2.78 & 2.516 & 0.064 & $P$ & Kron & Reliable \\
+750849 & 2014 YP35 & 15.94 & 0 & 221 & 210 & 4.76 & 4.875 & 0.141 & $2P$ & Kron & Questionable \\
 \bottomrule
 \end{tabular}
 \end{table}

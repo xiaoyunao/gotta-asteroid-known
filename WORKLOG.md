@@ -1,5 +1,27 @@
 # WORKLOG
 
+## 2026-05-16
+
+- task: 在 v6 基础上生成完整 Table 7、缩小 Fig. 2 并更新 Software 清单
+- files_changed: `paper_draft/v6.tex`, `paper_draft/v6.pdf`, `paper_draft/tables_v6/period_reliable_objects.tex`, `PLAN.md`, `WORKLOG.md`
+- commands_run: `git status --short --branch`; `git fetch --all --prune`; `rg` inspect v6 figure/table/software references; `/Users/island/opt/anaconda3/bin/python` read `/Users/island/Desktop/final_period_table.tsv` and `/Users/island/Desktop/all.fits`; `/Library/TeX/texbin/xelatex -interaction=nonstopmode -halt-on-error v6.tex` twice; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v6.pdf`; `rg` log checks
+- key_findings:
+  - 当前 shell 中没有 `tectonic`，但 `/Library/TeX/texbin/xelatex` 可用
+  - `final_period_table.tsv` 有 21 行，其中 `Final_Quality` 为 14 reliable 和 7 questionable
+  - `all.fits` 的相关列为 `object_des`、`name`、`source_file`；GOTTA 来源为 `stpxl*`，60 cm Schmidt 来源为 `OBJ*`
+  - Table 7 的 `N_{\rm GOTTA}`/`N_{\rm 60cm}` 按唯一 `source_file` 计数，`N_{\rm eff}` 使用 TSV 中的 `Neff`
+  - Fig. 2 原图为 1273 x 2743 px，单用 `width=0.80\textwidth` 仍会超高；已同时限制为 `height=0.61\textheight`
+  - Software 清单已删除 PyAstronomy，并加入 scikit-learn
+- validation:
+  - `paper_draft/v6.pdf` 编译成功，共 24 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v6.log` 未发现 undefined references、undefined citations、overfull 或 float-too-large
+  - `paper_draft/v6.tex` 和 Table 7 中未发现 PyAstronomy 或旧 Table 7 占位文字
+- remaining_issues:
+  - 仍建议人工检查 `paper_draft/v6.pdf` 中 Table 7 的表意、Fig. 2 实际大小和 Section 5 表述
+  - 需要确认外部周期数据库来源是否为 MPC、LCDB、ALCDEF 或其他数据库
+- next_step:
+  - 人工审阅更新后的 `paper_draft/v6.pdf`
+
 ## 2026-05-14
 
 - task: 小修 v6 浮动体位置、Software 清单并加入光变图

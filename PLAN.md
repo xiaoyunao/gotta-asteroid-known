@@ -4,8 +4,8 @@
 
 继续审阅并小修 `paper_draft/v6.tex` 和 `paper_draft/v6.pdf`。保持科学定位为
 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
-当前重点是补齐同事光变分析的最终结果表，并人工检查 v6 中
-Section 5、浮动体顺序、流程图、光变图和最终 PDF 排版。
+当前重点是人工检查 v6 中 Section 5、完整 Table 7、流程图、
+光变图和最终 PDF 排版。
 
 ## Milestones
 
@@ -31,12 +31,15 @@ Section 5、浮动体顺序、流程图、光变图和最终 PDF 排版。
 20. 已更新 v4 作者列表：前 5 位顺序不变，后续按姓氏首字母加入 Shuai Feng、Bo Zhang、Yuyi Zhuang，并新增山东大学威海单位
 21. 已生成 v5：加入 Gaia stationary-source rejection 方法描述，补 Huang/Han/Liu Mini-SiTian 正确引用，新增 Light-Curve Analysis 章节
 22. 已将 v5 Fig. 3 拆成 sky distribution 和 orbit distribution 两张图，新增 top-5 most frequently recovered asteroid 表，Fig. 9 residual vectors 加粗加长
-23. 已生成 v6：整合同事光变分析方法，加入 LS/PDM/FFT、周期聚类、P/2P Fourier+BIC、局部周期扫描和 26/11/15 初步结果表述
+23. 已生成 v6：整合同事光变分析方法，加入 LS/PDM/FFT、周期聚类、P/2P Fourier+BIC、局部周期扫描和 26/11/15 初步结果表述；后续 Table 7 已按最终 TSV 更新为 21 行、14 reliable、7 questionable
 24. 已将 v6 workflow figure 换回原始 `known_object_processing.png`，把 `nightly_top5` 移入 Section 4.1，把 example cross-match diagnostic 移到 Section 4.3 末尾
 25. 已新增 `tables_v6/period_reliable_objects.tex` 主文表结构，并编译生成 `paper_draft/v6.pdf`
 26. 已小修 v6 浮动体位置：将大部分 `figure*`/`table*` 改为局部 float，并加入 `placeins`/`\FloatBarrier`
 27. 已加入 `figures_v6/lightcurve.png` 作为 Section 5 的 11 个高可信源 folded-light-curve summary figure
-28. 已清理 Software 清单，删除未实际使用的 SExtractor、SCAMP、astrometry.net，补保留实际使用的 SciPy、healpy/HEALPix、PyAstronomy
+28. 已清理 Software 清单，删除未实际使用的 SExtractor、SCAMP、astrometry.net，补保留实际使用的 SciPy、healpy/HEALPix 等工具库
+29. 已根据 `/Users/island/Desktop/final_period_table.tsv` 和 `/Users/island/Desktop/all.fits` 生成完整 Table 7：21 行、14 reliable、7 questionable；`N_{\rm GOTTA}`/`N_{\rm 60cm}` 用 FITS 中唯一 `source_file` 计数，`N_{\rm eff}` 用 TSV 的 `Neff`
+30. 已将 Fig. 2 workflow 图缩小到 80% 宽度并限制高度，避免 float-too-large
+31. 已在 v6 Software 清单中删除 PyAstronomy，并加入周期聚类/分析相关的 scikit-learn
 
 ## Outstanding issues
 
@@ -44,11 +47,9 @@ Section 5、浮动体顺序、流程图、光变图和最终 PDF 排版。
 - 轨道图 `outputs/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
 - v6 后续小修应直接覆盖 `paper_draft/figures_v6/`、`paper_draft/tables_v6/` 和 `paper_draft/v6.pdf`，不要再新建 v7，除非用户明确要求
 - `paper_draft/v6.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者最终确认
-- `paper_draft/v6.tex` 中 Gaia stationary-source rejection 已写入方法，但本地 `gotta_asteroids.fits` 没有 Gaia 标记列；需共同作者确认上游实现细节和最终剔除计数
-- 匹配半径和星等一致性阈值未在正文写死；最终提交前需由生产配置确认
-- 光变分析方法已整合入 v6，但 `tables_v6/period_reliable_objects.tex` 仍缺 11 个高可信对象的最终行数据
+- 光变分析方法已整合入 v6，Table 7 已按最终 TSV/FITS 生成；仍建议人工检查表格含义和 reliable/questionable 标记
 - 需要确认外部周期数据库来源是否为 MPC、LCDB、ALCDEF 或其他数据库，正文目前保守写作 external/literature period database
-- 当前安装的是 `tectonic`，不是完整 TeX Live；如需 VSCode LaTeX Workshop 默认 `xelatex/latexmk` 工作流，仍需用管理员密码安装 BasicTeX/MacTeX
+- 当前 shell 中没有 `tectonic`，但 `/Library/TeX/texbin/xelatex` 可用；如需 VSCode LaTeX Workshop 默认 `latexmk` 工作流，仍需检查本机 TeX 工具链配置
 
 ## Validation criteria
 
@@ -80,20 +81,20 @@ Section 5、浮动体顺序、流程图、光变图和最终 PDF 排版。
 - v5 `v5.log` 未发现 undefined references、undefined citations 或 overfull
 - v5 Section 5 使用正式标题 `Light-Curve Analysis with Auxiliary Observations`，未出现 placeholder
 - v5 新增 `tables_v5/most_observed_objects.tex`，按当前 `g_{\rm aper}` 重新计算
-- `paper_draft/v6.pdf` 已由 `tectonic` 编译生成，共 25 页，A4 页面尺寸 `595.28 x 841.89 pts`
+- `paper_draft/v6.pdf` 已由 `/Library/TeX/texbin/xelatex` 编译生成，共 24 页，A4 页面尺寸 `595.28 x 841.89 pts`
 - v6 Section 5 不再是 placeholder，已整合 quality control、LS、PDM、插值 FFT、period clustering、P/2P、Fourier fit、BIC、visual inspection 和局部周期扫描
 - v6 `v6.log` 未发现 undefined references、undefined citations、overfull 或 float-too-large
 - v6 workflow figure 已换回原始 `known_object_processing.png`
 - v6 `nightly_top5` 表已移到 Section 4.1，example diagnostic 已移到 Section 4.3
 - v6 已加入 `figures_v6/lightcurve.png`，PDF 文本抽取显示 Fig. 11 位于 Section 5 附近
-- v6 Software 清单已删除 SExtractor、SCAMP、astrometry.net
+- v6 Table 7 已由 `final_period_table.tsv` 和 `all.fits` 生成完整 21 行表，`N_{\rm GOTTA}`/`N_{\rm 60cm}` 由唯一 `source_file` 统计，`N_{\rm eff}` 来自 TSV
+- v6 Software 清单已删除 SExtractor、SCAMP、astrometry.net、PyAstronomy，并加入 scikit-learn
+- v6 Fig. 2 workflow 图已缩小并通过编译，无 float-too-large
 
 ## Next recommended steps
 
-1. 人工检查更新后的 `paper_draft/v6.pdf` 首页作者、单位、流程图、Section 4.3/4.4 浮动体顺序、Section 5 光变表述和引用跳转
-2. 让同事导出 11 个高可信对象的最终 `tables_v6/period_reliable_objects.tex` 行数据，并确认 26/11/15 数字
-3. 确认外部周期数据库来源；若实际为 LCDB/ALCDEF，正文和表头应改为 LCDB/ALCDEF literature period
-4. 确认 Gaia stationary-source rejection 的上游实现细节、剔除计数，以及是否需要在正文给出数量
-5. 确认作者、单位、致谢、硬件参数、匹配半径和星等一致性阈值
-6. 如需重画 v6 图表，运行 `/opt/anaconda3/bin/python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v6`
-7. 如需重编 PDF，运行 `cd paper_draft && tectonic v6.tex --keep-logs --keep-intermediates`
+1. 人工检查更新后的 `paper_draft/v6.pdf` 首页作者、单位、流程图、Section 5 光变表述、Table 7 和引用跳转
+2. 确认外部周期数据库来源；若实际为 LCDB/ALCDEF，正文和表头应改为 LCDB/ALCDEF literature period
+3. 确认作者、单位、致谢和硬件参数
+4. 如需重画 v6 图表，运行 `/Users/island/opt/anaconda3/bin/python scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v6`
+5. 如需重编 PDF，运行 `cd paper_draft && /Library/TeX/texbin/xelatex -interaction=nonstopmode -halt-on-error v6.tex`，必要时执行两遍
