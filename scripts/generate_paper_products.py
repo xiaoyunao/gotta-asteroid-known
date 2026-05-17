@@ -177,20 +177,23 @@ def save_figure(fig: plt.Figure, out: Path) -> None:
 def histogram(ax, values, bins, xlabel, ylabel="Detections", logy=False, color="#4c78a8") -> None:
     values = np.asarray(values, dtype=float)
     values = values[np.isfinite(values)]
-    ax.hist(values, bins=bins, color=color, histtype="stepfilled", alpha=0.82, edgecolor="black", linewidth=0.7)
+    ax.hist(values, bins=bins, color=color, histtype="stepfilled", alpha=0.8, edgecolor="#2b2b2b", linewidth=0.55)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     if logy:
         ax.set_yscale("log")
+    ax.set_axisbelow(True)
+    ax.grid(alpha=0.16, linewidth=0.6)
     ax.tick_params(labelsize=22)
 
 
 def add_colorbar(ax, mappable, label: str) -> None:
     divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="4%", pad=0.05)
+    cax = divider.append_axes("right", size="3.5%", pad=0.06)
     cb = ax.figure.colorbar(mappable, cax=cax)
-    cb.set_label(label, fontsize=22)
-    cb.ax.tick_params(labelsize=18)
+    cb.set_label(label, fontsize=20)
+    cb.ax.tick_params(labelsize=17, width=0.9, length=4)
+    cb.outline.set_linewidth(0.8)
 
 
 def density_map(
@@ -272,8 +275,9 @@ def density_colored_scatter(
     ybins=70,
     xlim=None,
     ylim=None,
-    cmap="rainbow",
-    point_size=4,
+    cmap="viridis",
+    point_size=3.2,
+    alpha=0.8,
 ):
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
@@ -299,8 +303,9 @@ def density_colored_scatter(
         s=point_size,
         cmap=cmap,
         norm=LogNorm(vmin=1, vmax=max(1, float(np.nanmax(density)))),
+        marker="o",
         linewidths=0,
-        alpha=0.72,
+        alpha=alpha,
         rasterized=True,
     )
     ax.set_xlabel(xlabel)
@@ -309,6 +314,8 @@ def density_colored_scatter(
         ax.set_xlim(*xlim)
     if ylim is not None:
         ax.set_ylim(*ylim)
+    ax.set_axisbelow(True)
+    ax.grid(alpha=0.12, linewidth=0.55)
     ax.tick_params(labelsize=22)
     add_colorbar(ax, sc, "Local density")
 
@@ -545,8 +552,7 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
         xbins=90,
         ybins=70,
         ylim=(-0.2, 1.2),
-        cmap="rainbow",
-        point_size=4,
+        point_size=3.2,
     )
     axes[1, 1].set_aspect("auto")
     fig.tight_layout()
@@ -572,8 +578,7 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
         xbins=90,
         ybins=70,
         ylim=(0, 1.5),
-        cmap="rainbow",
-        point_size=4,
+        point_size=3.2,
     )
     fig.tight_layout()
     save_figure(fig, outdir / "astrometric_residuals")
@@ -627,12 +632,14 @@ def plot_temporal(df: pd.DataFrame, outdir: Path) -> None:
 
     fig, axes = plt.subplots(2, 2, figsize=(18, 14))
     dates = pd.to_datetime(nightly.index)
-    axes[0, 0].bar(dates, nightly.to_numpy(), color="#4c78a8", width=1.0)
+    axes[0, 0].bar(dates, nightly.to_numpy(), color="#4c78a8", alpha=0.8, edgecolor="#2b2b2b", linewidth=0.35, width=1.0)
     axes[0, 0].xaxis.set_major_locator(mdates.MonthLocator())
     axes[0, 0].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
     axes[0, 0].tick_params(axis="x", labelrotation=35)
     axes[0, 0].set_xlabel("UTC date")
     axes[0, 0].set_ylabel("Detections")
+    axes[0, 0].set_axisbelow(True)
+    axes[0, 0].grid(axis="y", alpha=0.16, linewidth=0.6)
     axes[0, 0].tick_params(labelsize=18)
     histogram(axes[0, 1], objects["detections"], np.arange(1, min(objects["detections"].max(), 60) + 2), "Detections per object", logy=True, color="#59a14f")
     values = np.sort(objects["detections"].to_numpy())

@@ -1,5 +1,27 @@
 # WORKLOG
 
+## 2026-05-17
+
+- task: 美化 v6 柱状图和 Fig. 5/6 密度散点图
+- files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v6/photometric_statistics.*`, `paper_draft/figures_v6/astrometric_residuals.*`, `paper_draft/figures_v6/separation_vs_rate.*`, `paper_draft/figures_v6/motion_geometry.*`, `paper_draft/figures_v6/temporal_sampling.*`, `paper_draft/v6.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `git log --oneline --decorate -n 15`; `git fetch --all --prune`（GitHub TLS 连接失败）； `rg` inspect figure generation; `/Users/island/opt/anaconda3/envs/astro/bin/python -m py_compile scripts/generate_paper_products.py`; `/Users/island/opt/anaconda3/envs/astro/bin/python scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v6`; `/Library/TeX/texbin/xelatex -interaction=nonstopmode -halt-on-error v6.tex`; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v6.pdf`; `rg` log checks
+- key_findings:
+  - 可用绘图环境为 `/Users/island/opt/anaconda3/envs/astro/bin/python`，包含 NumPy、pandas、Astropy、Matplotlib
+  - Fig. 5/6 的密度面板由 `density_colored_scatter()` 生成；已保留逐点 marker，不改统计口径
+  - 柱状图统一改为 `alpha=0.8`、细深色边线和浅网格
+  - Fig. 5/6 密度散点改为 `viridis`、小圆点、`alpha=0.8`、按局部密度排序绘制，并收窄 colorbar
+  - 重画脚本会刷新部分非目标生成文件；已回退常规表格 LaTeX wrapper 和非目标图文件
+- validation:
+  - `scripts/generate_paper_products.py` 语法检查通过
+  - v6 图 5/6/8/9/10 已重新生成 PNG/PDF
+  - `paper_draft/v6.pdf` 编译成功，共 24 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v6.log` 未发现 undefined references、undefined citations、overfull 或 float-too-large
+- remaining_issues:
+  - GitHub fetch 本轮因 TLS 连接失败，未能确认远端是否有新提交
+  - 仍建议人工检查 PDF 中 Fig. 5/6 密度点大小、colorbar 和柱状图透明度
+- next_step:
+  - 人工审阅更新后的 `paper_draft/v6.pdf`
+
 ## 2026-05-16
 
 - task: 在 v6 基础上生成完整 Table 7、缩小 Fig. 2 并更新 Software 清单

@@ -4,8 +4,8 @@
 
 继续审阅并小修 `paper_draft/v6.tex` 和 `paper_draft/v6.pdf`。保持科学定位为
 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
-当前重点是人工检查 v6 中 Section 5、完整 Table 7、流程图、
-光变图和最终 PDF 排版。
+当前重点是人工检查 v6 中更新后的 Fig. 5/6/8/9/10、
+完整 Table 7、Section 5 光变表述和最终 PDF 排版。
 
 ## Milestones
 
@@ -40,6 +40,7 @@ GOTTA Prototype known-asteroid extraction and statistical performance evaluation
 29. 已根据 `/Users/island/Desktop/final_period_table.tsv` 和 `/Users/island/Desktop/all.fits` 生成完整 Table 7：21 行、14 reliable、7 questionable；`N_{\rm GOTTA}`/`N_{\rm 60cm}` 用 FITS 中唯一 `source_file` 计数，`N_{\rm eff}` 用 TSV 的 `Neff`
 30. 已将 Fig. 2 workflow 图缩小到 80% 宽度并限制高度，避免 float-too-large
 31. 已在 v6 Software 清单中删除 PyAstronomy，并加入周期聚类/分析相关的 scikit-learn
+32. 已美化 v6 Fig. 5/6/8/9/10：柱状图使用 `alpha=0.8`、细边线和浅网格；Fig. 5/6 密度面板改为 `viridis` 小圆点逐点散点，颜色表示局部密度，colorbar 更窄
 
 ## Outstanding issues
 
@@ -48,6 +49,7 @@ GOTTA Prototype known-asteroid extraction and statistical performance evaluation
 - v6 后续小修应直接覆盖 `paper_draft/figures_v6/`、`paper_draft/tables_v6/` 和 `paper_draft/v6.pdf`，不要再新建 v7，除非用户明确要求
 - `paper_draft/v6.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者最终确认
 - 光变分析方法已整合入 v6，Table 7 已按最终 TSV/FITS 生成；仍建议人工检查表格含义和 reliable/questionable 标记
+- Fig. 5/6/8/9/10 已重画，仍建议人工确认打印版中的柱状图透明度、密度点大小和 colorbar 可读性
 - 需要确认外部周期数据库来源是否为 MPC、LCDB、ALCDEF 或其他数据库，正文目前保守写作 external/literature period database
 - 当前 shell 中没有 `tectonic`，但 `/Library/TeX/texbin/xelatex` 可用；如需 VSCode LaTeX Workshop 默认 `latexmk` 工作流，仍需检查本机 TeX 工具链配置
 
@@ -90,10 +92,11 @@ GOTTA Prototype known-asteroid extraction and statistical performance evaluation
 - v6 Table 7 已由 `final_period_table.tsv` 和 `all.fits` 生成完整 21 行表，`N_{\rm GOTTA}`/`N_{\rm 60cm}` 由唯一 `source_file` 统计，`N_{\rm eff}` 来自 TSV
 - v6 Software 清单已删除 SExtractor、SCAMP、astrometry.net、PyAstronomy，并加入 scikit-learn
 - v6 Fig. 2 workflow 图已缩小并通过编译，无 float-too-large
+- v6 Fig. 5/6/8/9/10 已重新生成并编译入 `paper_draft/v6.pdf`
 
 ## Next recommended steps
 
-1. 人工检查更新后的 `paper_draft/v6.pdf` 首页作者、单位、流程图、Section 5 光变表述、Table 7 和引用跳转
+1. 人工检查更新后的 `paper_draft/v6.pdf` 中 Fig. 5/6/8/9/10、Section 5 光变表述、Table 7 和引用跳转
 2. 确认外部周期数据库来源；若实际为 LCDB/ALCDEF，正文和表头应改为 LCDB/ALCDEF literature period
 3. 确认作者、单位、致谢和硬件参数
 4. 如需重画 v6 图表，运行 `/Users/island/opt/anaconda3/bin/python scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v6`
