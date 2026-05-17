@@ -40,7 +40,7 @@ GOTTA Prototype known-asteroid extraction and statistical performance evaluation
 29. 已根据 `/Users/island/Desktop/final_period_table.tsv` 和 `/Users/island/Desktop/all.fits` 生成完整 Table 7：21 行、14 reliable、7 questionable；`N_{\rm GOTTA}`/`N_{\rm 60cm}` 用 FITS 中唯一 `source_file` 计数，`N_{\rm eff}` 用 TSV 的 `Neff`
 30. 已将 Fig. 2 workflow 图缩小到 80% 宽度并限制高度，避免 float-too-large
 31. 已在 v6 Software 清单中删除 PyAstronomy，并加入周期聚类/分析相关的 scikit-learn
-32. 已美化 v6 Fig. 5/6/8/9/10：柱状图使用 `alpha=0.8`、细边线和浅网格；Fig. 5/6 密度面板改为 `viridis` 小圆点逐点散点，颜色表示局部密度，colorbar 更窄
+32. 已美化 v6 Fig. 5/6/8/9/10：柱状图使用 `alpha=0.5`、细边线和浅网格；Fig. 5/6 密度面板改为 `viridis` 小圆点逐点散点，颜色使用高分辨率 Gaussian-smoothed 局部密度插值，避免粗分箱色块，colorbar 更窄
 
 ## Outstanding issues
 
@@ -49,7 +49,7 @@ GOTTA Prototype known-asteroid extraction and statistical performance evaluation
 - v6 后续小修应直接覆盖 `paper_draft/figures_v6/`、`paper_draft/tables_v6/` 和 `paper_draft/v6.pdf`，不要再新建 v7，除非用户明确要求
 - `paper_draft/v6.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者最终确认
 - 光变分析方法已整合入 v6，Table 7 已按最终 TSV/FITS 生成；仍建议人工检查表格含义和 reliable/questionable 标记
-- Fig. 5/6/8/9/10 已重画，仍建议人工确认打印版中的柱状图透明度、密度点大小和 colorbar 可读性
+- Fig. 5/6/8/9/10 已重画，仍建议人工确认打印版中的柱状图透明度、密度点大小、平滑密度色带和 colorbar 可读性
 - 需要确认外部周期数据库来源是否为 MPC、LCDB、ALCDEF 或其他数据库，正文目前保守写作 external/literature period database
 - 当前 shell 中没有 `tectonic`，但 `/Library/TeX/texbin/xelatex` 可用；如需 VSCode LaTeX Workshop 默认 `latexmk` 工作流，仍需检查本机 TeX 工具链配置
 

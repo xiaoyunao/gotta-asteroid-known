@@ -18,6 +18,8 @@ from astropy.io import fits
 from matplotlib.colors import LogNorm
 from matplotlib.patches import Ellipse, FancyArrowPatch, FancyBboxPatch, Polygon
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from scipy.interpolate import RegularGridInterpolator
+from scipy.ndimage import gaussian_filter
 
 ADOPTED_APERTURE_INDEX = 4
 ADOPTED_MAG = f"Mag_Aper{ADOPTED_APERTURE_INDEX}"
@@ -177,7 +179,7 @@ def save_figure(fig: plt.Figure, out: Path) -> None:
 def histogram(ax, values, bins, xlabel, ylabel="Detections", logy=False, color="#4c78a8") -> None:
     values = np.asarray(values, dtype=float)
     values = values[np.isfinite(values)]
-    ax.hist(values, bins=bins, color=color, histtype="stepfilled", alpha=0.8, edgecolor="#2b2b2b", linewidth=0.55)
+    ax.hist(values, bins=bins, color=color, histtype="stepfilled", alpha=0.5, edgecolor="#2b2b2b", linewidth=0.55)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     if logy:
@@ -271,13 +273,14 @@ def density_colored_scatter(
     y,
     xlabel,
     ylabel,
-    xbins=90,
-    ybins=70,
+    xbins=240,
+    ybins=180,
     xlim=None,
     ylim=None,
     cmap="viridis",
-    point_size=3.2,
-    alpha=0.8,
+    point_size=3.0,
+    alpha=0.82,
+    smooth_sigma=2.2,
 ):
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
@@ -290,11 +293,17 @@ def density_colored_scatter(
     x_range = xlim if xlim is not None else (np.nanmin(x_plot), np.nanmax(x_plot))
     y_range = ylim if ylim is not None else (np.nanmin(y_plot), np.nanmax(y_plot))
     counts, x_edges, y_edges = np.histogram2d(x_plot, y_plot, bins=[xbins, ybins], range=[x_range, y_range])
-    x_idx = np.searchsorted(x_edges, x_plot, side="right") - 1
-    y_idx = np.searchsorted(y_edges, y_plot, side="right") - 1
-    in_range = (x_idx >= 0) & (x_idx < counts.shape[0]) & (y_idx >= 0) & (y_idx < counts.shape[1])
-    density = np.ones_like(x_plot, dtype=float)
-    density[in_range] = counts[x_idx[in_range], y_idx[in_range]]
+    smoothed = gaussian_filter(counts.astype(float), sigma=smooth_sigma, mode="nearest")
+    x_centers = 0.5 * (x_edges[:-1] + x_edges[1:])
+    y_centers = 0.5 * (y_edges[:-1] + y_edges[1:])
+    interpolator = RegularGridInterpolator(
+        (x_centers, y_centers),
+        smoothed,
+        bounds_error=False,
+        fill_value=1.0,
+    )
+    density = interpolator(np.column_stack([x_plot, y_plot]))
+    density = np.clip(density, 1.0, None)
     order = np.argsort(density)
     sc = ax.scatter(
         x_plot[order],
@@ -549,10 +558,10 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
         df[ADOPTED_MAGERR],
         f"{ADOPTED_MAG_LABEL} [mag]",
         f"{ADOPTED_MAGERR_LABEL} [mag]",
-        xbins=90,
-        ybins=70,
+        xbins=260,
+        ybins=190,
         ylim=(-0.2, 1.2),
-        point_size=3.2,
+        point_size=3.0,
     )
     axes[1, 1].set_aspect("auto")
     fig.tight_layout()
@@ -575,10 +584,10 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
         df["sep_arcsec"],
         f"{ADOPTED_MAG_LABEL} [mag]",
         "Separation [arcsec]",
-        xbins=90,
-        ybins=70,
+        xbins=260,
+        ybins=190,
         ylim=(0, 1.5),
-        point_size=3.2,
+        point_size=3.0,
     )
     fig.tight_layout()
     save_figure(fig, outdir / "astrometric_residuals")
@@ -632,7 +641,7 @@ def plot_temporal(df: pd.DataFrame, outdir: Path) -> None:
 
     fig, axes = plt.subplots(2, 2, figsize=(18, 14))
     dates = pd.to_datetime(nightly.index)
-    axes[0, 0].bar(dates, nightly.to_numpy(), color="#4c78a8", alpha=0.8, edgecolor="#2b2b2b", linewidth=0.35, width=1.0)
+    axes[0, 0].bar(dates, nightly.to_numpy(), color="#4c78a8", alpha=0.5, edgecolor="#2b2b2b", linewidth=0.35, width=1.0)
     axes[0, 0].xaxis.set_major_locator(mdates.MonthLocator())
     axes[0, 0].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
     axes[0, 0].tick_params(axis="x", labelrotation=35)
