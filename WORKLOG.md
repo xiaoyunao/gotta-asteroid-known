@@ -2,6 +2,23 @@
 
 ## 2026-05-18
 
+- task: 修正 v6 Appendix 图表分页和 Table A.1 排序/列顺序
+- files_changed: `paper_draft/v6.tex`, `paper_draft/v6.pdf`, `paper_draft/tables_v6/period_reliable_objects.tex`, `WORKLOG.md`, `PLAN.md`
+- commands_run: Python regenerate `period_reliable_objects.tex`; `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v6.pdf`; `pypdf` text extraction to locate appendix figures/table/references
+- key_findings:
+  - Appendix A title previously occupied a separate page because the first figure used a float-page placement
+  - Table A.1 should remove `N_{\rm GOTTA}` and `N_{\rm 60cm}`, keep `N_{\rm eff}`, and place `N_{\rm total}` before `N_{\rm eff}`
+  - Table rows should be sorted by `Final_Quality` first, reliable before questionable, then by object ID within each group
+  - References currently appear after the appendix in `v6.tex`
+- validation:
+  - `paper_draft/v6.pdf` compiled successfully with `tectonic`, 27 pages, A4 page size `595.28 x 841.89 pts`
+  - `v6.log` has no undefined references, undefined citations, overfull boxes, LaTeX errors, or float-too-large warnings
+  - PDF text extraction places Appendix A title and Figure A.1 together on page 23, Figure A.2 on page 24, Table A.1 on page 25, and References from page 26
+- remaining_issues:
+  - Need human visual check of Appendix page layout and whether references should remain after appendix for final RAA submission
+- next_step:
+  - Review pages 23--26 of `paper_draft/v6.pdf`
+
 - task: 将 v6 光变图和 Table 7 移入附录并调整表格列
 - files_changed: `paper_draft/v6.tex`, `paper_draft/v6.pdf`, `paper_draft/tables_v6/period_reliable_objects.tex`, `WORKLOG.md`, `PLAN.md`
 - commands_run: Python regenerate `period_reliable_objects.tex`; `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v6.pdf`; `pypdf` text extraction to locate appendix figures/table
