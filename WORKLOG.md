@@ -2,6 +2,25 @@
 
 ## 2026-05-18
 
+- task: 用更新后的光变结果重做 v6 Fig. 11、Table 7 和相关描述
+- files_changed: `paper_draft/v6.tex`, `paper_draft/v6.pdf`, `paper_draft/figures_v6/lightcurve_reliable.png`, `paper_draft/figures_v6/lightcurve_questionable.png`, `paper_draft/tables_v6/period_reliable_objects.tex`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `head -5 /Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv`; Python TSV column/count inspection; `sips -g pixelWidth -g pixelHeight /Users/yunaoxiao/Downloads/100.PNG /Users/yunaoxiao/Downloads/101.PNG /Users/yunaoxiao/Downloads/88.png`; `cp` new Fig. 11 images; Python regenerate `period_reliable_objects.tex`; `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v6.pdf`; `pypdf` text extraction to locate Fig. 11 and Table 7
+- key_findings:
+  - `final_period_table_merged_updated.tsv` has 24 rows
+  - `Final_Quality` is 12 reliable and 12 questionable
+  - `Quality` is an intermediate LS/PDM/FFT search-consistency flag tied to `match_point`, while `Final_Quality` is the final folded-light-curve/sampling assessment
+  - Fig. 11 is now two 4500 x 4800 px mosaics: reliable and questionable final-quality objects
+  - Table 7 now uses the updated TSV values directly, including `NGOTTA`, `N60cm`, `Neff`, `Span`, `Prot`, `Delta P`, `Model`, `best_mode`, `match_point`, `Quality`, and `Final_Quality`
+- validation:
+  - `paper_draft/v6.pdf` compiled successfully with `tectonic`, 25 pages, A4 page size `595.28 x 841.89 pts`
+  - `v6.log` has no undefined references, undefined citations, overfull boxes, LaTeX errors, or float-too-large warnings
+  - PDF text extraction places Fig. 11 on page 21 and Table 7 on page 22
+- remaining_issues:
+  - Need human visual check of the two Fig. 11 mosaics and the denser Table 7 in the PDF
+  - Need confirm external period database source before submission
+- next_step:
+  - Review `paper_draft/v6.pdf`, especially Fig. 11 and Table 7
+
 - task: 初始化本次会话并恢复项目上下文
 - files_changed: `WORKLOG.md`
 - commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `sed -n '1,220p' WORKLOG.md`; `sed -n '1,220p' PLAN.md`; `git diff --stat`; `git diff --summary`
