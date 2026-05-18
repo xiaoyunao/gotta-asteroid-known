@@ -321,18 +321,7 @@ is used together with the number of peaks, phase coverage, phase-overlap statist
 
 The combined GOTTA and 60 cm Schmidt data are used to identify asteroid light curves with plausible rotational modulation. The updated analysis retains 24 objects in the period-analysis validation table. The final quality flag is assigned after inspecting the folded light curve and the sampling ratio between the usable time span and the adopted period, rather than from the period-search agreement metric alone. Twelve objects are assigned reliable final quality flags, while the remaining twelve are retained as questionable solutions that require additional observations for confirmation. None of the 24 candidate periods has a corresponding reference period in the external period database used in the current comparison. This statement should be checked against the final database query before submission and should not be interpreted as a complete claim of newly discovered periods.
 
-Figure~\ref{fig:lightcurve_examples} shows folded light curves for the 24 objects retained in the updated validation sample. The panel titles list the initial period and the adopted single- or double-peaked period used for the displayed phase folding. The black curves show the Fourier models used for the morphology check. Table~\ref{tab:period_results} summarizes the final period-analysis validation table, including the GOTTA and 60 cm Schmidt measurement counts, the effective number of retained photometric points, the adopted period, period uncertainty, period model, preferred photometric measurement type, search-quality flag, and final-quality flag. These results demonstrate that, although the GOTTA Prototype data alone are generally too sparse for period determination, the recovered known-object catalog can be combined with auxiliary observations to validate the asteroid period-analysis pipeline.
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=0.98\textwidth,height=0.39\textheight,keepaspectratio]{figures_v6/lightcurve_reliable.png}
-\vspace{0.5em}
-\includegraphics[width=0.98\textwidth,height=0.39\textheight,keepaspectratio]{figures_v6/lightcurve_questionable.png}
-\caption{Phase-folded light curves for the 24 objects in the updated combined GOTTA Prototype and 60 cm Schmidt validation sample. The two mosaics show the objects assigned reliable and questionable final quality flags, respectively. Colored points denote retained measurements from different data subsets, gray points mark rejected or lower-weighted measurements, and black curves show the adopted Fourier models. Each panel gives the object identifier and the candidate period information used in the current period analysis.}
-\label{fig:lightcurve_examples}
-\end{figure}
-
-\input{tables_v6/period_reliable_objects.tex}
+Appendix Figures~\ref{fig:lightcurve_reliable} and \ref{fig:lightcurve_questionable} show folded light curves for the 24 objects retained in the updated validation sample, separated by final quality flag so that each mosaic can be displayed at full-page scale. The panel titles list the initial period and the adopted single- or double-peaked period used for the displayed phase folding. The black curves show the Fourier models used for the morphology check. Appendix Table~\ref{tab:period_results} summarizes the final period-analysis validation table, including the effective and total photometric point counts, the adopted period, period uncertainty, period model, preferred photometric measurement type, search-quality flag, and final-quality flag. These results demonstrate that, although the GOTTA Prototype data alone are generally too sparse for period determination, the recovered known-object catalog can be combined with auxiliary observations to validate the asteroid period-analysis pipeline.
 
 \FloatBarrier
 
@@ -361,6 +350,34 @@ The authors acknowledge support from the Strategic Priority Research Program of 
 \end{acknowledgements}
 
 Software: Astropy \citep{Astropy2013,Astropy2018,Astropy2022}, NumPy \citep{Harris2020}, SciPy \citep{Virtanen2020}, scikit-learn \citep{Pedregosa2011}, Matplotlib \citep{Hunter2007}, pandas \citep{McKinney2010}, astroquery \citep{Ginsburg2019}, and healpy/HEALPix \citep{Gorski2005}.
+
+\clearpage
+\appendix
+
+\section{Light-Curve Validation Products}
+\label{app:lightcurve}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth,height=0.86\textheight,keepaspectratio]{figures_v6/lightcurve_reliable.png}
+\caption{Phase-folded light curves for the 12 objects assigned reliable final quality flags in the updated combined GOTTA Prototype and 60 cm Schmidt validation sample. Colored points denote retained measurements from different data subsets, gray points mark rejected or lower-weighted measurements, and black curves show the adopted Fourier models. Each panel gives the object identifier and the candidate period information used in the current period analysis.}
+\label{fig:lightcurve_reliable}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth,height=0.86\textheight,keepaspectratio]{figures_v6/lightcurve_questionable.png}
+\caption{Same as Figure~\ref{fig:lightcurve_reliable}, but for the 12 objects assigned questionable final quality flags. These solutions are retained in the validation sample but require additional observations for confirmation.}
+\label{fig:lightcurve_questionable}
+\end{figure}
+
+\clearpage
+
+\input{tables_v6/period_reliable_objects.tex}
+
+\clearpage
 
 \begin{thebibliography}{99}
 

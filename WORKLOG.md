@@ -2,6 +2,22 @@
 
 ## 2026-05-18
 
+- task: 将 v6 光变图和 Table 7 移入附录并调整表格列
+- files_changed: `paper_draft/v6.tex`, `paper_draft/v6.pdf`, `paper_draft/tables_v6/period_reliable_objects.tex`, `WORKLOG.md`, `PLAN.md`
+- commands_run: Python regenerate `period_reliable_objects.tex`; `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v6.pdf`; `pypdf` text extraction to locate appendix figures/table
+- key_findings:
+  - Section 5 now points to Appendix Figures A.1/A.2 and Appendix Table A.1 instead of placing the large products in the main text
+  - Two Fig. 11 light-curve mosaics are now separate appendix figures, one page each
+  - Table A.1 now centers all columns, removes `N_{\rm GOTTA}` and `N_{\rm 60cm}`, and uses `N_{\rm eff}` plus `N_{\rm total}`
+- validation:
+  - `paper_draft/v6.pdf` compiled successfully with `tectonic`, 28 pages, A4 page size `595.28 x 841.89 pts`
+  - `v6.log` has no undefined references, undefined citations, overfull boxes, LaTeX errors, or float-too-large warnings
+  - PDF text extraction places Appendix Figures A.1/A.2 on pages 24/25 and Appendix Table A.1 on page 26
+- remaining_issues:
+  - Need human visual check of appendix figure scale and centered Table A.1
+- next_step:
+  - Review appendix pages in `paper_draft/v6.pdf`
+
 - task: 用更新后的光变结果重做 v6 Fig. 11、Table 7 和相关描述
 - files_changed: `paper_draft/v6.tex`, `paper_draft/v6.pdf`, `paper_draft/figures_v6/lightcurve_reliable.png`, `paper_draft/figures_v6/lightcurve_questionable.png`, `paper_draft/tables_v6/period_reliable_objects.tex`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `head -5 /Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv`; Python TSV column/count inspection; `sips -g pixelWidth -g pixelHeight /Users/yunaoxiao/Downloads/100.PNG /Users/yunaoxiao/Downloads/101.PNG /Users/yunaoxiao/Downloads/88.png`; `cp` new Fig. 11 images; Python regenerate `period_reliable_objects.tex`; `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v6.pdf`; `pypdf` text extraction to locate Fig. 11 and Table 7

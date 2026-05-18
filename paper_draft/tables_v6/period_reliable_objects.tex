@@ -1,39 +1,39 @@
-\begin{table}[!htbp]
+\begin{table}[!p]
 \centering
-\caption{Final period-analysis table for the combined GOTTA Prototype and 60 cm Schmidt validation sample. $N_{\rm GOTTA}$ and $N_{\rm 60cm}$ are the numbers of retained measurements from the two data sources in the updated period table, and $N_{\rm eff}$ is the effective number of photometric points used by the period-analysis quality cuts. The search-quality flag records the agreement among the Lomb--Scargle, PDM, and FFT period searches as summarized by the match-point metric, while the final-quality flag is assigned after the folded-light-curve sampling and period-span assessment. Rel., Quest., and Poss. denote reliable, questionable, and possible, respectively.}
+\caption{Final period-analysis table for the combined GOTTA Prototype and 60 cm Schmidt validation sample. $N_{\rm eff}$ is the effective number of photometric points retained by the period-analysis quality cuts, and $N_{\rm total}$ is the total point count reported in the updated period table. The search-quality flag records the agreement among the Lomb--Scargle, PDM, and FFT period searches as summarized by the match-point metric, while the final-quality flag is assigned after the folded-light-curve sampling and period-span assessment. Rel., Quest., and Poss. denote reliable, questionable, and possible, respectively.}
 \label{tab:period_results}
 \scriptsize
-\setlength{\tabcolsep}{1.8pt}
-\renewcommand{\arraystretch}{1.10}
-\begin{tabular}{rlrrrrrrrcclll}
+\setlength{\tabcolsep}{2.8pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{ccccccccccccc}
 \toprule
-Object ID & Name & $H$ & $N_{\rm GOTTA}$ & $N_{\rm 60cm}$ & $N_{\rm eff}$ & Span & $P_{\rm rot}$ & $\Delta P$ & Model & Phot. & MP & Search & Final \\
- & & (mag) & & & & (hr) & (hr) & (hr) & & & & qual. & qual. \\
+Object ID & Name & $H$ & $N_{\rm eff}$ & $N_{\rm total}$ & Span & $P_{\rm rot}$ & $\Delta P$ & Model & Phot. & MP & Search & Final \\
+ & & (mag) & & & (hr) & (hr) & (hr) & & & & qual. & qual. \\
 \midrule
-2175 & Andrea Doria & 14.42 & 2 & 858 & 671 & 123.4 & 4.8880 & 0.0010 & $P$ & aper. & 4 & Rel. & Rel. \\
-4479 & Charlieparker & 13.26 & 1 & 1589 & 1454 & 195.9 & 3.0055 & 0.0197 & $P$ & aper. & 7 & Rel. & Rel. \\
-7531 & Pecorelli & 14.07 & 6 & 504 & 503 & 49.0 & 3.3375 & 0.0004 & $2P$ & PSF & 6 & Rel. & Rel. \\
-11382 & Juliasitu & 15.46 & 0 & 654 & 591 & 53.1 & 15.2840 & 0.0273 & $2P$ & aper. & 6 & Rel. & Quest. \\
-19376 & 1998 BE1 & 15.18 & 0 & 1188 & 1066 & 196.5 & 5.4896 & 0.0001 & $P$ & aper. & 6 & Rel. & Rel. \\
-25745 & Schimmelpenninck & 13.15 & 0 & 1584 & 1540 & 170.8 & 5.5143 & 0.0000 & $2P$ & PSF & 6 & Rel. & Rel. \\
-54005 & 2000 GJ93 & 14.54 & 0 & 907 & 760 & 124.6 & 3.5362 & 0.0936 & $P$ & PSF & 4 & Rel. & Quest. \\
-72918 & 2001 RB134 & 16.66 & 0 & 1680 & 1466 & 221.9 & 6.1385 & 0.0004 & $P$ & PSF & 6 & Rel. & Rel. \\
-79589 & 1998 RF19 & 16.25 & 0 & 461 & 443 & 50.2 & 3.3634 & 0.0098 & $P$ & aper. & 9 & Rel. & Rel. \\
-97776 & 2000 KY10 & 15.31 & 0 & 593 & 587 & 78.1 & 3.5371 & 0.0417 & $2P$ & PSF & 6 & Rel. & Rel. \\
-171725 & 2000 WW15 & 16.69 & 0 & 288 & 276 & 26.3 & 5.0411 & 0.0118 & $2P$ & PSF & 5 & Rel. & Quest. \\
-750849 & 2014 YP35 & 15.94 & 0 & 221 & 210 & 4.8 & 4.8756 & 0.1409 & $2P$ & Kron & 8 & Rel. & Quest. \\
-5424 & Covington & 13.57 & 7 & 774 & 722 & 99.9 & 5.4887 & 0.0014 & $2P$ & Kron & 3 & Good & Rel. \\
-50292 & 2000 CW29 & 16.29 & 0 & 570 & 496 & 53.4 & 2.5186 & 0.0015 & $P$ & aper. & 4 & Rel. & Quest. \\
-7558 & Yurlov & 13.45 & 5 & 439 & 392 & 51.3 & 4.1124 & 0.0019 & $P$ & PSF & -- & Rel. & Quest. \\
-12148 & Caravaggio & 14.50 & 0 & 501 & 457 & 29.5 & 4.5248 & 0.0104 & $2P$ & aper. & 5 & Rel. & Rel. \\
-17341 & 4120 T-2 & 16.58 & 0 & 237 & 189 & 25.9 & 5.1682 & 0.0340 & $2P$ & PSF & 4 & Rel. & Quest. \\
-22542 & Pendri & 15.97 & 2 & 233 & 190 & 23.9 & 2.8439 & 0.0070 & $P$ & Kron & 2 & Poss. & Rel. \\
-28036 & 1998 FZ26 & 13.42 & 0 & 242 & 222 & 4.9 & 4.4503 & 0.1598 & $P$ & PSF & 4 & Rel. & Quest. \\
-44099 & 1998 FT117 & 16.02 & 0 & 221 & 209 & 4.8 & 3.5262 & 0.1210 & $2P$ & PSF & 6 & Rel. & Quest. \\
-46082 & 2001 EC10 & 15.41 & 0 & 1263 & 1181 & 171.6 & 5.6907 & 0.0013 & $P$ & PSF & 6 & Rel. & Rel. \\
-51965 & 2001 QO281 & 13.00 & 0 & 244 & 207 & 5.5 & 6.6819 & 0.0837 & $P$ & PSF & 6 & Rel. & Quest. \\
-57499 & 2001 SX239 & 14.83 & 0 & 232 & 204 & 24.0 & 6.1133 & 0.0771 & $P$ & PSF & 4 & Rel. & Quest. \\
-68679 & 2002 CP134 & 14.56 & 0 & 274 & 243 & 4.7 & 6.1144 & 0.1479 & $2P$ & aper. & 4 & Rel. & Quest. \\
+2175 & Andrea Doria & 14.42 & 671 & 796 & 123.4 & 4.8880 & 0.0010 & $P$ & aper. & 4 & Rel. & Rel. \\
+4479 & Charlieparker & 13.26 & 1454 & 1462 & 195.9 & 3.0055 & 0.0197 & $P$ & aper. & 7 & Rel. & Rel. \\
+7531 & Pecorelli & 14.07 & 503 & 503 & 49.0 & 3.3375 & 0.0004 & $2P$ & PSF & 6 & Rel. & Rel. \\
+11382 & Juliasitu & 15.46 & 591 & 615 & 53.1 & 15.2840 & 0.0273 & $2P$ & aper. & 6 & Rel. & Quest. \\
+19376 & 1998 BE1 & 15.18 & 1066 & 1093 & 196.5 & 5.4896 & 0.0001 & $P$ & aper. & 6 & Rel. & Rel. \\
+25745 & Schimmelpenninck & 13.15 & 1540 & 1541 & 170.8 & 5.5143 & 0.0000 & $2P$ & PSF & 6 & Rel. & Rel. \\
+54005 & 2000 GJ93 & 14.54 & 760 & 810 & 124.6 & 3.5362 & 0.0936 & $P$ & PSF & 4 & Rel. & Quest. \\
+72918 & 2001 RB134 & 16.66 & 1466 & 1473 & 221.9 & 6.1385 & 0.0004 & $P$ & PSF & 6 & Rel. & Rel. \\
+79589 & 1998 RF19 & 16.25 & 443 & 443 & 50.2 & 3.3634 & 0.0098 & $P$ & aper. & 9 & Rel. & Rel. \\
+97776 & 2000 KY10 & 15.31 & 587 & 588 & 78.1 & 3.5371 & 0.0417 & $2P$ & PSF & 6 & Rel. & Rel. \\
+171725 & 2000 WW15 & 16.69 & 276 & 286 & 26.3 & 5.0411 & 0.0118 & $2P$ & PSF & 5 & Rel. & Quest. \\
+750849 & 2014 YP35 & 15.94 & 210 & 215 & 4.8 & 4.8756 & 0.1409 & $2P$ & Kron & 8 & Rel. & Quest. \\
+5424 & Covington & 13.57 & 722 & 757 & 99.9 & 5.4887 & 0.0014 & $2P$ & Kron & 3 & Good & Rel. \\
+50292 & 2000 CW29 & 16.29 & 496 & 522 & 53.4 & 2.5186 & 0.0015 & $P$ & aper. & 4 & Rel. & Quest. \\
+7558 & Yurlov & 13.45 & 392 & 438 & 51.3 & 4.1124 & 0.0019 & $P$ & PSF & -- & Rel. & Quest. \\
+12148 & Caravaggio & 14.50 & 457 & 459 & 29.5 & 4.5248 & 0.0104 & $2P$ & aper. & 5 & Rel. & Rel. \\
+17341 & 4120 T-2 & 16.58 & 189 & 191 & 25.9 & 5.1682 & 0.0340 & $2P$ & PSF & 4 & Rel. & Quest. \\
+22542 & Pendri & 15.97 & 190 & 229 & 23.9 & 2.8439 & 0.0070 & $P$ & Kron & 2 & Poss. & Rel. \\
+28036 & 1998 FZ26 & 13.42 & 222 & 226 & 4.9 & 4.4503 & 0.1598 & $P$ & PSF & 4 & Rel. & Quest. \\
+44099 & 1998 FT117 & 16.02 & 209 & 216 & 4.8 & 3.5262 & 0.1210 & $2P$ & PSF & 6 & Rel. & Quest. \\
+46082 & 2001 EC10 & 15.41 & 1181 & 1211 & 171.6 & 5.6907 & 0.0013 & $P$ & PSF & 6 & Rel. & Rel. \\
+51965 & 2001 QO281 & 13.00 & 207 & 243 & 5.5 & 6.6819 & 0.0837 & $P$ & PSF & 6 & Rel. & Quest. \\
+57499 & 2001 SX239 & 14.83 & 204 & 206 & 24.0 & 6.1133 & 0.0771 & $P$ & PSF & 4 & Rel. & Quest. \\
+68679 & 2002 CP134 & 14.56 & 243 & 244 & 4.7 & 6.1144 & 0.1479 & $2P$ & aper. & 4 & Rel. & Quest. \\
 \bottomrule
 \end{tabular}
 \end{table}
