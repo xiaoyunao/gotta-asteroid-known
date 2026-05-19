@@ -2,6 +2,23 @@
 
 ## 2026-05-19
 
+- task: 将 v6 Fig. 5 右下密度图 y 轴范围改为 0--0.6
+- files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v6/photometric_statistics.*`, `paper_draft/v6.pdf`, `WORKLOG.md`
+- commands_run: `python3 -m py_compile scripts/generate_paper_products.py`; `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v6`; `git restore` unrelated regenerated v6 figures/tables from the same script run; `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v6.pdf`; `pypdf` text extraction for Fig. 5 page
+- key_findings:
+  - Fig. 5 right-bottom density panel y range was set by `density_colored_scatter(..., ylim=(-0.2, 1.2))`
+  - Updated the range to `ylim=(0.0, 0.6)`
+  - Re-running the paper-products script refreshed unrelated generated files; those were restored so only Fig. 5 outputs remain changed
+- validation:
+  - `scripts/generate_paper_products.py` syntax check passed
+  - `paper_draft/v6.pdf` compiled successfully with `tectonic`, 26 pages, A4 page size `595.28 x 841.89 pts`
+  - `v6.log` has no undefined references, undefined citations, overfull boxes, LaTeX errors, or float-too-large warnings
+  - PDF text extraction confirms Fig. 5 right-bottom y ticks run from 0.0 to 0.6
+- remaining_issues:
+  - Need human visual check of the updated Fig. 5 density panel
+- next_step:
+  - Review Fig. 5 in `paper_draft/v6.pdf`
+
 - task: 规范 v6 通讯作者邮箱写法
 - files_changed: `paper_draft/v6.tex`, `paper_draft/v6.pdf`, `WORKLOG.md`
 - commands_run: `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` check `xiaoyunao`/`zouhu`/`Corresponding author`; `pypdf` first-page text extraction; `rg` log checks

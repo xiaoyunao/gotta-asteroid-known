@@ -560,7 +560,7 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
         f"{ADOPTED_MAGERR_LABEL} [mag]",
         xbins=260,
         ybins=190,
-        ylim=(-0.2, 1.2),
+        ylim=(0.0, 0.6),
         point_size=3.0,
     )
     axes[1, 1].set_aspect("auto")
