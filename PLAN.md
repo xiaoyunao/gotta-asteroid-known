@@ -4,8 +4,8 @@
 
 继续审阅并小修 `paper_draft/v6.tex` 和 `paper_draft/v6.pdf`。保持科学定位为
 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
-当前重点是人工检查 v6 附录中的两张光变 mosaic、
-按 final quality 和 object ID 排序后的 24 行 Appendix Table A.1、Section 5 光变表述和最终 PDF 排版。
+当前重点是人工检查 v6 作者/单位信息、Fig. 3/5/10 版面、
+附录两张光变 mosaic、Appendix Table A.1、Section 5 光变表述和最终 PDF 排版。
 
 ## Milestones
 
@@ -44,6 +44,7 @@ GOTTA Prototype known-asteroid extraction and statistical performance evaluation
 33. 已用 `/Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv` 更新 v6 光变结果：Table 7 改为 24 行，`Final_Quality` 为 12 reliable 和 12 questionable；Fig. 11 改为 `lightcurve_reliable.png` 和 `lightcurve_questionable.png` 两张 mosaic 共用一条图注；正文区分 `Quality` 的 LS/PDM/FFT match-point 搜索一致性含义和 `Final_Quality` 的最终 folded-light-curve/sampling assessment
 34. 已将两张光变 mosaic 和验证表移入 Appendix：Figures A.1/A.2 分页显示，Appendix Table A.1 全列居中，删除 `N_{\rm GOTTA}` 和 `N_{\rm 60cm}`，保留 `N_{\rm eff}` 并加入 `N_{\rm total}`
 35. 已修正 Appendix 排版和 Table A.1：Appendix A 标题与 Figure A.1 同页，Figure A.2 单独一页；Table A.1 列顺序为 `N_{\rm total}` 后接 `N_{\rm eff}`，行排序为 reliable 在前、questionable 在后，各组内按 object ID 升序
+36. 已更新 v6 作者和版面：Feiyang Tian 为第二作者，Hu Zou 为第三作者和通讯作者（`zouhu@nao.cas.cn`），第二单位邮编改为 `100049`，Fig. 3 改为 75% 宽，Fig. 5 和 Fig. 10 缩小以减少图下空白
 
 ## Outstanding issues
 
@@ -52,7 +53,7 @@ GOTTA Prototype known-asteroid extraction and statistical performance evaluation
 - v6 后续小修应直接覆盖 `paper_draft/figures_v6/`、`paper_draft/tables_v6/` 和 `paper_draft/v6.pdf`，不要再新建 v7，除非用户明确要求
 - `paper_draft/v6.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者最终确认
 - 光变分析方法已整合入 v6，Table 7 已按 `final_period_table_merged_updated.tsv` 更新为 24 行；仍建议人工检查表格含义和 reliable/questionable 标记
-- Fig. 5/6/8/9/10 已重画，两张光变 mosaic 和验证表已移入 Appendix；仍建议人工确认打印版中的柱状图透明度、密度点大小、平滑密度色带、colorbar、Appendix figure panel 字号、Appendix Table A.1 可读性，以及参考文献是否按最终投稿格式放在附录之后
+- Fig. 5/6/8/9/10 已重画，两张光变 mosaic 和验证表已移入 Appendix；仍建议人工确认打印版中的柱状图透明度、密度点大小、平滑密度色带、colorbar、Fig. 5/Fig. 10 页面空白、Appendix figure panel 字号和 Appendix Table A.1 可读性
 - 需要确认外部周期数据库来源是否为 MPC、LCDB、ALCDEF 或其他数据库，正文目前保守写作 external/literature period database
 - 当前本机可用 `tectonic`；未发现 `/Library/TeX/texbin/xelatex` 或 `latexmk`
 
@@ -86,7 +87,7 @@ GOTTA Prototype known-asteroid extraction and statistical performance evaluation
 - v5 `v5.log` 未发现 undefined references、undefined citations 或 overfull
 - v5 Section 5 使用正式标题 `Light-Curve Analysis with Auxiliary Observations`，未出现 placeholder
 - v5 新增 `tables_v5/most_observed_objects.tex`，按当前 `g_{\rm aper}` 重新计算
-- 当前 `paper_draft/v6.pdf` 已由 `tectonic` 编译生成，共 27 页，A4 页面尺寸 `595.28 x 841.89 pts`
+- 当前 `paper_draft/v6.pdf` 已由 `tectonic` 编译生成，共 26 页，A4 页面尺寸 `595.28 x 841.89 pts`
 - v6 Section 5 不再是 placeholder，已整合 quality control、LS、PDM、插值 FFT、period clustering、P/2P、Fourier fit、BIC、visual inspection 和局部周期扫描
 - v6 `v6.log` 未发现 undefined references、undefined citations、overfull 或 float-too-large
 - v6 workflow figure 已换回原始 `known_object_processing.png`
@@ -100,7 +101,8 @@ GOTTA Prototype known-asteroid extraction and statistical performance evaluation
 ## Next recommended steps
 
 1. 人工检查更新后的 `paper_draft/v6.pdf` 中 Appendix Figures A.1/A.2、Appendix Table A.1、Section 5 光变表述、引用跳转和 References/Appendix 顺序
-2. 确认外部周期数据库来源；若实际为 LCDB/ALCDEF，正文和表头应改为 LCDB/ALCDEF literature period
-3. 确认作者、单位、致谢和硬件参数
-4. 如需重画 v6 统计图表，运行 `/Users/island/opt/anaconda3/bin/python scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v6`
-5. 如需重编 PDF，本机可运行 `cd paper_draft && tectonic v6.tex --keep-logs --keep-intermediates`；旧机器如有 TeXLive，也可运行 `/Library/TeX/texbin/xelatex -interaction=nonstopmode -halt-on-error v6.tex`，必要时执行两遍
+2. 人工检查首页作者顺序、Hu Zou 通讯作者标记、邮箱和第二单位邮编
+3. 确认外部周期数据库来源；若实际为 LCDB/ALCDEF，正文和表头应改为 LCDB/ALCDEF literature period
+4. 确认作者、单位、致谢和硬件参数
+5. 如需重画 v6 统计图表，运行 `/Users/island/opt/anaconda3/bin/python scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v6`
+6. 如需重编 PDF，本机可运行 `cd paper_draft && tectonic v6.tex --keep-logs --keep-intermediates`；旧机器如有 TeXLive，也可运行 `/Library/TeX/texbin/xelatex -interaction=nonstopmode -halt-on-error v6.tex`，必要时执行两遍

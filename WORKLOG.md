@@ -1,5 +1,25 @@
 # WORKLOG
 
+## 2026-05-19
+
+- task: 更新 v6 作者顺序、通讯作者、单位邮编和图版面
+- files_changed: `paper_draft/v6.tex`, `paper_draft/v6.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `rg` inspect author and figure references; `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v6.pdf`; `pypdf` text extraction for author block and Fig. 3/5/10 pages; RAA author guideline check
+- key_findings:
+  - Feiyang Tian is now second author; Hu Zou is third author and marked as corresponding author with `zouhu@nao.cas.cn`
+  - The second affiliation postcode is updated to `100049`
+  - Fig. 3 width is reduced to `0.75\textwidth`
+  - Fig. 5 and Fig. 10 widths are reduced to `0.88\textwidth`; PDF text extraction shows Fig. 5 followed by Section 4.3 text and Fig. 10 followed by Section 5 text
+  - RAA author guidelines describe the reference list as appearing at the end of the paper, so the current order keeps references after the appendix
+- validation:
+  - `paper_draft/v6.pdf` compiled successfully with `tectonic`, 26 pages, A4 page size `595.28 x 841.89 pts`
+  - `v6.log` has no undefined references, undefined citations, overfull boxes, LaTeX errors, or float-too-large warnings
+  - PDF text extraction confirms the updated author order, Hu Zou email, Fig. 3, Fig. 5, and Fig. 10 placement
+- remaining_issues:
+  - Need human visual check of Fig. 5 and Fig. 10 whitespace in the rendered PDF
+- next_step:
+  - Review `paper_draft/v6.pdf`, especially pages containing Fig. 3, Fig. 5, and Fig. 10
+
 ## 2026-05-18
 
 - task: 修正 v6 Appendix 图表分页和 Table A.1 排序/列顺序
