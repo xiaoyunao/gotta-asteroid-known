@@ -2,6 +2,22 @@
 
 ## 2026-05-19
 
+- task: 规范 v6 通讯作者邮箱写法
+- files_changed: `paper_draft/v6.tex`, `paper_draft/v6.pdf`, `WORKLOG.md`
+- commands_run: `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` check `xiaoyunao`/`zouhu`/`Corresponding author`; `pypdf` first-page text extraction; `rg` log checks
+- key_findings:
+  - Removed the first-author email from the affiliation block
+  - Kept `Hu Zou\inst{1,*}` in the author list
+  - Changed the affiliation note to `$^*$Corresponding author: {\it zouhu@nao.cas.cn}` without repeating the name
+- validation:
+  - `paper_draft/v6.pdf` compiled successfully with `tectonic`
+  - `v6.log` has no undefined references, undefined citations, overfull boxes, LaTeX errors, or float-too-large warnings
+  - PDF first-page text extraction confirms `xiaoyunao` is absent and `zouhu@nao.cas.cn` is present
+- remaining_issues:
+  - Need human visual check of title-page author/affiliation formatting
+- next_step:
+  - Review first page of `paper_draft/v6.pdf`
+
 - task: 更新 v6 作者顺序、通讯作者、单位邮编和图版面
 - files_changed: `paper_draft/v6.tex`, `paper_draft/v6.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `rg` inspect author and figure references; `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v6.pdf`; `pypdf` text extraction for author block and Fig. 3/5/10 pages; RAA author guideline check
