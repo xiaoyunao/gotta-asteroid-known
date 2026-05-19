@@ -550,7 +550,6 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
     fig, axes = plt.subplots(2, 2, figsize=(18, 14))
     histogram(axes[0, 0], finite(df[ADOPTED_MAG]), np.linspace(10, 21, 45), f"{ADOPTED_MAG_LABEL} [mag]", color="#4c78a8")
     axes[0, 0].set_xlim(10, 21)
-    axes[0, 0].set_xticks([10, 12, 14, 16, 18, 20, 21])
     histogram(axes[0, 1], finite(df[ADOPTED_MAGERR]), np.linspace(0, 1.05, 54), f"{ADOPTED_MAGERR_LABEL} [mag]", logy=True, color="#59a14f")
     histogram(axes[1, 0], finite(df["snr_aper_proxy"]), np.logspace(-0.2, 3.2, 58), "Aperture S/N proxy", logy=True, color="#f28e2b")
     axes[1, 0].set_xscale("log")
@@ -566,7 +565,6 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
         ylim=(0.0, 0.6),
         point_size=3.0,
     )
-    axes[1, 1].set_xticks([10, 12, 14, 16, 18, 20, 21])
     axes[1, 1].set_aspect("auto")
     fig.tight_layout()
     save_figure(fig, outdir / "photometric_statistics")
@@ -594,7 +592,6 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
         ylim=(0, 1.5),
         point_size=3.0,
     )
-    axes[1, 1].set_xticks([10, 12, 14, 16, 18, 20, 21])
     fig.tight_layout()
     save_figure(fig, outdir / "astrometric_residuals")
 

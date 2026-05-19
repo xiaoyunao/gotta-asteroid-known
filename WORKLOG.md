@@ -2,6 +2,21 @@
 
 ## 2026-05-19
 
+- task: 移除 v6 Fig. 5/6 星等 x 轴手动 21 tick
+- files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v6/photometric_statistics.*`, `paper_draft/figures_v6/astrometric_residuals.*`, `paper_draft/v6.pdf`, `WORKLOG.md`
+- commands_run: `python3 -m py_compile scripts/generate_paper_products.py`; `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v6`; `git restore` unrelated regenerated v6 figures/tables; `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` text extraction for Fig. 5 and Fig. 6 pages
+- key_findings:
+  - Explicit `21` tick labels made the magnitude axes visually crowded
+  - Kept the `10--21` x-axis limits but removed manual `set_xticks(...)` calls so Matplotlib chooses cleaner tick labels automatically
+- validation:
+  - `scripts/generate_paper_products.py` syntax check passed
+  - `paper_draft/v6.pdf` compiled successfully with `tectonic`, 26 pages, A4 page size `595.28 x 841.89 pts`
+  - `v6.log` has no undefined references, undefined citations, overfull boxes, LaTeX errors, or float-too-large warnings
+- remaining_issues:
+  - Need human visual check of Fig. 5/6 automatic tick spacing
+- next_step:
+  - Review Fig. 5 and Fig. 6 in `paper_draft/v6.pdf`
+
 - task: 将 v6 Fig. 5/6 中星等 x 轴上限统一为 21
 - files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v6/photometric_statistics.*`, `paper_draft/figures_v6/astrometric_residuals.*`, `paper_draft/v6.pdf`, `WORKLOG.md`
 - commands_run: `python3 -m py_compile scripts/generate_paper_products.py`; `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v6`; `git restore` unrelated regenerated v6 figures/tables from the same script run; `tectonic v6.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` text extraction for Fig. 5 and Fig. 6 pages
