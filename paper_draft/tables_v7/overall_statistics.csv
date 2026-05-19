@@ -1,0 +1,20 @@
+Quantity,Value,Note
+Accepted source-ephemeris associations,"56,230",Accepted source-ephemeris associations
+Distinct known asteroids,"16,053",Unique minor-planet identifiers
+Exposure catalogs with accepted associations,"13,253",Per-exposure catalog products
+UTC nights represented,73,Recovered sample date coverage
+Field groups represented,588,Grouped by pointing metadata
+NEO-class objects,77,Identified from small-body metadata
+PHA-class objects,19,Identified from small-body metadata
+Median ephemeris magnitude,18.2215,Predicted brightness
+Median $g_{\rm aper}$,18.1110,Adopted aperture magnitude
+Median $\sigma(g_{\rm aper})$,0.1239 mag,Adopted aperture uncertainty
+Median aperture S/N proxy,8.7621,Flux/error in adopted aperture
+Median observed-minus-predicted separation,0.220 arcsec,Recovered detections
+84th-percentile observed-minus-predicted separation,0.484 arcsec,Recovered detections
+2D residual RMS,0.355 arcsec,RMS of the 2D separation
+RMS in $\Delta\alpha\cos\delta$,0.250 arcsec,Coordinate residual
+RMS in $\Delta\delta$,0.252 arcsec,Coordinate residual
+Median angular rate,29.276 arcsec hr$^{-1}$,Derived from augmented geometry
+Median phase angle,13.245 deg,Derived from augmented geometry
+Associations without geometry augmentation,107,Excluded from geometry statistics

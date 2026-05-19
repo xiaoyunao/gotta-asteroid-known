@@ -28,6 +28,7 @@ ADOPTED_FLUX = f"Flux_Aper{ADOPTED_APERTURE_INDEX}"
 ADOPTED_FLUXERR = f"FluxErr_Aper{ADOPTED_APERTURE_INDEX}"
 ADOPTED_MAG_LABEL = r"$g_{\rm aper}$"
 ADOPTED_MAGERR_LABEL = r"$\sigma(g_{\rm aper})$"
+FOUR_PANEL_FIGSIZE = (18, 14)
 
 
 def as_text(values) -> pd.Series:
@@ -210,6 +211,8 @@ def density_map(
     yscale=None,
     cmap="rainbow",
     colorbar=True,
+    xlim=None,
+    ylim=None,
 ):
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
@@ -218,6 +221,10 @@ def density_map(
         mask &= x > 0
     if yscale == "log":
         mask &= y > 0
+    if xlim is not None:
+        mask &= (x >= xlim[0]) & (x <= xlim[1])
+    if ylim is not None:
+        mask &= (y >= ylim[0]) & (y <= ylim[1])
     x_plot = x[mask]
     y_plot = y[mask]
     if x_plot.size == 0:
@@ -262,6 +269,10 @@ def density_map(
         ax.set_xscale(xscale)
     if yscale:
         ax.set_yscale(yscale)
+    if xlim is not None:
+        ax.set_xlim(*xlim)
+    if ylim is not None:
+        ax.set_ylim(*ylim)
     ax.tick_params(labelsize=22)
     if colorbar:
         add_colorbar(ax, mesh, "Detections")
@@ -352,6 +363,26 @@ def running_rate_statistics(rate: pd.Series, sep: pd.Series, nbins: int = 20) ->
     return pd.DataFrame(rows)
 
 
+def running_linear_statistics(x: pd.Series, y: pd.Series, edges: np.ndarray, min_count: int = 40) -> pd.DataFrame:
+    data = pd.DataFrame({"x": pd.to_numeric(x, errors="coerce"), "y": pd.to_numeric(y, errors="coerce")})
+    data = data[np.isfinite(data["x"]) & np.isfinite(data["y"])]
+    rows = []
+    for left, right in zip(edges[:-1], edges[1:]):
+        sub = data[(data["x"] >= left) & (data["x"] < right)]["y"]
+        if len(sub) < min_count:
+            continue
+        rows.append(
+            {
+                "x": 0.5 * (left + right),
+                "p16": np.nanpercentile(sub, 16),
+                "median": np.nanpercentile(sub, 50),
+                "p84": np.nanpercentile(sub, 84),
+                "count": len(sub),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def write_csv_and_latex(
     df: pd.DataFrame,
     csv_path: Path,
@@ -405,7 +436,7 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
             ("Median aperture S/N proxy", fmt(q(df["snr_aper_proxy"], 50), 4), "Flux/error in adopted aperture"),
             ("Median observed-minus-predicted separation", fmt(q(df["sep_arcsec"], 50), 3) + " arcsec", "Recovered detections"),
             ("84th-percentile observed-minus-predicted separation", fmt(q(df["sep_arcsec"], 84), 3) + " arcsec", "Recovered detections"),
-            ("2D residual RMS", fmt(rms(df["sep_arcsec"]), 3) + " arcsec", r"sqrt(mean(sep$^2$))"),
+            ("2D residual RMS", fmt(rms(df["sep_arcsec"]), 3) + " arcsec", "RMS of the 2D separation"),
             (r"RMS in $\Delta\alpha\cos\delta$", fmt(rms(df["dra_cosdec_arcsec"]), 3) + " arcsec", "Coordinate residual"),
             (r"RMS in $\Delta\delta$", fmt(rms(df["ddec_arcsec"]), 3) + " arcsec", "Coordinate residual"),
             ("Median angular rate", fmt(q(df["ang_rate_arcsec_hour"], 50), 3) + r" arcsec hr$^{-1}$", "Derived from augmented geometry"),
@@ -415,8 +446,13 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
         columns=["Quantity", "Value", "Note"],
     )
 
+    orbit_work = df.copy()
+    sparse_codes = {"AST", "CEN"}
+    sparse_mask = orbit_work["object_orbit_class_code"].isin(sparse_codes)
+    orbit_work.loc[sparse_mask, "object_orbit_class_code"] = "Other"
+    orbit_work.loc[sparse_mask, "object_orbit_class_name"] = "Other / unclassified"
     orbit = (
-        df.groupby(["object_orbit_class_code", "object_orbit_class_name"], dropna=False)
+        orbit_work.groupby(["object_orbit_class_code", "object_orbit_class_name"], dropna=False)
         .agg(
             Detections=("query_id", "size"),
             **{
@@ -530,7 +566,13 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
         "tab:summary",
         r"p{0.40\textwidth}p{0.15\textwidth}p{0.33\textwidth}",
     )
-    write_csv_and_latex(orbit, outdir / "orbit_class_statistics.csv", "Orbit-class composition of the recovered known-asteroid sample. Separations are in arcsec.", "tab:orbit_class", r"llrrrr")
+    write_csv_and_latex(
+        orbit,
+        outdir / "orbit_class_statistics.csv",
+        "Orbit-class composition of the recovered known-asteroid sample. Separations are in arcsec. Classes with only a few detections are grouped into ``Other/unclassified''. The original generic SBDB class ``AST'' denotes an asteroid without a more specific dynamical class in the adopted mapping.",
+        "tab:orbit_class",
+        r"llrrrr",
+    )
     write_csv_and_latex(mag_ast, outdir / "astrometry_by_magnitude.csv", r"Astrometric residuals as a function of adopted aperture magnitude $g_{\rm aper}$. Separations are in arcsec.", "tab:mag_astrometry", r"lrrrr")
     write_csv_and_latex(rate_ast, outdir / "astrometry_by_rate.csv", r"Astrometric residuals as a function of sky-plane angular rate. Rate bins are in arcsec hr$^{-1}$ and separations are in arcsec.", "tab:rate_astrometry", r"lrrrr")
     write_csv_and_latex(nightly, outdir / "nightly_top5.csv", "Five UTC nights with the largest numbers of accepted known-asteroid associations.", "tab:nightly_top5", r"lrrrrr")
@@ -547,7 +589,7 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
 
 
 def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
-    fig, axes = plt.subplots(2, 2, figsize=(18, 14))
+    fig, axes = plt.subplots(2, 2, figsize=FOUR_PANEL_FIGSIZE)
     histogram(axes[0, 0], finite(df[ADOPTED_MAG]), np.linspace(10, 21, 45), f"{ADOPTED_MAG_LABEL} [mag]", color="#4c78a8")
     axes[0, 0].set_xlim(10, 21)
     histogram(axes[0, 1], finite(df[ADOPTED_MAGERR]), np.linspace(0, 1.05, 54), f"{ADOPTED_MAGERR_LABEL} [mag]", logy=True, color="#59a14f")
@@ -571,7 +613,7 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
 
 
 def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
-    fig, axes = plt.subplots(2, 2, figsize=(18, 14))
+    fig, axes = plt.subplots(2, 2, figsize=FOUR_PANEL_FIGSIZE)
     histogram(axes[0, 0], finite(df["sep_arcsec"]), np.linspace(0, 1.5, 61), "Separation [arcsec]", logy=True)
     med = q(df["sep_arcsec"], 50)
     p84 = q(df["sep_arcsec"], 84)
@@ -580,18 +622,31 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
     axes[0, 0].legend(fontsize=18)
     histogram(axes[0, 1], finite(df["dra_cosdec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\alpha\cos\delta$ [arcsec]", logy=True, color="#59a14f")
     histogram(axes[1, 0], finite(df["ddec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\delta$ [arcsec]", logy=True, color="#f28e2b")
-    density_colored_scatter(
+    mag_sep = df[np.isfinite(df[ADOPTED_MAG]) & np.isfinite(df["sep_arcsec"]) & (df["sep_arcsec"] <= 1.2)]
+    density_map(
         axes[1, 1],
-        df[ADOPTED_MAG],
-        df["sep_arcsec"],
+        mag_sep[ADOPTED_MAG],
+        mag_sep["sep_arcsec"],
         f"{ADOPTED_MAG_LABEL} [mag]",
         "Separation [arcsec]",
-        xbins=260,
-        ybins=190,
+        xbins=58,
+        ybins=34,
         xlim=(10, 21),
-        ylim=(0, 1.5),
-        point_size=3.0,
+        ylim=(0, 1.2),
+        cmap="Greys",
     )
+    mag_stats = running_linear_statistics(df[ADOPTED_MAG], df["sep_arcsec"], np.linspace(10, 21, 23), min_count=40)
+    if not mag_stats.empty:
+        axes[1, 1].plot(mag_stats["x"], mag_stats["median"], color="#d62728", linewidth=2.2, label="running median")
+        axes[1, 1].fill_between(
+            mag_stats["x"],
+            mag_stats["p16"],
+            mag_stats["p84"],
+            color="#d62728",
+            alpha=0.22,
+            label="16--84 percentile",
+        )
+        axes[1, 1].legend(fontsize=18, loc="upper left")
     fig.tight_layout()
     save_figure(fig, outdir / "astrometric_residuals")
 
@@ -623,7 +678,7 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
 
 
 def plot_geometry(df: pd.DataFrame, outdir: Path) -> None:
-    fig, axes = plt.subplots(2, 2, figsize=(18, 14))
+    fig, axes = plt.subplots(2, 2, figsize=FOUR_PANEL_FIGSIZE)
     histogram(axes[0, 0], finite(df["ang_rate_arcsec_hour"]), np.logspace(-1, 3.2, 65), r"Angular rate [arcsec hr$^{-1}$]", logy=True)
     axes[0, 0].set_xscale("log")
     axes[0, 0].axvline(q(df["ang_rate_arcsec_hour"], 50), color="black", linestyle="--", linewidth=1.6)
@@ -638,33 +693,20 @@ def plot_geometry(df: pd.DataFrame, outdir: Path) -> None:
 
 
 def plot_temporal(df: pd.DataFrame, outdir: Path) -> None:
-    nightly = df.groupby("night").size().sort_index()
     objects = df.groupby("query_id").agg(detections=("query_id", "size"), distinct_nights=("night", "nunique"), first_epoch=("epoch", "min"), last_epoch=("epoch", "max"))
-    objects["baseline_days"] = objects["last_epoch"] - objects["first_epoch"]
-
-    fig, axes = plt.subplots(2, 2, figsize=(18, 14))
-    dates = pd.to_datetime(nightly.index)
-    axes[0, 0].bar(dates, nightly.to_numpy(), color="#4c78a8", alpha=0.5, edgecolor="#2b2b2b", linewidth=0.35, width=1.0)
-    axes[0, 0].xaxis.set_major_locator(mdates.MonthLocator())
-    axes[0, 0].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
-    axes[0, 0].tick_params(axis="x", labelrotation=35)
-    axes[0, 0].set_xlabel("UTC date")
-    axes[0, 0].set_ylabel("Detections")
-    axes[0, 0].set_axisbelow(True)
-    axes[0, 0].grid(axis="y", alpha=0.16, linewidth=0.6)
-    axes[0, 0].tick_params(labelsize=18)
-    histogram(axes[0, 1], objects["detections"], np.arange(1, min(objects["detections"].max(), 60) + 2), "Detections per object", logy=True, color="#59a14f")
     values = np.sort(objects["detections"].to_numpy())
-    axes[1, 0].step(values, np.arange(1, len(values) + 1) / len(values), where="post", color="black", linewidth=2.0)
-    axes[1, 0].set_xscale("log")
-    axes[1, 0].set_xlabel("Detections per object")
-    axes[1, 0].set_ylabel("Cumulative fraction")
-    axes[1, 0].tick_params(labelsize=22)
-    values = np.sort(objects["baseline_days"].replace([np.inf, -np.inf], np.nan).dropna().to_numpy())
-    axes[1, 1].step(values, np.arange(1, len(values) + 1) / len(values), where="post", color="black", linewidth=2.0)
-    axes[1, 1].set_xlabel("Baseline per object [days]")
-    axes[1, 1].set_ylabel("Cumulative fraction")
-    axes[1, 1].tick_params(labelsize=22)
+    fig, ax = plt.subplots(figsize=(9.2, 5.8))
+    ax.step(values, np.arange(1, len(values) + 1) / len(values), where="post", color="black", linewidth=2.0)
+    ax.axvline(np.nanmedian(values), color="#d62728", linestyle="--", linewidth=1.8, label="median")
+    ax.axvline(np.nanpercentile(values, 84), color="#4c78a8", linestyle=":", linewidth=1.8, label="84th percentile")
+    ax.set_xscale("log")
+    ax.set_xlabel("Detections per object")
+    ax.set_ylabel("Cumulative fraction")
+    ax.set_ylim(0, 1.02)
+    ax.set_axisbelow(True)
+    ax.grid(alpha=0.16, linewidth=0.6)
+    ax.tick_params(labelsize=22)
+    ax.legend(fontsize=18, loc="lower right")
     fig.tight_layout()
     save_figure(fig, outdir / "temporal_sampling")
 

@@ -2,6 +2,28 @@
 
 ## 2026-05-19
 
+- task: 按 GPT Pro 意见在 v6 基础上生成 v7 论文稿
+- files_changed: `paper_draft/v7.tex`, `paper_draft/v7.pdf`, `paper_draft/figures_v7/*`, `paper_draft/tables_v7/*`, `scripts/generate_paper_products.py`, `scripts/generate_period_tables.py`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `python3 -m py_compile scripts/generate_paper_products.py`; `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v7`; `python3 -m py_compile scripts/generate_period_tables.py`; `python3 scripts/generate_period_tables.py --period-tsv /Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv --fits-path gotta_asteroids.fits --outdir paper_draft/tables_v7`; `tectonic v7.tex --keep-logs --keep-intermediates`; `rg` log/text checks; `pypdf` PDF text extraction; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v7.pdf`
+- key_findings:
+  - 本地 `gotta_asteroids.fits` 仍不含 Gaia mask 前候选或 Gaia 距离列，因此 v7 未写无法复核的 Gaia 剔除数量
+  - NEO 子集为 259 detections / 77 objects，median `g_aper=17.525`，median rate `111.643 arcsec hr^-1`，median separation `0.232 arcsec`
+  - PHA 子集为 53 detections / 19 objects，median `g_aper=17.660`，median rate `132.424 arcsec hr^-1`，median separation `0.211 arcsec`
+  - 24 个周期样本的 Type 已用本地 FITS 和 JPL SBDB API 补齐，当前均为 `MBA`
+  - v7 删除主文 Fig. 8、Table 4、Table 5；Fig. 6 右下角加入 magnitude-bin running median 和 16--84 percentile；Fig. 10 改为单 panel CDF；Fig. 9 移到 Section 4.1
+  - Appendix Table A.1 删除 `Name`、加入 `Type`，并将四舍五入为零的 `\Delta P` 显示为 `<0.0001`
+- validation:
+  - 两个 Python 脚本语法检查通过
+  - `paper_draft/v7.pdf` 编译成功，共 26 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v7.log` 未发现 undefined references、undefined citations、overfull、float-too-large 或 LaTeX errors
+  - PDF 文本抽取未发现 `This statement should`、`TODO`、`validation table`、`questionable final classifications` 或 `sqrt(mean...)`
+- remaining_issues:
+  - 需要人工视觉检查 v7 PDF 中 Fig. 6 median band、Fig. 10 CDF、主文周期表和 Appendix Table A.1 的排版
+  - Gaia mask 剔除数量仍需上游候选/剔除表才能补入正文
+  - 外部周期数据库来源仍需共同作者最终确认
+- next_step:
+  - 人工审阅 `paper_draft/v7.pdf`，优先检查 Results 图表顺序和 Section 5 周期结果表
+
 - task: 初始化本次会话并恢复项目上下文
 - files_changed: `WORKLOG.md`
 - commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git status --short --branch`; `git log --oneline --decorate --graph -n 15 --all`; `sed -n '1,220p' WORKLOG.md`; `sed -n '1,220p' PLAN.md`; `sed -n '1,220p' README.md`; `git rev-list --left-right --count HEAD...origin/main`
