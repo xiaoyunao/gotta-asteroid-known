@@ -1,5 +1,24 @@
 # WORKLOG
 
+## 2026-05-20
+
+- task: 恢复 v7 astrometric residual 右下角为 v6 局部密度散点底图
+- files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v7/astrometric_residuals.*`, `paper_draft/v7.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `python3 -m py_compile scripts/generate_paper_products.py`; `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v7`; `tectonic v7.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` PDF text extraction; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v7.pdf`; `git restore` unrelated regenerated v7 figure PDFs
+- key_findings:
+  - v7 上一版把 astrometric residual 右下角从 v6 的 `viridis` 局部密度散点改成了灰度 density map
+  - 已恢复为 v6 的 `density_colored_scatter()` 底图，保留新增 running median 和 16--84 percentile 阴影
+  - y 轴范围恢复为 v6 的 `0--1.5 arcsec`
+- validation:
+  - `scripts/generate_paper_products.py` 语法检查通过
+  - `paper_draft/v7.pdf` 编译成功，共 26 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v7.log` 未发现 undefined references、undefined citations、overfull、float-too-large 或 LaTeX errors
+  - PDF 文本抽取未发现 `This statement should`、`TODO`、`validation table`、`questionable final classifications` 或 `sqrt(mean...)`
+- remaining_issues:
+  - 需要人工视觉检查更新后的 astrometric residual 图右下角底图和 median/percentile 叠加效果
+- next_step:
+  - 打开 `paper_draft/v7.pdf` 检查对应图页
+
 ## 2026-05-19
 
 - task: 按 GPT Pro 意见在 v6 基础上生成 v7 论文稿

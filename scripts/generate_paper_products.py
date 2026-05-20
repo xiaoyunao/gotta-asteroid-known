@@ -622,18 +622,17 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
     axes[0, 0].legend(fontsize=18)
     histogram(axes[0, 1], finite(df["dra_cosdec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\alpha\cos\delta$ [arcsec]", logy=True, color="#59a14f")
     histogram(axes[1, 0], finite(df["ddec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\delta$ [arcsec]", logy=True, color="#f28e2b")
-    mag_sep = df[np.isfinite(df[ADOPTED_MAG]) & np.isfinite(df["sep_arcsec"]) & (df["sep_arcsec"] <= 1.2)]
-    density_map(
+    density_colored_scatter(
         axes[1, 1],
-        mag_sep[ADOPTED_MAG],
-        mag_sep["sep_arcsec"],
+        df[ADOPTED_MAG],
+        df["sep_arcsec"],
         f"{ADOPTED_MAG_LABEL} [mag]",
         "Separation [arcsec]",
-        xbins=58,
-        ybins=34,
+        xbins=260,
+        ybins=190,
         xlim=(10, 21),
-        ylim=(0, 1.2),
-        cmap="Greys",
+        ylim=(0, 1.5),
+        point_size=3.0,
     )
     mag_stats = running_linear_statistics(df[ADOPTED_MAG], df["sep_arcsec"], np.linspace(10, 21, 23), min_count=40)
     if not mag_stats.empty:

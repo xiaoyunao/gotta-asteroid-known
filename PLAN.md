@@ -46,6 +46,7 @@ Fig. 6/7/10 趋势图、主文可靠周期表、Appendix Table A.1 和最终 PDF
 35. 已修正 Appendix 排版和 Table A.1：Appendix A 标题与 Figure A.1 同页，Figure A.2 单独一页；Table A.1 列顺序为 `N_{\rm total}` 后接 `N_{\rm eff}`，行排序为 reliable 在前、questionable 在后，各组内按 object ID 升序
 36. 已更新 v6 作者和版面：Feiyang Tian 为第二作者，Hu Zou 为第三作者和通讯作者（`zouhu@nao.cas.cn`），第二单位邮编改为 `100049`，Fig. 3 改为 75% 宽，Fig. 5 和 Fig. 10 缩小以减少图下空白
 37. 已按 GPT Pro 意见生成 v7：重写 Method 星历和 Gaia mask，删除主文 Fig. 8/Table 4/Table 5，Fig. 6 加 magnitude running median，Fig. 10 改为单 panel CDF，Fig. 9 移到 Section 4.1，新增 NEO/PHA 子集统计和主文 reliable period 表，Appendix Table A.1 删除 Name 并加入 Type
+38. 已恢复 v7 astrometric residual 图右下角为 v6 的 `viridis` 局部密度散点底图，同时保留 running median 和 16--84 percentile 阴影
 
 ## Outstanding issues
 
@@ -54,7 +55,7 @@ Fig. 6/7/10 趋势图、主文可靠周期表、Appendix Table A.1 和最终 PDF
 - v7 后续小修应直接覆盖 `paper_draft/figures_v7/`、`paper_draft/tables_v7/` 和 `paper_draft/v7.pdf`，不要再新建 v8，除非用户明确要求
 - `paper_draft/v7.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者最终确认
 - 光变分析方法已整合入 v7，主文可靠周期表列出 12 个 reliable objects，Appendix Table A.1 保留 24 个 validation-sample objects；仍建议人工检查表格含义和 tentative 标记
-- Fig. 5/6/7/10 已重画或调整，两张光变 mosaic 和验证表保留在 Appendix；仍建议人工确认打印版中的柱状图透明度、密度点大小、colorbar、Fig. 6 median band、Fig. 10 CDF、Appendix figure panel 字号和 Appendix Table A.1 可读性
+- Fig. 5/6/7/10 已重画或调整，两张光变 mosaic 和验证表保留在 Appendix；仍建议人工确认打印版中的柱状图透明度、密度点大小、colorbar、Fig. 6 右下角局部密度散点和 median band、Fig. 10 CDF、Appendix figure panel 字号和 Appendix Table A.1 可读性
 - 需要确认外部周期数据库来源是否为 MPC、LCDB、ALCDEF 或其他数据库，正文目前保守写作 external/literature period database
 - 当前本机可用 `tectonic`；未发现 `/Library/TeX/texbin/xelatex` 或 `latexmk`
 
@@ -103,11 +104,12 @@ Fig. 6/7/10 趋势图、主文可靠周期表、Appendix Table A.1 和最终 PDF
 - v7 PDF 文本抽取未发现内部 TODO、`This statement should`、`validation table`、`questionable final classifications` 或 `sqrt(mean...)`
 - v7 Section 3.2 已扩展轨道根数到 RA/Dec 的描述，Section 3.3 已删除 cross-match 距离公式并采用 1.5 arcsec Gaia mask 表述
 - v7 Fig. 6 右下角已加入 running median 和 16th--84th percentile；主文不再输入 Table 4/Table 5
+- v7 astrometric residual 图右下角底图已恢复为 v6 的局部密度散点样式，并保留 running median 和 16th--84th percentile
 - v7 Section 5 已新增 `tables_v7/period_reliable_main.tex` 主文可靠周期表，Appendix Table A.1 已删除 Name、加入 Type、并将极小 `\Delta P` 显示为 `<0.0001`
 
 ## Next recommended steps
 
-1. 人工检查更新后的 `paper_draft/v7.pdf` 中 Fig. 6/7/10、主文 reliable period table、Appendix Figures A.1/A.2、Appendix Table A.1、引用跳转和 References/Appendix 顺序
+1. 人工检查更新后的 `paper_draft/v7.pdf` 中 astrometric residual 图右下角、Fig. 7/10、主文 reliable period table、Appendix Figures A.1/A.2、Appendix Table A.1、引用跳转和 References/Appendix 顺序
 2. 人工检查首页作者顺序、Hu Zou 通讯作者标记、邮箱和第二单位邮编
 3. 确认外部周期数据库来源；若实际为 LCDB/ALCDEF，正文和表头应改为 LCDB/ALCDEF literature period
 4. 确认作者、单位、致谢和硬件参数
