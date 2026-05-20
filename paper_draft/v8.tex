@@ -119,7 +119,7 @@ The statistics presented in this paper are produced by applying the association 
 
 \begin{figure*}[!htbp]
 \centering
-\includegraphics[width=0.75\textwidth]{outputs/known_object_processing_updated_v7.png}
+\includegraphics{outputs/known_object_processing_updated_v7.png}
 \caption{Single-night workflow of the known-asteroid processing system. The batch statistics presented in this paper are produced by applying the same core association logic to the accumulated prototype data set. In the operational single-night mode, calibrated L2 source catalogs are dispatched to per-frame processing, matched detections are stored in the object-history catalog, and cutout images are generated for inspection. All accepted detections enter the matched-object history, while only objects with at least three detections in a night are selected for ADES PSV generation and MPC test submission.}
 \label{fig:flowchart}
 \end{figure*}
@@ -282,8 +282,9 @@ The weak residual dependence on angular rate indicates that, for most detections
 
 \FloatBarrier
 
-\subsection{Temporal Sampling and Auxiliary Light-Curve Data}
+\subsection{Temporal Sampling and Pilot Light-Curve Results}
 \label{sec:temporal_sampling}
+\label{sec:period_results}
 
 The scientific value of a high-cadence survey for asteroid work depends not only on the number of recovered objects, but also on how often individual objects are revisited. In the current sample the revisit statistics are highly non-uniform. The median number of detections per object is two, the mean is 3.50, and the 84th percentile is six. A small subset of objects has much denser sampling; the most frequently recovered object has 317 detections over nine distinct nights. The five most frequently recovered objects are listed in Table~\ref{tab:most_observed_objects}.
 
@@ -300,12 +301,9 @@ In the single-night operational workflow, objects recovered at least three times
 \label{fig:detections_per_object}
 \end{figure}
 
-\FloatBarrier
-
-\subsection{Pilot Rotation-Period Results}
-\label{sec:period_results}
-
 Applying the period-analysis procedure in Section~\ref{sec:method_lightcurve} to the combined GOTTA Prototype and 60 cm Schmidt data yields 24 retained period-analysis candidates. Twelve objects satisfy the adopted high-confidence criteria, while the remaining twelve are classified as tentative candidates that require additional observations. Within the external period database queried in this work, none of the retained candidates has a matched reference period. We therefore treat these periods as validation-sample measurements rather than as a complete census of previously unknown asteroid rotation periods.
+
+The reliable solutions are all classified as main-belt asteroids in the adopted small-body metadata. Their adopted rotation periods range from 2.84 to 6.14 hr, with a median of 4.71 hr. These values are typical of ordinary main-belt asteroid rotation periods and none approaches the approximate 2.2 hr spin barrier for strengthless rubble-pile asteroids. The pilot sample therefore provides a physically plausible check on the period-search workflow, although the present data do not yet support a population-level interpretation of amplitudes, shapes, or spin-state distributions. The tentative subset includes cases with weaker phase coverage, stronger alias ambiguity, or less secure folded-light-curve morphology, and should be treated as follow-up candidates.
 
 The full validation sample is listed in Appendix Table~\ref{tab:period_validation}. The reliable subset is used here to demonstrate that the recovered known-object catalog can feed into an asteroid period-search workflow when supplemented by denser auxiliary observations. Appendix Figures~\ref{fig:lightcurve_reliable} and \ref{fig:lightcurve_questionable} show the folded light curves for the reliable and tentative subsets, respectively. The pilot analysis demonstrates the feasibility of the period-search pipeline, while also confirming that the GOTTA Prototype survey cadence alone is insufficient for routine period recovery for most objects.
 

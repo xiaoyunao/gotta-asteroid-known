@@ -4,7 +4,7 @@
 
 继续审阅并小修 `paper_draft/v8.tex` 和 `paper_draft/v8.pdf`。保持科学定位为
 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
-当前重点是人工检查 v8 的新 workflow 图、Results 重构后的叙事、
+当前重点是人工检查 v8 的新 workflow 图自然尺寸、Results 重构后的叙事、
 Fig. 5/7/8/9、Appendix Table A.1 和最终 PDF 排版。
 
 ## Milestones
@@ -48,6 +48,7 @@ Fig. 5/7/8/9、Appendix Table A.1 和最终 PDF 排版。
 37. 已按 GPT Pro 意见生成 v7：重写 Method 星历和 Gaia mask，删除主文 Fig. 8/Table 4/Table 5，Fig. 6 加 magnitude running median，Fig. 10 改为单 panel CDF，Fig. 9 移到 Section 4.1，新增 NEO/PHA 子集统计和主文 reliable period 表，Appendix Table A.1 删除 Name 并加入 Type
 38. 已恢复 v7 astrometric residual 图右下角为 v6 的 `viridis` 局部密度散点底图，同时保留 running median 和 16--84 percentile 阴影
 39. 已按 GPT Pro 意见生成 v8：摘要结果导向压缩，光变方法移入 Section 3.4，光变结果移入 Section 4.5，Discussion 改为 Section 5，主文 reliable period table 删除，新 workflow PNG 插入 Fig. 2，Fig. 5 增加 median 图例，Fig. 7/8 改为 binned median，Fig. 9 改为 detection-count histogram，Table 1 和 Appendix Table A.1 排版更新
+40. 已按用户小修 v8：Fig. 2 LaTeX 去掉显式宽度并通过 PNG DPI 元数据控制自然打印尺寸，原 4.4/4.5 合并为 `Temporal Sampling and Pilot Light-Curve Results`，Fig. 9 改为前文 histogram 风格，并在光变结果段补充可靠周期的物理解释
 
 ## Outstanding issues
 
@@ -56,7 +57,7 @@ Fig. 5/7/8/9、Appendix Table A.1 和最终 PDF 排版。
 - v8 后续小修应直接覆盖 `paper_draft/figures_v8/`、`paper_draft/tables_v8/` 和 `paper_draft/v8.pdf`，不要再新建 v9，除非用户明确要求
 - `paper_draft/v8.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者最终确认
 - 光变分析方法已整合入 v8 Section 3.4，结果移入 Section 4.5，主文 reliable period table 已删除；Appendix Table A.1 保留 24 个 validation-sample objects；仍建议人工检查表格含义和 tentative 标记
-- Fig. 5/6/7/8/9 已重画或调整，两张光变 mosaic 和验证表保留在 Appendix；仍建议人工确认打印版中的柱状图透明度、密度点大小、colorbar、Fig. 6 右下角局部密度散点和 median band、Fig. 9 histogram、Appendix figure panel 字号和 Appendix Table A.1 可读性
+- Fig. 5/6/7/8/9 已重画或调整，两张光变 mosaic 和验证表保留在 Appendix；仍建议人工确认打印版中的柱状图透明度、密度点大小、colorbar、Fig. 6 右下角局部密度散点和 median band、Fig. 9 histogram、workflow 图自然尺寸、Appendix figure panel 字号和 Appendix Table A.1 可读性
 - 需要确认外部周期数据库来源是否为 MPC、LCDB、ALCDEF 或其他数据库，正文目前保守写作 external/literature period database
 - 当前本机可用 `tectonic`；未发现 `/Library/TeX/texbin/xelatex` 或 `latexmk`
 
@@ -107,13 +108,14 @@ Fig. 5/7/8/9、Appendix Table A.1 和最终 PDF 排版。
 - v7 Fig. 6 右下角已加入 running median 和 16th--84th percentile；主文不再输入 Table 4/Table 5
 - v7 astrometric residual 图右下角底图已恢复为 v6 的局部密度散点样式，并保留 running median 和 16th--84th percentile
 - v7 Section 5 已新增 `tables_v7/period_reliable_main.tex` 主文可靠周期表，Appendix Table A.1 已删除 Name、加入 Type、并将极小 `\Delta P` 显示为 `<0.0001`
-- 当前 `paper_draft/v8.pdf` 已由 `tectonic` 编译生成，共 25 页，A4 页面尺寸 `595.28 x 841.89 pts`
+- 当前 `paper_draft/v8.pdf` 已由 `tectonic` 编译生成，共 26 页，A4 页面尺寸 `595.28 x 841.89 pts`
 - v8 `v8.log` 未发现 undefined references、undefined citations、overfull、float-too-large 或 LaTeX errors
 - v8 PDF 文本抽取未发现独立 `Light-Curve Analysis with Auxiliary Observations`、`running median`、`cumulative distribution`、`validation table`、内部 TODO 或主文 `Table 5`
 - v8 Section 3.4 已加入 light-curve period-analysis method，Section 4.5 已加入 pilot rotation-period results，Discussion 变为 Section 5
 - v8 Fig. 2 使用 `paper_draft/outputs/known_object_processing_updated_v7.png`
 - v8 Table 1 使用 `tabularx` 固定列宽，Appendix Table A.1 有单位行、`tab:period_validation` label、`Aper` photometry label 和 `<0.0001` 极小 `\Delta P` 格式
 - v8 Fig. 9 已改为 detection-count histogram，legend 显示 median = 2、84th = 6、max = 317
+- v8 原 4.4/4.5 已合并为 `Temporal Sampling and Pilot Light-Curve Results`；PDF 文本抽取未发现独立 `Pilot Rotation-Period Results`
 
 ## Next recommended steps
 

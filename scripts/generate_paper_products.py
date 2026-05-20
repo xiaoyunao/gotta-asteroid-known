@@ -721,15 +721,18 @@ def plot_temporal(df: pd.DataFrame, outdir: Path) -> None:
     median = np.nanmedian(values)
     p84 = np.nanpercentile(values, 84)
     maximum = np.nanmax(values)
-    fig, ax = plt.subplots(figsize=(9.6, 5.8))
+    fig, ax = plt.subplots(figsize=(8.8, 5.2))
     ax.bar(
         x,
         np.r_[hist, tail],
         color="#4c78a8",
-        edgecolor="white",
-        linewidth=0.7,
-        label=f"median = {median:.0f}; 84th = {p84:.0f}; max = {maximum:.0f}",
+        alpha=0.5,
+        edgecolor="#2b2b2b",
+        linewidth=0.55,
     )
+    ax.axvline(median, color="black", linestyle="--", linewidth=1.4, label=f"median = {median:.0f}")
+    ax.axvline(p84, color="black", linestyle=":", linewidth=1.4, label=f"84th percentile = {p84:.0f}")
+    ax.plot([], [], color="none", label=f"max = {maximum:.0f}")
     ax.set_xlabel("Detections per object")
     ax.set_ylabel("Number of objects")
     ax.set_yscale("log")
@@ -738,8 +741,10 @@ def plot_temporal(df: pd.DataFrame, outdir: Path) -> None:
     ax.set_xticklabels(["1", "2", "3", "4", "5", "10", "20", ">20"])
     ax.set_axisbelow(True)
     ax.grid(alpha=0.16, linewidth=0.6)
-    ax.tick_params(labelsize=22)
-    ax.legend(frameon=False, fontsize=18, loc="upper right")
+    ax.tick_params(labelsize=18)
+    ax.xaxis.label.set_size(22)
+    ax.yaxis.label.set_size(22)
+    ax.legend(frameon=False, fontsize=15, loc="upper right", handlelength=2.5)
     fig.tight_layout()
     save_figure(fig, outdir / "temporal_sampling")
 

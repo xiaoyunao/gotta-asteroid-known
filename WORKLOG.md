@@ -2,6 +2,26 @@
 
 ## 2026-05-20
 
+- task: 小修 v8 workflow 尺寸、4.4/4.5 合并和 Fig. 9 风格
+- files_changed: `paper_draft/v8.tex`, `paper_draft/v8.pdf`, `paper_draft/figures_v8/temporal_sampling.*`, `paper_draft/outputs/known_object_processing_updated_v7.png`, `scripts/generate_paper_products.py`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `sips -g pixelWidth -g pixelHeight -g dpiWidth -g dpiHeight paper_draft/outputs/known_object_processing_updated_v7.png`; `python3 -m py_compile scripts/generate_paper_products.py`; `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v8`; `sips -s dpiWidth 252 -s dpiHeight 252 paper_draft/outputs/known_object_processing_updated_v7.png`; `tectonic v8.tex --keep-logs --keep-intermediates`; `rg` log/text checks; `pypdf` PDF text extraction; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v8.pdf`; `view_image paper_draft/figures_v8/temporal_sampling.png`
+- key_findings:
+  - 直接去掉 Fig. 2 的 LaTeX `width=0.75\textwidth` 后，72 dpi PNG 自然尺寸导致 `Overfull \hbox` 超出 1064 pt
+  - 已保留 LaTeX `\includegraphics{...}` 无显式宽度，并将 workflow PNG DPI 元数据设为 252，使图片按自身物理尺寸插入且不再 overfull
+  - 原 Section 4.4/4.5 已合并为 `Temporal Sampling and Pilot Light-Curve Results`
+  - 光变结果段补充可靠周期的物理解释：12 个可靠解均为 MBA，周期范围 `2.84--6.14 hr`，median `4.71 hr`，未接近约 `2.2 hr` rubble-pile spin barrier
+  - Fig. 9 已改为更接近前文 histogram 的半透明柱、细黑边、浅网格和 median/84th percentile 竖线
+- validation:
+  - `scripts/generate_paper_products.py` 语法检查通过
+  - `paper_draft/v8.pdf` 编译成功，共 26 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v8.log` 未发现 undefined references、undefined citations、overfull、float-too-large 或 LaTeX errors
+  - PDF 文本抽取确认合并后标题 `Temporal Sampling and Pilot Light-Curve Results` 存在，独立 `Pilot Rotation-Period Results` 不存在
+  - PDF 文本抽取未发现独立 `Light-Curve Analysis with Auxiliary Observations`、`running median`、`cumulative distribution`、`validation table` 或主文 `Table 5`
+- remaining_issues:
+  - 需要人工视觉检查 workflow 图自然尺寸和 Fig. 9 新风格在 PDF 中的实际观感
+- next_step:
+  - 打开 `paper_draft/v8.pdf` 检查 Fig. 2、合并后的 Section 4.4 和 Fig. 9
+
 - task: 按 GPT Pro 意见生成 v8 论文稿
 - files_changed: `paper_draft/v8.tex`, `paper_draft/v8.pdf`, `paper_draft/figures_v8/*`, `paper_draft/tables_v8/*`, `paper_draft/outputs/known_object_processing_updated_v7.png`, `scripts/generate_paper_products.py`, `scripts/generate_period_tables.py`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `python3 -m py_compile scripts/generate_paper_products.py`; `python3 -m py_compile scripts/generate_period_tables.py`; `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v8`; `python3 scripts/generate_period_tables.py --period-tsv /Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv --fits-path gotta_asteroids.fits --outdir paper_draft/tables_v8 --class-csv paper_draft/tables_v7/period_object_classes.csv`; `tectonic v8.tex --keep-logs --keep-intermediates`; `rg` log/text checks; `pypdf` PDF text extraction; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v8.pdf`; `view_image` checks for workflow/Fig. 5/Fig. 9 PNGs
