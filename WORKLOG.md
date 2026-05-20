@@ -2,6 +2,20 @@
 
 ## 2026-05-20
 
+- task: 初始化本次会话并查看当前工作进度
+- files_changed: `WORKLOG.md`
+- commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `sed -n '1,220p' WORKLOG.md`; `sed -n '1,220p' PLAN.md`; `sed -n '1,180p' README.md`; `git rev-list --left-right --count HEAD...origin/main`; `git diff --stat`; `find paper_draft -maxdepth 2 ...`
+- key_findings:
+  - 当前分支为 `main`，`HEAD` 与 `origin/main` 均为 `0dc395b Restore v7 astrometry density style`
+  - `git rev-list --left-right --count HEAD...origin/main` 返回 `0 0`，本地与远端未分叉
+  - 初始化前工作区干净；当前进度集中在 `paper_draft/v7.pdf` 的人工审阅和最终小修
+- validation:
+  - 已完成上下文恢复、远端同步检查和项目记忆读取
+- remaining_issues:
+  - 仍需人工检查 v7 PDF 中 Fig. 6/7/10、主文可靠周期表、Appendix figures/table、首页作者信息和引用/附录顺序
+- next_step:
+  - 打开 `paper_draft/v7.pdf` 做人工视觉检查，优先看 astrometric residual 右下角和周期相关表格
+
 - task: 恢复 v7 astrometric residual 右下角为 v6 局部密度散点底图
 - files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v7/astrometric_residuals.*`, `paper_draft/v7.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `python3 -m py_compile scripts/generate_paper_products.py`; `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v7`; `tectonic v7.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` PDF text extraction; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v7.pdf`; `git restore` unrelated regenerated v7 figure PDFs
