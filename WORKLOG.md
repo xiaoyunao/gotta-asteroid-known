@@ -2,6 +2,30 @@
 
 ## 2026-05-20
 
+- task: 按 GPT Pro 意见生成 v8 论文稿
+- files_changed: `paper_draft/v8.tex`, `paper_draft/v8.pdf`, `paper_draft/figures_v8/*`, `paper_draft/tables_v8/*`, `paper_draft/outputs/known_object_processing_updated_v7.png`, `scripts/generate_paper_products.py`, `scripts/generate_period_tables.py`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `python3 -m py_compile scripts/generate_paper_products.py`; `python3 -m py_compile scripts/generate_period_tables.py`; `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v8`; `python3 scripts/generate_period_tables.py --period-tsv /Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv --fits-path gotta_asteroids.fits --outdir paper_draft/tables_v8 --class-csv paper_draft/tables_v7/period_object_classes.csv`; `tectonic v8.tex --keep-logs --keep-intermediates`; `rg` log/text checks; `pypdf` PDF text extraction; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v8.pdf`; `view_image` checks for workflow/Fig. 5/Fig. 9 PNGs
+- key_findings:
+  - v7 的独立 light-curve Section 已拆分：period method 移到 Section 3.4，period results 移到 Section 4.5，Discussion 变为 Section 5
+  - 摘要已改为结果导向版本，删除逐步 workflow 细节
+  - 新 workflow PNG 已插入为 Fig. 2；所有 accepted detections 入 matched-object history，单夜同目标 `>=3` 次仅用于 ADES PSV/MPC report selection
+  - 按 `query_id + night` 统计，当前 batch sample 中有 16 个 object-night groups 满足单夜 `>=3` 次，涉及 15 个唯一目标
+  - 主文 reliable period table 已删除，仅保留 Appendix Table A.1 完整 period-analysis sample
+  - Fig. 5 median 竖线加入数值 legend；Fig. 7/8 legend 和正文改为 `binned median`；Fig. 9 改为 detection-count histogram，legend 显示 median=2、84th=6、max=317
+  - Table 1 改用 `tabularx` 固定列宽；Appendix Table A.1 加单位行、统一对齐、`Aper` 标签和 `tab:period_validation` label
+  - JPL SBDB 网络连接中途 reset，周期表 Type 已改为优先使用本地 `tables_v7/period_object_classes.csv` 缓存
+- validation:
+  - 两个 Python 脚本语法检查通过
+  - `paper_draft/v8.pdf` 编译成功，共 25 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v8.log` 未发现 undefined references、undefined citations、overfull、float-too-large 或 LaTeX errors
+  - PDF 文本抽取未发现独立 `Light-Curve Analysis with Auxiliary Observations`、`running median`、`cumulative distribution`、`validation table`、内部 TODO 或主文 `Table 5`
+  - 已快速查看 workflow PNG、Fig. 5 geometry PNG 和 Fig. 9 histogram PNG；Fig. 9 尾 bin 标签重叠已修复
+- remaining_issues:
+  - 需要人工视觉检查 `paper_draft/v8.pdf` 中新 workflow 图、Table 1、Fig. 5/7/8/9、Appendix Figures A.1/A.2 和 Appendix Table A.1 的最终版面
+  - 外部周期数据库来源仍需共同作者最终确认
+- next_step:
+  - 打开 `paper_draft/v8.pdf` 做人工审阅，优先检查图表编号、引用跳转和 Appendix Table A.1 可读性
+
 - task: 初始化本次会话并查看当前工作进度
 - files_changed: `WORKLOG.md`
 - commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `sed -n '1,220p' WORKLOG.md`; `sed -n '1,220p' PLAN.md`; `sed -n '1,180p' README.md`; `git rev-list --left-right --count HEAD...origin/main`; `git diff --stat`; `find paper_draft -maxdepth 2 ...`

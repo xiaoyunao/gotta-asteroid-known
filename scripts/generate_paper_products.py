@@ -413,6 +413,23 @@ def write_csv_and_latex(
         handle.write("\\bottomrule\n\\end{tabular}\n\\end{table*}\n")
 
 
+def write_overall_statistics_table(df: pd.DataFrame, tex_path: Path, caption: str, label: str) -> None:
+    with tex_path.open("w", encoding="utf-8") as handle:
+        handle.write("\\begin{table*}\n\\centering\n")
+        handle.write(f"\\caption{{{caption}}}\n")
+        handle.write(f"\\label{{{label}}}\n")
+        handle.write("\\footnotesize\n")
+        handle.write("\\setlength{\\tabcolsep}{5pt}\n")
+        handle.write("\\renewcommand{\\arraystretch}{1.12}\n")
+        handle.write("\\begin{tabularx}{0.96\\textwidth}{@{}>{\\raggedright\\arraybackslash}p{0.42\\textwidth}>{\\raggedleft\\arraybackslash}p{0.22\\textwidth}>{\\raggedright\\arraybackslash}X@{}}\n")
+        handle.write("\\toprule\n")
+        handle.write("Quantity & Value & Note \\\\\n")
+        handle.write("\\midrule\n")
+        for _, row in df.iterrows():
+            handle.write(" & ".join(latex_escape(x) for x in row.to_list()) + " \\\\\n")
+        handle.write("\\bottomrule\n\\end{tabularx}\n\\end{table*}\n")
+
+
 def latex_escape(value) -> str:
     text = str(value)
     if "$" in text or "\\" in text:
@@ -423,9 +440,9 @@ def latex_escape(value) -> str:
 def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
     overall = pd.DataFrame(
         [
-            ("Accepted source-ephemeris associations", f"{len(df):,}", "Accepted source-ephemeris associations"),
+            ("Accepted source--ephemeris matches", f"{len(df):,}", "Recovered detections"),
             ("Distinct known asteroids", f"{df['query_id'].nunique():,}", "Unique minor-planet identifiers"),
-            ("Exposure catalogs with accepted associations", f"{df['source_file'].nunique():,}", "Per-exposure catalog products"),
+            ("Exposure catalogs with accepted matches", f"{df['source_file'].nunique():,}", "Per-exposure catalog products"),
             ("UTC nights represented", f"{df['night'].nunique():,}", "Recovered sample date coverage"),
             ("Field groups represented", f"{df['field_id'].nunique():,}", "Grouped by pointing metadata"),
             ("NEO-class objects", f"{df.loc[df['object_neo_bool'], 'query_id'].nunique():,}", "Identified from small-body metadata"),
@@ -439,7 +456,7 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
             ("2D residual RMS", fmt(rms(df["sep_arcsec"]), 3) + " arcsec", "RMS of the 2D separation"),
             (r"RMS in $\Delta\alpha\cos\delta$", fmt(rms(df["dra_cosdec_arcsec"]), 3) + " arcsec", "Coordinate residual"),
             (r"RMS in $\Delta\delta$", fmt(rms(df["ddec_arcsec"]), 3) + " arcsec", "Coordinate residual"),
-            ("Median angular rate", fmt(q(df["ang_rate_arcsec_hour"], 50), 3) + r" arcsec hr$^{-1}$", "Derived from augmented geometry"),
+            ("Median angular rate", r"\mbox{" + fmt(q(df["ang_rate_arcsec_hour"], 50), 3) + r" arcsec hr$^{-1}$}", "Derived from augmented geometry"),
             ("Median phase angle", fmt(q(df["phase_deg"], 50), 3) + " deg", "Derived from augmented geometry"),
             ("Associations without geometry augmentation", f"{int(truthy(df['horizons_failed']).sum()):,}", "Excluded from geometry statistics"),
         ],
@@ -559,13 +576,9 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
     for col in ["Detections", "Nights"]:
         obj[col] = obj[col].map(lambda x: f"{x:,}")
 
-    write_csv_and_latex(
-        overall,
-        outdir / "overall_statistics.csv",
-        "Statistics for the recovered GOTTA known-asteroid sample.",
-        "tab:summary",
-        r"p{0.40\textwidth}p{0.15\textwidth}p{0.33\textwidth}",
-    )
+    outdir.mkdir(parents=True, exist_ok=True)
+    overall.to_csv(outdir / "overall_statistics.csv", index=False)
+    write_overall_statistics_table(overall, outdir / "overall_statistics.tex", "Statistics for the recovered GOTTA known-asteroid sample.", "tab:summary")
     write_csv_and_latex(
         orbit,
         outdir / "orbit_class_statistics.csv",
@@ -636,7 +649,7 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
     )
     mag_stats = running_linear_statistics(df[ADOPTED_MAG], df["sep_arcsec"], np.linspace(10, 21, 23), min_count=40)
     if not mag_stats.empty:
-        axes[1, 1].plot(mag_stats["x"], mag_stats["median"], color="#d62728", linewidth=2.2, label="running median")
+        axes[1, 1].plot(mag_stats["x"], mag_stats["median"], color="#d62728", linewidth=2.2, label="binned median")
         axes[1, 1].fill_between(
             mag_stats["x"],
             mag_stats["p16"],
@@ -665,7 +678,7 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
     )
     stats = running_rate_statistics(data["ang_rate_arcsec_hour"], data["sep_arcsec"])
     if not stats.empty:
-        ax.plot(stats["rate"], stats["median"], color="#d62728", linewidth=2.2, label="running median")
+        ax.plot(stats["rate"], stats["median"], color="#d62728", linewidth=2.2, label="binned median")
         ax.fill_between(stats["rate"], stats["p16"], stats["p84"], color="#d62728", alpha=0.22, label="16--84 percentile")
         ax.legend(fontsize=18, loc="upper left")
     ax.set_xscale("log")
@@ -680,32 +693,53 @@ def plot_geometry(df: pd.DataFrame, outdir: Path) -> None:
     fig, axes = plt.subplots(2, 2, figsize=FOUR_PANEL_FIGSIZE)
     histogram(axes[0, 0], finite(df["ang_rate_arcsec_hour"]), np.logspace(-1, 3.2, 65), r"Angular rate [arcsec hr$^{-1}$]", logy=True)
     axes[0, 0].set_xscale("log")
-    axes[0, 0].axvline(q(df["ang_rate_arcsec_hour"], 50), color="black", linestyle="--", linewidth=1.6)
+    med = q(df["ang_rate_arcsec_hour"], 50)
+    axes[0, 0].axvline(med, color="black", linestyle="--", linewidth=1.6, label=rf"median = {med:.2f} arcsec hr$^{{-1}}$")
+    axes[0, 0].legend(frameon=False, fontsize=15, loc="upper right")
     histogram(axes[0, 1], finite(df["phase_deg"]), np.linspace(0, 40, 49), "Phase angle [deg]", color="#59a14f")
-    axes[0, 1].axvline(q(df["phase_deg"], 50), color="black", linestyle="--", linewidth=1.6)
+    med = q(df["phase_deg"], 50)
+    axes[0, 1].axvline(med, color="black", linestyle="--", linewidth=1.6, label=f"median = {med:.2f} deg")
+    axes[0, 1].legend(frameon=False, fontsize=15, loc="upper right")
     histogram(axes[1, 0], finite(df["r_AU"]), np.linspace(0, 6, 61), "Heliocentric distance [AU]", color="#f28e2b")
-    axes[1, 0].axvline(q(df["r_AU"], 50), color="black", linestyle="--", linewidth=1.6)
+    med = q(df["r_AU"], 50)
+    axes[1, 0].axvline(med, color="black", linestyle="--", linewidth=1.6, label=f"median = {med:.2f} AU")
+    axes[1, 0].legend(frameon=False, fontsize=15, loc="upper right")
     histogram(axes[1, 1], finite(df["delta_AU"]), np.linspace(0, 5, 61), "Topocentric distance [AU]", color="#e15759")
-    axes[1, 1].axvline(q(df["delta_AU"], 50), color="black", linestyle="--", linewidth=1.6)
+    med = q(df["delta_AU"], 50)
+    axes[1, 1].axvline(med, color="black", linestyle="--", linewidth=1.6, label=f"median = {med:.2f} AU")
+    axes[1, 1].legend(frameon=False, fontsize=15, loc="upper right")
     fig.tight_layout()
     save_figure(fig, outdir / "motion_geometry")
 
 
 def plot_temporal(df: pd.DataFrame, outdir: Path) -> None:
     objects = df.groupby("query_id").agg(detections=("query_id", "size"), distinct_nights=("night", "nunique"), first_epoch=("epoch", "min"), last_epoch=("epoch", "max"))
-    values = np.sort(objects["detections"].to_numpy())
-    fig, ax = plt.subplots(figsize=(9.2, 5.8))
-    ax.step(values, np.arange(1, len(values) + 1) / len(values), where="post", color="black", linewidth=2.0)
-    ax.axvline(np.nanmedian(values), color="#d62728", linestyle="--", linewidth=1.8, label="median")
-    ax.axvline(np.nanpercentile(values, 84), color="#4c78a8", linestyle=":", linewidth=1.8, label="84th percentile")
-    ax.set_xscale("log")
+    values = objects["detections"].to_numpy()
+    hist = np.array([(values == count).sum() for count in range(1, 21)], dtype=int)
+    tail = int((values > 20).sum())
+    x = np.r_[np.arange(1, 21), 22]
+    median = np.nanmedian(values)
+    p84 = np.nanpercentile(values, 84)
+    maximum = np.nanmax(values)
+    fig, ax = plt.subplots(figsize=(9.6, 5.8))
+    ax.bar(
+        x,
+        np.r_[hist, tail],
+        color="#4c78a8",
+        edgecolor="white",
+        linewidth=0.7,
+        label=f"median = {median:.0f}; 84th = {p84:.0f}; max = {maximum:.0f}",
+    )
     ax.set_xlabel("Detections per object")
-    ax.set_ylabel("Cumulative fraction")
-    ax.set_ylim(0, 1.02)
+    ax.set_ylabel("Number of objects")
+    ax.set_yscale("log")
+    ax.set_xlim(0.4, 22.8)
+    ax.set_xticks([1, 2, 3, 4, 5, 10, 20, 22])
+    ax.set_xticklabels(["1", "2", "3", "4", "5", "10", "20", ">20"])
     ax.set_axisbelow(True)
     ax.grid(alpha=0.16, linewidth=0.6)
     ax.tick_params(labelsize=22)
-    ax.legend(fontsize=18, loc="lower right")
+    ax.legend(frameon=False, fontsize=18, loc="upper right")
     fig.tight_layout()
     save_figure(fig, outdir / "temporal_sampling")
 

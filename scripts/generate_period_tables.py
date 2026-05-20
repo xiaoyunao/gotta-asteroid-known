@@ -49,8 +49,8 @@ def quality_label(value) -> str:
 def phot_label(value) -> str:
     text = str(value).strip().lower()
     mapping = {
-        "apr": "aper.",
-        "aper": "aper.",
+        "apr": "Aper",
+        "aper": "Aper",
         "psf": "PSF",
         "kron": "Kron",
     }
@@ -75,14 +75,23 @@ def fetch_sbdb_class(object_id: str) -> str:
     return str(orbit_class.get("code") or "--").strip() or "--"
 
 
-def build_class_map(fits_path: Path, object_ids: list[str]) -> dict[str, str]:
+def build_class_map(fits_path: Path, object_ids: list[str], class_csv: Path | None = None) -> dict[str, str]:
     df = add_derived(load_table(fits_path))
     local = {str(k): str(v).strip() for k, v in df.groupby("query_id")["object_orbit_class_code"].first().items()}
+    cached: dict[str, str] = {}
+    if class_csv is not None and class_csv.exists():
+        cache_df = pd.read_csv(class_csv, dtype=str)
+        cached = {str(row["Object ID"]): str(row["Type"]).strip() for _, row in cache_df.iterrows()}
     classes = {}
     for object_id in object_ids:
         classes[object_id] = local.get(object_id, "--")
+        if classes[object_id] == "--" and object_id in cached:
+            classes[object_id] = cached[object_id]
         if classes[object_id] == "--":
-            classes[object_id] = fetch_sbdb_class(object_id)
+            try:
+                classes[object_id] = fetch_sbdb_class(object_id)
+            except Exception:
+                classes[object_id] = "--"
     return classes
 
 
@@ -98,6 +107,27 @@ def write_table(path: Path, caption: str, label: str, columns: list[str], rows: 
         handle.write(f"\\begin{{tabular}}{{{colspec}}}\n")
         handle.write("\\toprule\n")
         handle.write(" & ".join(columns) + " \\\\\n")
+        handle.write("\\midrule\n")
+        for row in rows:
+            handle.write(" & ".join(latex_escape(item) for item in row) + " \\\\\n")
+        handle.write("\\bottomrule\n")
+        handle.write("\\end{tabular}\n")
+        handle.write("\\end{table}\n")
+
+
+def write_period_validation_table(path: Path, caption: str, label: str, rows: list[list[str]]) -> None:
+    with path.open("w", encoding="utf-8") as handle:
+        handle.write("\\begin{table}[!p]\n")
+        handle.write("\\centering\n")
+        handle.write(f"\\caption{{{caption}}}\n")
+        handle.write(f"\\label{{{label}}}\n")
+        handle.write("\\scriptsize\n")
+        handle.write("\\setlength{\\tabcolsep}{2.5pt}\n")
+        handle.write("\\renewcommand{\\arraystretch}{1.12}\n")
+        handle.write("\\begin{tabular}{r r c r r r r r c c r c c}\n")
+        handle.write("\\toprule\n")
+        handle.write("Object ID & $H$ & Type & $N_{\\rm total}$ & $N_{\\rm eff}$ & Span & $P_{\\rm rot}$ & $\\Delta P$ & Model & Phot. & MP & Search & Final \\\\\n")
+        handle.write("          & (mag) &      &                   &                 & (hr) & (hr) & (hr) &       &       &    &        &       \\\\\n")
         handle.write("\\midrule\n")
         for row in rows:
             handle.write(" & ".join(latex_escape(item) for item in row) + " \\\\\n")
@@ -150,6 +180,7 @@ def main() -> None:
     parser.add_argument("--period-tsv", default="/Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv")
     parser.add_argument("--fits-path", default="gotta_asteroids.fits")
     parser.add_argument("--outdir", default="paper_draft/tables_v7")
+    parser.add_argument("--class-csv", default="paper_draft/tables_v7/period_object_classes.csv")
     args = parser.parse_args()
 
     outdir = Path(args.outdir)
@@ -157,7 +188,7 @@ def main() -> None:
     df = pd.read_csv(args.period_tsv, sep="\t")
     df = df.sort_values(["Final_Quality", "Object ID"], ascending=[False, True]).reset_index(drop=True)
     object_ids = [str(int(value)) for value in df["Object ID"]]
-    classes = build_class_map(Path(args.fits_path), object_ids)
+    classes = build_class_map(Path(args.fits_path), object_ids, Path(args.class_csv) if args.class_csv else None)
 
     reliable = df[df["Final_Quality"].astype(str).str.lower() == "reliable"].copy()
     write_table(
@@ -172,16 +203,11 @@ def main() -> None:
         "!htbp",
     )
 
-    write_table(
+    write_period_validation_table(
         outdir / "period_reliable_objects.tex",
-        "Final period-analysis table for the combined GOTTA Prototype and 60 cm Schmidt validation sample. The column ``Type'' gives the small-body orbit class used in the known-asteroid catalog. $N_{\\rm total}$ is the total point count reported in the updated period table, and $N_{\\rm eff}$ is the effective number of photometric points retained by the period-analysis quality cuts. The search-quality flag records the agreement among the Lomb--Scargle, PDM, and FFT period searches, while the final-quality flag is assigned after the folded-light-curve sampling and period-span assessment. Tent. denotes tentative follow-up candidates.",
-        "tab:period_results",
-        ["Object ID", "$H$", "Type", "$N_{\\rm total}$", "$N_{\\rm eff}$", "Span", "$P_{\\rm rot}$", "$\\Delta P$", "Model", "Phot.", "MP", "Search", "Final"],
+        "Final period-analysis table for the combined GOTTA Prototype and 60 cm Schmidt validation sample. The column ``Type'' gives the small-body orbit class used in the known-asteroid catalog. $N_{\\rm total}$ is the total number of photometric points reported by the period-analysis pipeline, and $N_{\\rm eff}$ is the number retained after quality cuts. The final-quality flag separates reliable solutions from tentative follow-up candidates.",
+        "tab:period_validation",
         make_rows(df, classes, full=True),
-        "lrlrrrrrlllll",
-        r"\scriptsize",
-        2.6,
-        "!p",
     )
 
     pd.DataFrame({"Object ID": object_ids, "Type": [classes[object_id] for object_id in object_ids]}).to_csv(outdir / "period_object_classes.csv", index=False)
