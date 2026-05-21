@@ -7,7 +7,8 @@
 - commands_run: `python3 /Users/yunaoxiao/Downloads/known_object_processing_minimal_edit_source.py`; `view_image` checks for full workflow and yes-arrow detail; `cp .../known_object_processing_minimal_edit_final.png paper_draft/outputs/known_object_processing_updated_v7.png`; `sips -s dpiWidth 252 -s dpiHeight 252 paper_draft/outputs/known_object_processing_updated_v7.png`; `tectonic v8.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v8.pdf`
 - key_findings:
   - 初次左移 80 px 在 PDF 缩小后不够明显；已改为相对原右移版总计左移 200 px
-  - 上游主链、Sky association 框、Reject 框及红绿分支箭头同步平移
+  - 后续按用户意见继续调整为上游主链与 `Accepted` 下方主竖线对齐；pass 绿色箭头也对齐到同一 x 位置
+  - Reject 框保留在右侧，红色水平段相应延长，避免挤到 `Accepted` 框
   - Accepted 框及其以下流程保持原位置不变
   - yes/no 下部分支未改动，yes 箭头头部和蓝框斜边保持上一版修复状态
 - validation:
