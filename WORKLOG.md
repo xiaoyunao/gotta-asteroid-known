@@ -2,6 +2,27 @@
 
 ## 2026-05-21
 
+- task: 小修 v9 Table 5 浮动、Appendix 图页和 Schmidt/MPC 文字
+- files_changed: `paper_draft/v9.tex`, `paper_draft/v9.pdf`, `paper_draft/tables_v9/period_reliable_objects.tex`, `scripts/generate_period_tables.py`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `rg` v9/Table 5/Schmidt/float placement checks; `python3 -m py_compile scripts/generate_period_tables.py`; `python3 scripts/generate_period_tables.py --period-tsv /Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv --fits-path gotta_asteroids.fits --outdir paper_draft/tables_v9 --class-csv paper_draft/tables_v7/period_object_classes.csv`; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` page marker extraction; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v9.pdf`
+- key_findings:
+  - Removed the Section 4.4 `\FloatBarrier` after Table 5 so Section 5 can flow before the table float
+  - Table 5 placement changed to `[!htbp]`
+  - Table 5 note `e` now defines Search flags as `reliable (Rel.)`, `good (Good)`, and `possible (Poss.)`
+  - Moved the ADES PSV `>=3` same-night recovery sentence from Section 4.4 to the end of Section 3.3 and tied it to the basic MPC same-night tracklet reporting requirement
+  - Removed the formal detection-efficiency sentence from Section 3.1
+  - First telescope mention now uses `Xinglong 60/90 cm Schmidt Telescope`; later mentions use shorter Xinglong Schmidt wording
+  - Appendix A first light-curve figure changed from `[p]` to `[!htbp]` with a smaller height so the appendix title and Fig. A.1 share the same page
+- validation:
+  - `scripts/generate_period_tables.py` syntax check passed
+  - `paper_draft/v9.pdf` compiled successfully, now 25 pages, A4 page size `595.28 x 841.89 pts`
+  - `v9.log` has no undefined references, undefined citations, overfull boxes, float-too-large warnings, missing files, or LaTeX errors
+  - PDF text extraction confirms Section 5 starts on page 18 before Table 5 on page 19, and Appendix A title plus Fig. A.1 are on page 22
+- remaining_issues:
+  - Still recommend visual inspection of Table 5 and Appendix figures in the PDF viewer
+- next_step:
+  - Review `paper_draft/v9.pdf` visually, especially pages 18--23
+
 - task: 基于 v8 生成投稿前 v9 修订稿
 - files_changed: `paper_draft/v9.tex`, `paper_draft/v9.pdf`, `paper_draft/figures_v9/*`, `paper_draft/tables_v9/*`, `scripts/generate_paper_products.py`, `scripts/generate_period_tables.py`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `git push origin main`; `cp paper_draft/v8.tex paper_draft/v9.tex`; `cp -R paper_draft/figures_v8 paper_draft/figures_v9`; `cp -R paper_draft/tables_v8 paper_draft/tables_v9`; `python3 -m py_compile scripts/generate_paper_products.py scripts/generate_period_tables.py`; `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v9`; `python3 scripts/generate_period_tables.py --period-tsv /Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv --fits-path gotta_asteroids.fits --outdir paper_draft/tables_v9 --class-csv paper_draft/tables_v7/period_object_classes.csv`; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` consistency/log checks; `pypdf` PDF text extraction; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v9.pdf`; web checks for Larsen 2007 and Vereš & Chesley 2017 reference metadata

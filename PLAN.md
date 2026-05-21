@@ -4,9 +4,9 @@
 
 继续审阅并小修 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf`。保持科学定位为
 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
-当前 v9 已完成投稿前一致性修订：matching/Gaia mask 统一为 1 arcsec，
+当前 v9 已完成投稿前一致性修订和后续小修：matching/Gaia mask 统一为 1 arcsec，
 删除 predicted magnitude filtering 表述，周期验证表已移到正文，Appendix 只保留
-light-curve figures。workflow 图不重画，v9 继续使用最终 2x PNG：
+light-curve figures，Table 5 浮动和 Appendix A 图页已调整。workflow 图不重画，v9 继续使用最终 2x PNG：
 `paper_draft/figures_v9/known_object_processing_minimal_edit_final_2x.png`。
 后续重点是人工检查 v9 的 Fig. 2 caption、正文 Table 5、Fig. 5/7/8/9、
 Appendix figures 和最终 PDF 排版。
@@ -56,6 +56,7 @@ Appendix figures 和最终 PDF 排版。
 41. 已按用户最后意见更新 v8 workflow 图：上游链条右移、Gaia label 改为 `within 1 arcsec`、四个分支 label 固定在箭头右侧，并将 no/yes 分支箭头延伸到下方框边缘后重新编译 `paper_draft/v8.pdf`
 42. 已整理 v8 workflow 图文件：最终使用 `figures_v8/known_object_processing_minimal_edit_final_2x.png`，删除 v8 中未使用的旧 workflow/mermaid 中间文件和 `outputs/known_object_processing_updated_v7.png`
 43. 已基于 v8 生成 v9 投稿前修订稿：删除 predicted magnitude cut 叙述，matching/Gaia mask 统一 1 arcsec，周期验证表移入正文并删除 Type 列，Discussion 删除 trailing-length 公式，Fig. 9 和表注/引用做最终小修
+44. 已小修 v9：移除 Table 5 后的 `\FloatBarrier` 让 Discussion 前移，补充 Table 5 Search flag 说明，移动 ADES PSV `>=3` 句子到 Section 3.3，删除 formal detection-efficiency 句子，首次写全 `Xinglong 60/90 cm Schmidt Telescope`，并让 Appendix A 标题与 Fig. A.1 同页
 
 ## Outstanding issues
 
@@ -128,10 +129,11 @@ Appendix figures 和最终 PDF 排版。
 - v9 PDF 文本抽取未发现 `1.5 arcsec`、`arcsecond-level`、旧 magnitude-limit filtering、`Appendix Table`、`Table A.1`、trailing 公式、`scikit-learn`、内部 TODO 或旧 Appendix 标题
 - v9 Fig. 2 caption 明确 association 基于 sky position，predicted magnitude only diagnostics
 - v9 周期验证表为正文 Table 5，删除 Type 列，并用表下注释解释 `N_{\rm total}`、`N_{\rm eff}`、Phot、MP、Search、Final
+- v9 小修后 `paper_draft/v9.pdf` 编译成功，共 25 页；PDF 文本抽取确认 Section 5 开始于 Table 5 前一页，Appendix A 标题和 Fig. A.1 同页
 
 ## Next recommended steps
 
-1. 人工检查更新后的 `paper_draft/v9.pdf` 中 Fig. 2 caption、正文 Table 5、Fig. 5/7/8/9、Appendix Figures A.1/A.2、引用跳转和 References/Appendix 顺序
+1. 人工检查更新后的 `paper_draft/v9.pdf` 中 pages 18--23、正文 Table 5、Fig. 2 caption、Fig. 5/7/8/9、Appendix Figures A.1/A.2、引用跳转和 References/Appendix 顺序
 2. 人工检查首页作者顺序、Hu Zou 通讯作者标记、邮箱和第二单位邮编
 3. 确认外部周期数据库来源；若实际为 LCDB/ALCDEF，正文和表头应改为 LCDB/ALCDEF literature period
 4. 确认作者、单位、致谢和硬件参数

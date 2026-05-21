@@ -117,7 +117,7 @@ def write_table(path: Path, caption: str, label: str, columns: list[str], rows: 
 
 def write_period_validation_table(path: Path, caption: str, label: str, rows: list[list[str]]) -> None:
     with path.open("w", encoding="utf-8") as handle:
-        handle.write("\\begin{table*}[tbp]\n")
+        handle.write("\\begin{table*}[!htbp]\n")
         handle.write("\\centering\n")
         handle.write(f"\\caption{{{caption}}}\n")
         handle.write(f"\\label{{{label}}}\n")
@@ -140,7 +140,7 @@ def write_period_validation_table(path: Path, caption: str, label: str, rows: li
         handle.write("\\item[$b$] Number of measurements retained after quality cuts and outlier rejection.\n")
         handle.write("\\item[$c$] Photometric measurement used for the adopted solution: aperture (Aper), PSF, or Kron-like photometry.\n")
         handle.write("\\item[$d$] Number of period-search estimates in the adopted consistency cluster.\n")
-        handle.write("\\item[$e$] Quality flag assigned from the agreement among the period-search methods.\n")
+        handle.write("\\item[$e$] Quality flag assigned from the agreement among the period-search methods: reliable (Rel.), good (Good), or possible (Poss.).\n")
         handle.write("\\item[$f$] Final quality flag after folded-light-curve inspection: reliable (Rel.) or tentative (Tent.).\n")
         handle.write("\\end{tablenotes}\n")
         handle.write("\\end{threeparttable}\n")
@@ -199,7 +199,7 @@ def main() -> None:
     reliable = df[df["Final_Quality"].astype(str).str.lower() == "reliable"].copy()
     write_table(
         outdir / "period_reliable_main.tex",
-        "Reliable asteroid rotation-period measurements from the combined GOTTA Prototype and 60 cm Schmidt validation sample. Only objects assigned reliable final quality flags are included. The full validation sample, including tentative solutions, is given in Appendix~\\ref{app:lightcurve}.",
+        "Reliable asteroid rotation-period measurements from the combined GOTTA Prototype and Xinglong 60/90 cm Schmidt Telescope validation sample. Only objects assigned reliable final quality flags are included. The full validation sample, including tentative solutions, is given in Appendix~\\ref{app:lightcurve}.",
         "tab:period_reliable_main",
         ["Object ID", "Type", "$N_{\\rm eff}$", "Span", "$P_{\\rm rot}$", "$\\Delta P$", "Model", "Phot."],
         make_rows(reliable, classes, full=False),
@@ -211,7 +211,7 @@ def main() -> None:
 
     write_period_validation_table(
         outdir / "period_reliable_objects.tex",
-        "Period-analysis validation sample from the combined GOTTA Prototype and 60 cm Schmidt data.",
+        "Period-analysis validation sample from the combined GOTTA Prototype and Xinglong 60/90 cm Schmidt Telescope data.",
         "tab:period_validation",
         make_rows(df, classes, full=True),
     )
