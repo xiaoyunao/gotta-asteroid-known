@@ -4,8 +4,10 @@
 
 继续审阅并小修 `paper_draft/v8.tex` 和 `paper_draft/v8.pdf`。保持科学定位为
 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
-当前 workflow 图已按用户最后意见更新到论文中；后续重点是人工检查 v8 的
-Fig. 2、Results 重构后的叙事、Fig. 5/7/8/9、Appendix Table A.1 和最终 PDF 排版。
+当前 workflow 图已按用户最后意见更新到论文中，并已整理为
+`paper_draft/figures_v8/known_object_processing_minimal_edit_final_2x.png`。
+后续重点是人工检查 v8 的 Fig. 2、Results 重构后的叙事、Fig. 5/7/8/9、
+Appendix Table A.1 和最终 PDF 排版。
 
 ## Milestones
 
@@ -50,6 +52,7 @@ Fig. 2、Results 重构后的叙事、Fig. 5/7/8/9、Appendix Table A.1 和最�
 39. 已按 GPT Pro 意见生成 v8：摘要结果导向压缩，光变方法移入 Section 3.4，光变结果移入 Section 4.5，Discussion 改为 Section 5，主文 reliable period table 删除，新 workflow PNG 插入 Fig. 2，Fig. 5 增加 median 图例，Fig. 7/8 改为 binned median，Fig. 9 改为 detection-count histogram，Table 1 和 Appendix Table A.1 排版更新
 40. 已按用户小修 v8：Fig. 2 LaTeX 去掉显式宽度并通过 PNG DPI 元数据控制自然打印尺寸，原 4.4/4.5 合并为 `Temporal Sampling and Pilot Light-Curve Results`，Fig. 9 改为前文 histogram 风格，并在光变结果段补充可靠周期的物理解释
 41. 已按用户最后意见更新 v8 workflow 图：上游链条右移、Gaia label 改为 `within 1 arcsec`、四个分支 label 固定在箭头右侧，并将 no/yes 分支箭头延伸到下方框边缘后重新编译 `paper_draft/v8.pdf`
+42. 已整理 v8 workflow 图文件：最终使用 `figures_v8/known_object_processing_minimal_edit_final_2x.png`，删除 v8 中未使用的旧 workflow/mermaid 中间文件和 `outputs/known_object_processing_updated_v7.png`
 
 ## Outstanding issues
 

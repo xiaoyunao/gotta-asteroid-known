@@ -2,6 +2,21 @@
 
 ## 2026-05-21
 
+- task: 整理 v8 workflow 图文件并切换到最终 2x PNG
+- files_changed: `paper_draft/v8.tex`, `paper_draft/v8.pdf`, `paper_draft/figures_v8/known_object_processing_minimal_edit_final_2x.png`, removed old unused v8 workflow files, `WORKLOG.md`, `PLAN.md`
+- commands_run: `cp /Users/yunaoxiao/Downloads/known_object_processing_minimal_edit_final_2x.png paper_draft/figures_v8/known_object_processing_minimal_edit_final_2x.png`; `sips -s dpiWidth 504 -s dpiHeight 504 ...`; `git rm -f paper_draft/outputs/known_object_processing_updated_v7.png paper_draft/figures_v8/known_object_processing.png paper_draft/figures_v8/method_flowchart_styled.*`; `rg` path checks; cleanup of temporary Downloads zoom/check PNGs; `tectonic v8.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v8.pdf`
+- key_findings:
+  - v8 now references `figures_v8/known_object_processing_minimal_edit_final_2x.png`
+  - The final 2x workflow PNG is stored in `paper_draft/figures_v8/` with 504 dpi metadata so its natural print size matches the previous 1x figure
+  - Removed unused v8 workflow intermediates: old `figures_v8/known_object_processing.png`, `figures_v8/method_flowchart_styled.*`, and `outputs/known_object_processing_updated_v7.png`
+- validation:
+  - `paper_draft/v8.pdf` compiled successfully, 26 pages, A4 page size `595.28 x 841.89 pts`
+  - `v8.log` has no undefined references, undefined citations, overfull boxes, float-too-large warnings, missing files, or LaTeX errors
+- remaining_issues:
+  - None for workflow file organization
+- next_step:
+  - Continue final visual review of `paper_draft/v8.pdf`
+
 - task: 将 v8 workflow 图上半部分整体左移以改善居中
 - files_changed: `paper_draft/outputs/known_object_processing_updated_v7.png`, `paper_draft/v8.pdf`, `WORKLOG.md`
 - commands_run: `python3 /Users/yunaoxiao/Downloads/known_object_processing_minimal_edit_source.py`; `view_image` checks for full workflow and yes-arrow detail; `cp .../known_object_processing_minimal_edit_final.png paper_draft/outputs/known_object_processing_updated_v7.png`; `sips -s dpiWidth 252 -s dpiHeight 252 paper_draft/outputs/known_object_processing_updated_v7.png`; `tectonic v8.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v8.pdf`
