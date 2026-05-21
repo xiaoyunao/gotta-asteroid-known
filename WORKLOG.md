@@ -2,6 +2,30 @@
 
 ## 2026-05-21
 
+- task: 基于 v8 生成投稿前 v9 修订稿
+- files_changed: `paper_draft/v9.tex`, `paper_draft/v9.pdf`, `paper_draft/figures_v9/*`, `paper_draft/tables_v9/*`, `scripts/generate_paper_products.py`, `scripts/generate_period_tables.py`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git push origin main`; `cp paper_draft/v8.tex paper_draft/v9.tex`; `cp -R paper_draft/figures_v8 paper_draft/figures_v9`; `cp -R paper_draft/tables_v8 paper_draft/tables_v9`; `python3 -m py_compile scripts/generate_paper_products.py scripts/generate_period_tables.py`; `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v9`; `python3 scripts/generate_period_tables.py --period-tsv /Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv --fits-path gotta_asteroids.fits --outdir paper_draft/tables_v9 --class-csv paper_draft/tables_v7/period_object_classes.csv`; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` consistency/log checks; `pypdf` PDF text extraction; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v9.pdf`; web checks for Larsen 2007 and Vereš & Chesley 2017 reference metadata
+- key_findings:
+  - 已先推送此前本地 6 个提交到 `origin/main`
+  - v9 删除了正文中 predicted ephemeris magnitude cut 的暗示；明确 matching 使用 sky position，predicted magnitude 只作 diagnostics
+  - asteroid-source matching radius 和 Gaia stationary-source mask 均统一为 `1 arcsec`
+  - 周期验证表移入正文 Section 4.4 附近，成为正文 Table 5；删除 `Type` 列，改用 `threeparttable` 表下注释解释 `N_{\rm total}`、`N_{\rm eff}`、Phot、MP、Search、Final
+  - Appendix 只保留 light-curve validation figures，标题改为 `Light-Curve Validation Figures`
+  - Discussion 删除 trailing-length 公式，改为 fast-moving/trail cutout recognition 的机器学习未来工作表述
+  - Fig. 9 y 轴改为 `Number of asteroids`；Table 1/2/3/4 相关表头或 caption 小修；Software 删除未实际使用的 scikit-learn
+  - Larsen 2007 改为 `Larsen, J. A., Roe, E. S., Albert, C. E., et al. 2007, AJ, 133, 1247`；Vereš & Chesley 2017 改为 AJ orbit-linking paper；两条 Li in prep bibliography label 改为 Zhengyang/Niu 区分
+- validation:
+  - 两个 Python 脚本语法检查通过
+  - `paper_draft/v9.pdf` 编译成功，共 26 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v9.log` 未发现 undefined references、undefined citations、overfull、float-too-large、missing files 或 LaTeX errors
+  - PDF 文本抽取未发现 `1.5 arcsec`、`arcsecond-level`、旧 magnitude-limit filtering、`Appendix Table`、`Table A.1`、trailing 公式、`scikit-learn`、内部 TODO 或旧 Appendix 标题
+- remaining_issues:
+  - 仍建议人工视觉检查 `paper_draft/v9.pdf` 中正文 Table 5 是否足够清晰、Appendix 两张 light-curve figures 是否分页合适
+  - Catalina Sky Survey 的 `Larson et al. 2003` 仍为 BAAS/DPS 摘要引用；如共同作者要求更正式来源，后续可替换
+  - 外部周期数据库来源仍需最终确认
+- next_step:
+  - 人工审阅 `paper_draft/v9.pdf`，优先检查 Table 5、Fig. 2 caption、Fig. 9 和 Appendix figures 的投稿版观感
+
 - task: 初始化本次会话并确认 v8 当前进度
 - files_changed: `WORKLOG.md`, `PLAN.md`
 - commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `sed -n '1,220p' WORKLOG.md`; `sed -n '1,220p' PLAN.md`; `git rev-list --left-right --count HEAD...origin/main`; `rg -n "known_object_processing|method_flowchart|workflow" paper_draft/v8.tex PLAN.md WORKLOG.md`; `ls -lh paper_draft/figures_v8/known_object_processing_minimal_edit_final_2x.png paper_draft/v8.pdf`

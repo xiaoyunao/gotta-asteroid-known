@@ -1,0 +1,50 @@
+\begin{table*}[tbp]
+\centering
+\caption{Period-analysis validation sample from the combined GOTTA Prototype and 60 cm Schmidt data.}
+\label{tab:period_validation}
+\footnotesize
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{threeparttable}
+\begin{tabular}{rrrrrrrccrcc}
+\toprule
+Object ID & $H$ & $N_{\rm total}^{a}$ & $N_{\rm eff}^{b}$ & Span & $P_{\rm rot}$ & $\Delta P$ & Model & Phot.$^{c}$ & MP$^{d}$ & Search$^{e}$ & Final$^{f}$ \\
+          & (mag) & & & (hr) & (hr) & (hr) & & & & & \\
+\midrule
+2175 & 14.42 & 796 & 671 & 123.4 & 4.8880 & 0.0010 & $P$ & Aper & 4 & Rel. & Rel. \\
+4479 & 13.26 & 1462 & 1454 & 195.9 & 3.0055 & 0.0197 & $P$ & Aper & 7 & Rel. & Rel. \\
+5424 & 13.57 & 757 & 722 & 99.9 & 5.4887 & 0.0014 & $2P$ & Kron & 3 & Good & Rel. \\
+7531 & 14.07 & 503 & 503 & 49.0 & 3.3375 & 0.0004 & $2P$ & PSF & 6 & Rel. & Rel. \\
+12148 & 14.50 & 459 & 457 & 29.5 & 4.5248 & 0.0104 & $2P$ & Aper & 5 & Rel. & Rel. \\
+19376 & 15.18 & 1093 & 1066 & 196.5 & 5.4896 & 0.0001 & $P$ & Aper & 6 & Rel. & Rel. \\
+22542 & 15.97 & 229 & 190 & 23.9 & 2.8439 & 0.0070 & $P$ & Kron & 2 & Poss. & Rel. \\
+25745 & 13.15 & 1541 & 1540 & 170.8 & 5.5143 & $<0.0001$ & $2P$ & PSF & 6 & Rel. & Rel. \\
+46082 & 15.41 & 1211 & 1181 & 171.6 & 5.6907 & 0.0013 & $P$ & PSF & 6 & Rel. & Rel. \\
+72918 & 16.66 & 1473 & 1466 & 221.9 & 6.1385 & 0.0004 & $P$ & PSF & 6 & Rel. & Rel. \\
+79589 & 16.25 & 443 & 443 & 50.2 & 3.3634 & 0.0098 & $P$ & Aper & 9 & Rel. & Rel. \\
+97776 & 15.31 & 588 & 587 & 78.1 & 3.5371 & 0.0417 & $2P$ & PSF & 6 & Rel. & Rel. \\
+7558 & 13.45 & 438 & 392 & 51.3 & 4.1124 & 0.0019 & $P$ & PSF & -- & Rel. & Tent. \\
+11382 & 15.46 & 615 & 591 & 53.1 & 15.2840 & 0.0273 & $2P$ & Aper & 6 & Rel. & Tent. \\
+17341 & 16.58 & 191 & 189 & 25.9 & 5.1682 & 0.0340 & $2P$ & PSF & 4 & Rel. & Tent. \\
+28036 & 13.42 & 226 & 222 & 4.9 & 4.4503 & 0.1598 & $P$ & PSF & 4 & Rel. & Tent. \\
+44099 & 16.02 & 216 & 209 & 4.8 & 3.5262 & 0.1210 & $2P$ & PSF & 6 & Rel. & Tent. \\
+50292 & 16.29 & 522 & 496 & 53.4 & 2.5186 & 0.0015 & $P$ & Aper & 4 & Rel. & Tent. \\
+51965 & 13.00 & 243 & 207 & 5.5 & 6.6819 & 0.0837 & $P$ & PSF & 6 & Rel. & Tent. \\
+54005 & 14.54 & 810 & 760 & 124.6 & 3.5362 & 0.0936 & $P$ & PSF & 4 & Rel. & Tent. \\
+57499 & 14.83 & 206 & 204 & 24.0 & 6.1133 & 0.0771 & $P$ & PSF & 4 & Rel. & Tent. \\
+68679 & 14.56 & 244 & 243 & 4.7 & 6.1144 & 0.1479 & $2P$ & Aper & 4 & Rel. & Tent. \\
+171725 & 16.69 & 286 & 276 & 26.3 & 5.0411 & 0.0118 & $2P$ & PSF & 5 & Rel. & Tent. \\
+750849 & 15.94 & 215 & 210 & 4.8 & 4.8756 & 0.1409 & $2P$ & Kron & 8 & Rel. & Tent. \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item[$a$] Total number of photometric measurements available for the period-analysis pipeline.
+\item[$b$] Number of measurements retained after quality cuts and outlier rejection.
+\item[$c$] Photometric measurement used for the adopted solution: aperture (Aper), PSF, or Kron-like photometry.
+\item[$d$] Number of period-search estimates in the adopted consistency cluster.
+\item[$e$] Quality flag assigned from the agreement among the period-search methods.
+\item[$f$] Final quality flag after folded-light-curve inspection: reliable (Rel.) or tentative (Tent.).
+\end{tablenotes}
+\end{threeparttable}
+\end{table*}

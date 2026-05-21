@@ -456,7 +456,7 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
             ("2D residual RMS", fmt(rms(df["sep_arcsec"]), 3) + " arcsec", "RMS of the 2D separation"),
             (r"RMS in $\Delta\alpha\cos\delta$", fmt(rms(df["dra_cosdec_arcsec"]), 3) + " arcsec", "Coordinate residual"),
             (r"RMS in $\Delta\delta$", fmt(rms(df["ddec_arcsec"]), 3) + " arcsec", "Coordinate residual"),
-            ("Median angular rate", r"\mbox{" + fmt(q(df["ang_rate_arcsec_hour"], 50), 3) + r" arcsec hr$^{-1}$}", "Derived from augmented geometry"),
+            ("Median angular rate", r"\mbox{" + fmt(q(df["ang_rate_arcsec_hour"], 50), 3) + r" arcsec h$^{-1}$}", "Derived from augmented geometry"),
             ("Median phase angle", fmt(q(df["phase_deg"], 50), 3) + " deg", "Derived from augmented geometry"),
             ("Associations without geometry augmentation", f"{int(truthy(df['horizons_failed']).sum()):,}", "Excluded from geometry statistics"),
         ],
@@ -582,13 +582,13 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
     write_csv_and_latex(
         orbit,
         outdir / "orbit_class_statistics.csv",
-        "Orbit-class composition of the recovered known-asteroid sample. Separations are in arcsec. Classes with only a few detections are grouped into ``Other/unclassified''. The original generic SBDB class ``AST'' denotes an asteroid without a more specific dynamical class in the adopted mapping.",
+        "Orbit-class composition of the recovered known-asteroid sample. Separations are in arcsec. Classes with only a few detections are grouped into ``Other/unclassified''; this group includes objects without a more specific dynamical class in the adopted small-body metadata.",
         "tab:orbit_class",
         r"llrrrr",
     )
     write_csv_and_latex(mag_ast, outdir / "astrometry_by_magnitude.csv", r"Astrometric residuals as a function of adopted aperture magnitude $g_{\rm aper}$. Separations are in arcsec.", "tab:mag_astrometry", r"lrrrr")
-    write_csv_and_latex(rate_ast, outdir / "astrometry_by_rate.csv", r"Astrometric residuals as a function of sky-plane angular rate. Rate bins are in arcsec hr$^{-1}$ and separations are in arcsec.", "tab:rate_astrometry", r"lrrrr")
-    write_csv_and_latex(nightly, outdir / "nightly_top5.csv", "Five UTC nights with the largest numbers of accepted known-asteroid associations.", "tab:nightly_top5", r"lrrrrr")
+    write_csv_and_latex(rate_ast, outdir / "astrometry_by_rate.csv", r"Astrometric residuals as a function of sky-plane angular rate. Rate bins are in arcsec h$^{-1}$ and separations are in arcsec.", "tab:rate_astrometry", r"lrrrr")
+    write_csv_and_latex(nightly, outdir / "nightly_top5.csv", "Five UTC nights with the largest numbers of recovered known-asteroid detections.", "tab:nightly_top5", r"lrrrrr")
     write_csv_and_latex(
         obj,
         outdir / "most_observed_objects.csv",
@@ -669,7 +669,7 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
         ax,
         main["ang_rate_arcsec_hour"],
         main["sep_arcsec"],
-        r"Angular rate [arcsec hr$^{-1}$]",
+        r"Angular rate [arcsec h$^{-1}$]",
         "Separation [arcsec]",
         xscale="log",
         xbins=58,
@@ -691,10 +691,10 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
 
 def plot_geometry(df: pd.DataFrame, outdir: Path) -> None:
     fig, axes = plt.subplots(2, 2, figsize=FOUR_PANEL_FIGSIZE)
-    histogram(axes[0, 0], finite(df["ang_rate_arcsec_hour"]), np.logspace(-1, 3.2, 65), r"Angular rate [arcsec hr$^{-1}$]", logy=True)
+    histogram(axes[0, 0], finite(df["ang_rate_arcsec_hour"]), np.logspace(-1, 3.2, 65), r"Angular rate [arcsec h$^{-1}$]", logy=True)
     axes[0, 0].set_xscale("log")
     med = q(df["ang_rate_arcsec_hour"], 50)
-    axes[0, 0].axvline(med, color="black", linestyle="--", linewidth=1.6, label=rf"median = {med:.2f} arcsec hr$^{{-1}}$")
+    axes[0, 0].axvline(med, color="black", linestyle="--", linewidth=1.6, label=rf"median = {med:.2f} arcsec h$^{{-1}}$")
     axes[0, 0].legend(frameon=False, fontsize=15, loc="upper right")
     histogram(axes[0, 1], finite(df["phase_deg"]), np.linspace(0, 40, 49), "Phase angle [deg]", color="#59a14f")
     med = q(df["phase_deg"], 50)
@@ -734,7 +734,7 @@ def plot_temporal(df: pd.DataFrame, outdir: Path) -> None:
     ax.axvline(p84, color="black", linestyle=":", linewidth=1.4, label=f"84th percentile = {p84:.0f}")
     ax.plot([], [], color="none", label=f"max = {maximum:.0f}")
     ax.set_xlabel("Detections per object")
-    ax.set_ylabel("Number of objects")
+    ax.set_ylabel("Number of asteroids")
     ax.set_yscale("log")
     ax.set_xlim(0.4, 22.8)
     ax.set_xticks([1, 2, 3, 4, 5, 10, 20, 22])
@@ -836,8 +836,8 @@ def plot_flowchart(outdir: Path) -> None:
         "wcs": ((3.4, 15.6), 3.2, 0.8, "WCS footprint\nfrom CCD corners", "process"),
         "epoch": ((3.4, 14.3), 3.2, 0.8, "Mid-exposure\nepoch", "process"),
         "query": ((3.4, 13.0), 3.2, 0.8, "Ephemeris\nscreening", "process"),
-        "mag": ((3.55, 11.55), 2.9, 1.0, "Magnitude\npre-filter?", "decision"),
-        "faint": ((7.0, 11.7), 2.4, 0.7, "Reject faint\ncandidates", "reject"),
+        "mag": ((3.55, 11.55), 2.9, 1.0, "Field-radius\npre-filter?", "decision"),
+        "faint": ((7.0, 11.7), 2.4, 0.7, "Reject outside\nfield radius", "reject"),
         "pixel": ((3.4, 10.2), 3.2, 0.8, "Predicted RA/Dec\ninto pixels", "process"),
         "inside": ((3.55, 8.75), 2.9, 1.0, "Inside CCD\nfootprint?", "decision"),
         "offccd": ((7.0, 8.9), 2.4, 0.7, "Reject off-CCD\npredictions", "reject"),
@@ -884,18 +884,18 @@ def write_mermaid(outdir: Path) -> None:
     F([Compute mid-exposure epoch]):::process
     G([Estimate padded field search radius]):::process
     H([Ephemeris screening]):::process
-    I{{Predicted magnitude within limit?}}:::decision
+    I{{Within padded field radius?}}:::decision
     J([Transform predictions to pixel coordinates]):::process
     K{{Inside CCD footprint?}}:::decision
     L([Nearest-neighbor angular cross-match]):::process
-    M{{Separation threshold and optional magnitude check?}}:::decision
+    M{{Separation threshold?}}:::decision
     G1([Gaia stationary-source check]):::process
     N([Merge prediction row with catalog source row]):::process
     O([Merge exposure/night products]):::process
     P([SBDB and Horizons augmentation]):::process
     Q[/Recovered known-asteroid sample/]:::output
     R[/Statistics, figures, light-curve inputs/]:::output
-    X1([Reject faint candidates]):::reject
+    X1([Reject predictions outside field radius]):::reject
     X2([Reject off-CCD predictions]):::reject
     X3([Reject unmatched rows]):::reject
     X4([Reject likely stellar contaminants]):::reject

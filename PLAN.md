@@ -2,12 +2,14 @@
 
 ## Current objective
 
-继续审阅并小修 `paper_draft/v8.tex` 和 `paper_draft/v8.pdf`。保持科学定位为
+继续审阅并小修 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf`。保持科学定位为
 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
-当前 workflow 图已按用户最后意见更新到论文中，并已整理为
-`paper_draft/figures_v8/known_object_processing_minimal_edit_final_2x.png`。
-后续重点是人工检查 v8 的 Fig. 2、Results 重构后的叙事、Fig. 5/7/8/9、
-Appendix Table A.1 和最终 PDF 排版。
+当前 v9 已完成投稿前一致性修订：matching/Gaia mask 统一为 1 arcsec，
+删除 predicted magnitude filtering 表述，周期验证表已移到正文，Appendix 只保留
+light-curve figures。workflow 图不重画，v9 继续使用最终 2x PNG：
+`paper_draft/figures_v9/known_object_processing_minimal_edit_final_2x.png`。
+后续重点是人工检查 v9 的 Fig. 2 caption、正文 Table 5、Fig. 5/7/8/9、
+Appendix figures 和最终 PDF 排版。
 
 ## Milestones
 
@@ -53,15 +55,16 @@ Appendix Table A.1 和最终 PDF 排版。
 40. 已按用户小修 v8：Fig. 2 LaTeX 去掉显式宽度并通过 PNG DPI 元数据控制自然打印尺寸，原 4.4/4.5 合并为 `Temporal Sampling and Pilot Light-Curve Results`，Fig. 9 改为前文 histogram 风格，并在光变结果段补充可靠周期的物理解释
 41. 已按用户最后意见更新 v8 workflow 图：上游链条右移、Gaia label 改为 `within 1 arcsec`、四个分支 label 固定在箭头右侧，并将 no/yes 分支箭头延伸到下方框边缘后重新编译 `paper_draft/v8.pdf`
 42. 已整理 v8 workflow 图文件：最终使用 `figures_v8/known_object_processing_minimal_edit_final_2x.png`，删除 v8 中未使用的旧 workflow/mermaid 中间文件和 `outputs/known_object_processing_updated_v7.png`
+43. 已基于 v8 生成 v9 投稿前修订稿：删除 predicted magnitude cut 叙述，matching/Gaia mask 统一 1 arcsec，周期验证表移入正文并删除 Type 列，Discussion 删除 trailing-length 公式，Fig. 9 和表注/引用做最终小修
 
 ## Outstanding issues
 
 - 后续新增统计和图时必须默认使用 `gotta_asteroids.fits`
 - 轨道图 `outputs/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
-- v8 后续小修应直接覆盖 `paper_draft/figures_v8/`、`paper_draft/tables_v8/` 和 `paper_draft/v8.pdf`，不要再新建 v9，除非用户明确要求
-- `paper_draft/v8.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者最终确认
-- 光变分析方法已整合入 v8 Section 3.4，结果移入 Section 4.5，主文 reliable period table 已删除；Appendix Table A.1 保留 24 个 validation-sample objects；仍建议人工检查表格含义和 tentative 标记
-- Fig. 5/6/7/8/9 已重画或调整，两张光变 mosaic 和验证表保留在 Appendix；仍建议人工确认打印版中的柱状图透明度、密度点大小、colorbar、Fig. 6 右下角局部密度散点和 median band、Fig. 9 histogram、更新后的 workflow 图、Appendix figure panel 字号和 Appendix Table A.1 可读性
+- v9 后续小修应直接覆盖 `paper_draft/figures_v9/`、`paper_draft/tables_v9/` 和 `paper_draft/v9.pdf`，不要再新建 v10，除非用户明确要求
+- `paper_draft/v9.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者最终确认
+- 光变分析方法已整合入 v9 Section 3.4，结果移入 Section 4.4，周期验证表已移到正文 Table 5；仍建议人工检查表格含义、MP 定义和 tentative 标记
+- Fig. 5/6/7/8/9 已重画或调整，两张光变 mosaic 保留在 Appendix，周期验证表已移到正文 Table 5；仍建议人工确认打印版中的柱状图透明度、密度点大小、colorbar、Fig. 6 右下角局部密度散点和 median band、Fig. 9 histogram、更新后的 workflow 图、Appendix figure panel 字号和正文 Table 5 可读性
 - 需要确认外部周期数据库来源是否为 MPC、LCDB、ALCDEF 或其他数据库，正文目前保守写作 external/literature period database
 - 当前本机可用 `tectonic`；未发现 `/Library/TeX/texbin/xelatex` 或 `latexmk`
 
@@ -120,13 +123,18 @@ Appendix Table A.1 和最终 PDF 排版。
 - v8 Table 1 使用 `tabularx` 固定列宽，Appendix Table A.1 有单位行、`tab:period_validation` label、`Aper` photometry label 和 `<0.0001` 极小 `\Delta P` 格式
 - v8 Fig. 9 已改为 detection-count histogram，legend 显示 median = 2、84th = 6、max = 317
 - v8 原 4.4/4.5 已合并为 `Temporal Sampling and Pilot Light-Curve Results`；PDF 文本抽取未发现独立 `Pilot Rotation-Period Results`
+- 当前 `paper_draft/v9.pdf` 已由 `tectonic` 编译生成，共 26 页，A4 页面尺寸 `595.28 x 841.89 pts`
+- v9 `v9.log` 未发现 undefined references、undefined citations、overfull、float-too-large、missing files 或 LaTeX errors
+- v9 PDF 文本抽取未发现 `1.5 arcsec`、`arcsecond-level`、旧 magnitude-limit filtering、`Appendix Table`、`Table A.1`、trailing 公式、`scikit-learn`、内部 TODO 或旧 Appendix 标题
+- v9 Fig. 2 caption 明确 association 基于 sky position，predicted magnitude only diagnostics
+- v9 周期验证表为正文 Table 5，删除 Type 列，并用表下注释解释 `N_{\rm total}`、`N_{\rm eff}`、Phot、MP、Search、Final
 
 ## Next recommended steps
 
-1. 人工检查更新后的 `paper_draft/v8.pdf` 中新 workflow 图、Fig. 5/7/8/9、Appendix Figures A.1/A.2、Appendix Table A.1、引用跳转和 References/Appendix 顺序
+1. 人工检查更新后的 `paper_draft/v9.pdf` 中 Fig. 2 caption、正文 Table 5、Fig. 5/7/8/9、Appendix Figures A.1/A.2、引用跳转和 References/Appendix 顺序
 2. 人工检查首页作者顺序、Hu Zou 通讯作者标记、邮箱和第二单位邮编
 3. 确认外部周期数据库来源；若实际为 LCDB/ALCDEF，正文和表头应改为 LCDB/ALCDEF literature period
 4. 确认作者、单位、致谢和硬件参数
-5. 如需重画 v8 统计图表，运行 `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v8`
-6. 如需重做 v8 周期表，运行 `python3 scripts/generate_period_tables.py --period-tsv /Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv --fits-path gotta_asteroids.fits --outdir paper_draft/tables_v8 --class-csv paper_draft/tables_v7/period_object_classes.csv`
-7. 如需重编 PDF，本机可运行 `cd paper_draft && tectonic v8.tex --keep-logs --keep-intermediates`
+5. 如需重画 v9 统计图表，运行 `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v9`
+6. 如需重做 v9 周期表，运行 `python3 scripts/generate_period_tables.py --period-tsv /Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv --fits-path gotta_asteroids.fits --outdir paper_draft/tables_v9 --class-csv paper_draft/tables_v7/period_object_classes.csv`
+7. 如需重编 PDF，本机可运行 `cd paper_draft && tectonic v9.tex --keep-logs --keep-intermediates`

@@ -117,49 +117,55 @@ def write_table(path: Path, caption: str, label: str, columns: list[str], rows: 
 
 def write_period_validation_table(path: Path, caption: str, label: str, rows: list[list[str]]) -> None:
     with path.open("w", encoding="utf-8") as handle:
-        handle.write("\\begin{table}[!p]\n")
+        handle.write("\\begin{table*}[tbp]\n")
         handle.write("\\centering\n")
         handle.write(f"\\caption{{{caption}}}\n")
         handle.write(f"\\label{{{label}}}\n")
-        handle.write("\\scriptsize\n")
-        handle.write("\\setlength{\\tabcolsep}{2.5pt}\n")
+        handle.write("\\footnotesize\n")
+        handle.write("\\setlength{\\tabcolsep}{4.5pt}\n")
         handle.write("\\renewcommand{\\arraystretch}{1.12}\n")
-        handle.write("\\begin{tabular}{r r c r r r r r c c r c c}\n")
+        handle.write("\\begin{threeparttable}\n")
+        handle.write("\\begin{tabular}{rrrrrrrccrcc}\n")
         handle.write("\\toprule\n")
-        handle.write("Object ID & $H$ & Type & $N_{\\rm total}$ & $N_{\\rm eff}$ & Span & $P_{\\rm rot}$ & $\\Delta P$ & Model & Phot. & MP & Search & Final \\\\\n")
-        handle.write("          & (mag) &      &                   &                 & (hr) & (hr) & (hr) &       &       &    &        &       \\\\\n")
+        handle.write("Object ID & $H$ & $N_{\\rm total}^{a}$ & $N_{\\rm eff}^{b}$ & Span & $P_{\\rm rot}$ & $\\Delta P$ & Model & Phot.$^{c}$ & MP$^{d}$ & Search$^{e}$ & Final$^{f}$ \\\\\n")
+        handle.write("          & (mag) & & & (hr) & (hr) & (hr) & & & & & \\\\\n")
         handle.write("\\midrule\n")
         for row in rows:
             handle.write(" & ".join(latex_escape(item) for item in row) + " \\\\\n")
         handle.write("\\bottomrule\n")
         handle.write("\\end{tabular}\n")
-        handle.write("\\end{table}\n")
+        handle.write("\\begin{tablenotes}\n")
+        handle.write("\\footnotesize\n")
+        handle.write("\\item[$a$] Total number of photometric measurements available for the period-analysis pipeline.\n")
+        handle.write("\\item[$b$] Number of measurements retained after quality cuts and outlier rejection.\n")
+        handle.write("\\item[$c$] Photometric measurement used for the adopted solution: aperture (Aper), PSF, or Kron-like photometry.\n")
+        handle.write("\\item[$d$] Number of period-search estimates in the adopted consistency cluster.\n")
+        handle.write("\\item[$e$] Quality flag assigned from the agreement among the period-search methods.\n")
+        handle.write("\\item[$f$] Final quality flag after folded-light-curve inspection: reliable (Rel.) or tentative (Tent.).\n")
+        handle.write("\\end{tablenotes}\n")
+        handle.write("\\end{threeparttable}\n")
+        handle.write("\\end{table*}\n")
 
 
 def make_rows(df: pd.DataFrame, classes: dict[str, str], full: bool) -> list[list[str]]:
     rows = []
     for _, row in df.iterrows():
         object_id = str(int(row["Object ID"]))
-        base = [
-            object_id,
-            fmt_float(row["Median_H"], 2),
-            classes.get(object_id, "--"),
-        ]
         if full:
-            base.extend(
-                [
-                    f"{int(row['Ntotal'])}",
-                    f"{int(row['Neff'])}",
-                    fmt_float(row["Span"], 1),
-                    fmt_float(row["Prot"], 4),
-                    fmt_delta_p(row["ΔP"]),
-                    model_label(row["Model"]),
-                    phot_label(row["best_mode"]),
-                    "--" if pd.isna(row["match_point"]) else f"{int(float(row['match_point']))}",
-                    quality_label(row["Quality"]),
-                    quality_label(row["Final_Quality"]),
-                ]
-            )
+            base = [
+                object_id,
+                fmt_float(row["Median_H"], 2),
+                f"{int(row['Ntotal'])}",
+                f"{int(row['Neff'])}",
+                fmt_float(row["Span"], 1),
+                fmt_float(row["Prot"], 4),
+                fmt_delta_p(row["ΔP"]),
+                model_label(row["Model"]),
+                phot_label(row["best_mode"]),
+                "--" if pd.isna(row["match_point"]) else f"{int(float(row['match_point']))}",
+                quality_label(row["Quality"]),
+                quality_label(row["Final_Quality"]),
+            ]
         else:
             base = [
                 object_id,
@@ -205,7 +211,7 @@ def main() -> None:
 
     write_period_validation_table(
         outdir / "period_reliable_objects.tex",
-        "Final period-analysis table for the combined GOTTA Prototype and 60 cm Schmidt validation sample. The column ``Type'' gives the small-body orbit class used in the known-asteroid catalog. $N_{\\rm total}$ is the total number of photometric points reported by the period-analysis pipeline, and $N_{\\rm eff}$ is the number retained after quality cuts. The final-quality flag separates reliable solutions from tentative follow-up candidates.",
+        "Period-analysis validation sample from the combined GOTTA Prototype and 60 cm Schmidt data.",
         "tab:period_validation",
         make_rows(df, classes, full=True),
     )
