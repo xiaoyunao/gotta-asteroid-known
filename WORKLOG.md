@@ -2,6 +2,21 @@
 
 ## 2026-05-21
 
+- task: 修正 v9 Appendix 两张 light-curve 图插反
+- files_changed: `paper_draft/v9.tex`, `paper_draft/v9.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `sed -n '326,352p' paper_draft/v9.tex`; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` page marker extraction
+- key_findings:
+  - Appendix A 的两张 folded light-curve figure 内容顺序与 caption 对应关系相反
+  - 已对调 `figures_v9/lightcurve_reliable.png` 和 `figures_v9/lightcurve_questionable.png` 在 Appendix 中的插入路径，保留原 caption/label 逻辑
+- validation:
+  - `paper_draft/v9.pdf` 编译成功，仍为 25 页
+  - `v9.log` 未发现 undefined references、undefined citations、overfull、float-too-large、missing files 或 LaTeX errors
+  - PDF 文本抽取确认 Fig. A.1 位于 page 22，Fig. A.2 位于 page 23
+- remaining_issues:
+  - 建议人工视觉确认 Fig. A.1/Fig. A.2 内容现在与 caption 对应
+- next_step:
+  - 继续人工审阅 `paper_draft/v9.pdf`
+
 - task: 小修 v9 Table 5 浮动、Appendix 图页和 Schmidt/MPC 文字
 - files_changed: `paper_draft/v9.tex`, `paper_draft/v9.pdf`, `paper_draft/tables_v9/period_reliable_objects.tex`, `scripts/generate_period_tables.py`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `rg` v9/Table 5/Schmidt/float placement checks; `python3 -m py_compile scripts/generate_period_tables.py`; `python3 scripts/generate_period_tables.py --period-tsv /Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv --fits-path gotta_asteroids.fits --outdir paper_draft/tables_v9 --class-csv paper_draft/tables_v7/period_object_classes.csv`; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` page marker extraction; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v9.pdf`
