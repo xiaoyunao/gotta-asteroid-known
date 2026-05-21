@@ -9,9 +9,10 @@
   - 最终 workflow PNG 保持原图框体、字体、颜色、线宽和下半部分布局不变
   - no 分支箭头已延伸到 `No MPC report...` 框上边缘；yes 分支箭头已延伸到 `Generate ADES PSV...` 框上斜边
   - yes 分支旧箭头整段清除后重画，去掉浅绿/深绿双线残留；随后缩短箭头，使其不压住 diamond 下边线和蓝色输出框斜边
+  - 蓝色输出框斜边被清理旧箭头时产生的小缺口已补回
   - `Gaia match within 1.5 arcsec` 已改为 `within 1 arcsec`，四个分支 label 均固定在对应箭头右侧
 - validation:
-  - 已放大检查 no/yes 箭头端点和 yes 分支整段线条，无残留双箭头、双色叠线、压边框或明显线头
+  - 已放大检查 no/yes 箭头端点、yes 分支整段线条和蓝色输出框斜边，无残留双箭头、双色叠线、压边框或明显缺口
   - `paper_draft/v8.pdf` 编译成功，共 26 页，A4 页面尺寸 `595.28 x 841.89 pts`
   - `v8.log` 未发现 undefined references、undefined citations、overfull、float-too-large 或 LaTeX errors
 - remaining_issues:
