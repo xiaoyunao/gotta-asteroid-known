@@ -2,6 +2,26 @@
 
 ## 2026-05-21
 
+- task: 初始化本次会话并做 v9 终稿前基线检查
+- files_changed: `paper_draft/v9.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `sed -n '1,220p' WORKLOG.md`; `sed -n '1,220p' PLAN.md`; `git rev-list --left-right --count HEAD...origin/main`; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` v9 log checks; `pypdf` PDF text extraction; `mdls` page-size/page-count check; `view_image` checks for two Appendix light-curve PNGs
+- key_findings:
+  - 当前分支为 `main`，本地与 `origin/main` 同步，ahead/behind 为 `0/0`
+  - 最近提交为 `d8f4fe4 Refine v9 light-curve and ML discussion wording`
+  - 当前进度与项目记忆一致：v9 已完成，进入终稿前人工确认阶段
+  - `paper_draft/v9.tex` 中 Appendix 图路径与文件名对调是有意状态；视觉确认 `lightcurve_questionable.png` 内容为 Table 5 前 12 个 reliable 对象，`lightcurve_reliable.png` 内容为后 12 个 tentative 对象，因此 Fig. A.1/Fig. A.2 caption 对应正确
+- validation:
+  - `paper_draft/v9.pdf` 重新编译成功，共 25 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v9.log` 未发现 undefined references、undefined citations、overfull、float-too-large、missing files 或 LaTeX errors
+  - PDF 文本抽取未发现 `1.5 arcsec`、`arcsecond-level`、旧 magnitude-limit filtering、`Appendix Table`、`Table A.1`、`scikit-learn`、内部 TODO 或旧光变表述残留
+  - PDF 文本抽取确认 Table 5 在 pages 18--19，Appendix A 在 page 22，Fig. A.1 在 page 22，Fig. A.2 在 page 23
+- remaining_issues:
+  - `Received 20xx month day; accepted 20xx month day` 仍为占位
+  - grant list、完整 co-author list、外部周期数据库来源仍需共同作者最终确认
+  - 仍需人工视觉检查 pages 18--23、首页作者单位、References/Appendix 顺序和图表打印观感
+- next_step:
+  - 打开 `paper_draft/v9.pdf` 做终稿前人工通读和版面确认
+
 - task: 修正 v9 Discussion 机器学习范围和光变结果科学价值表述
 - files_changed: `paper_draft/v9.tex`, `paper_draft/v9.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `rg` target text checks; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` PDF text extraction
