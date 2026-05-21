@@ -2,6 +2,23 @@
 
 ## 2026-05-21
 
+- task: 修正 v9 Discussion 机器学习范围和光变结果科学价值表述
+- files_changed: `paper_draft/v9.tex`, `paper_draft/v9.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `rg` target text checks; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` PDF text extraction
+- key_findings:
+  - Discussion 中 ML cutout-recognition 模块不应只说接入 catalog-based known-object recovery
+  - Section 4.4 中外部周期库表述不应弱化为 validation-only，也应说明这些目标没有公开周期测量、可靠解具有科学价值
+  - 已改为 ML 模块将同时接入 known-object recovery workflow 和 future unknown-moving-object search pipeline
+  - 已改为 retained candidates 在查询的外部周期库中没有公开 rotation-period measurement；reliable solutions 提供 scientifically useful new period measurements，tentative solutions 是 follow-up targets
+- validation:
+  - `paper_draft/v9.pdf` 编译成功，仍为 25 页
+  - `v9.log` 未发现 undefined references、undefined citations、overfull、float-too-large、missing files 或 LaTeX errors
+  - PDF 文本抽取确认旧句 `previously unknown asteroid rotation periods` 和旧 ML 句 `This module will be particularly important...` 已不存在
+- remaining_issues:
+  - 仍建议人工阅读 Section 4.4 和 Discussion 新句的语气是否符合共同作者预期
+- next_step:
+  - 继续人工审阅 `paper_draft/v9.pdf`
+
 - task: 修正 v9 Appendix 两张 light-curve 图插反
 - files_changed: `paper_draft/v9.tex`, `paper_draft/v9.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `sed -n '326,352p' paper_draft/v9.tex`; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` page marker extraction

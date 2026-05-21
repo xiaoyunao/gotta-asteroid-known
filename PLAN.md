@@ -58,6 +58,7 @@ Appendix figures 和最终 PDF 排版。
 43. 已基于 v8 生成 v9 投稿前修订稿：删除 predicted magnitude cut 叙述，matching/Gaia mask 统一 1 arcsec，周期验证表移入正文并删除 Type 列，Discussion 删除 trailing-length 公式，Fig. 9 和表注/引用做最终小修
 44. 已小修 v9：移除 Table 5 后的 `\FloatBarrier` 让 Discussion 前移，补充 Table 5 Search flag 说明，移动 ADES PSV `>=3` 句子到 Section 3.3，删除 formal detection-efficiency 句子，首次写全 `Xinglong 60/90 cm Schmidt Telescope`，并让 Appendix A 标题与 Fig. A.1 同页
 45. 已修正 v9 Appendix A 两张 folded light-curve figure 插入顺序，使 Fig. A.1/Fig. A.2 与 caption 逻辑对应
+46. 已修正 v9 Discussion 中机器学习 cutout-recognition 模块范围：未来同时接入 known-object recovery 和 unknown-moving-object search；Section 4.4 光变结果改为强调 retained candidates 无公开周期测量、reliable solutions 具有科学价值
 
 ## Outstanding issues
 
