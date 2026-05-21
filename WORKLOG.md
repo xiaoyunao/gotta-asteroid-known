@@ -2,6 +2,22 @@
 
 ## 2026-05-21
 
+- task: 将 v8 workflow 图上半部分整体左移以改善居中
+- files_changed: `paper_draft/outputs/known_object_processing_updated_v7.png`, `paper_draft/v8.pdf`, `WORKLOG.md`
+- commands_run: `python3 /Users/yunaoxiao/Downloads/known_object_processing_minimal_edit_source.py`; `view_image` checks for full workflow and yes-arrow detail; `cp .../known_object_processing_minimal_edit_final.png paper_draft/outputs/known_object_processing_updated_v7.png`; `sips -s dpiWidth 252 -s dpiHeight 252 paper_draft/outputs/known_object_processing_updated_v7.png`; `tectonic v8.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v8.pdf`
+- key_findings:
+  - 上游主链、Sky association 框、Reject 框及红绿分支箭头整体左移 80 px
+  - Accepted 框及其以下流程保持原位置不变
+  - yes/no 下部分支未改动，yes 箭头头部和蓝框斜边保持上一版修复状态
+- validation:
+  - 已检查完整 workflow PNG，主流程视觉重心更接近中线
+  - `paper_draft/v8.pdf` 编译成功，共 26 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v8.log` 未发现 undefined references、undefined citations、overfull、float-too-large 或 LaTeX errors
+- remaining_issues:
+  - 建议人工检查 PDF 中 Fig. 2 的最终缩放观感
+- next_step:
+  - 继续人工审阅 `paper_draft/v8.pdf`
+
 - task: 修正 v8 workflow 图 no/yes 分支箭头端点并更新论文
 - files_changed: `paper_draft/outputs/known_object_processing_updated_v7.png`, `paper_draft/v8.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `python3 /Users/yunaoxiao/Downloads/known_object_processing_minimal_edit_source.py`; `sips -g pixelWidth -g pixelHeight -g dpiWidth -g dpiHeight ...`; `cp .../known_object_processing_minimal_edit_final.png paper_draft/outputs/known_object_processing_updated_v7.png`; `sips -s dpiWidth 252 -s dpiHeight 252 paper_draft/outputs/known_object_processing_updated_v7.png`; `tectonic v8.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v8.pdf`; `view_image` checks on full figure and zoomed no/yes arrow endpoints
