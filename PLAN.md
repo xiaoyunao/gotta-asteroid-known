@@ -116,7 +116,7 @@ Appendix Table A.1 和最终 PDF 排版。
 - v8 `v8.log` 未发现 undefined references、undefined citations、overfull、float-too-large 或 LaTeX errors
 - v8 PDF 文本抽取未发现独立 `Light-Curve Analysis with Auxiliary Observations`、`running median`、`cumulative distribution`、`validation table`、内部 TODO 或主文 `Table 5`
 - v8 Section 3.4 已加入 light-curve period-analysis method，Section 4.5 已加入 pilot rotation-period results，Discussion 变为 Section 5
-- v8 Fig. 2 使用 `paper_draft/outputs/known_object_processing_updated_v7.png`
+- v8 Fig. 2 使用 `paper_draft/figures_v8/known_object_processing_minimal_edit_final_2x.png`
 - v8 Table 1 使用 `tabularx` 固定列宽，Appendix Table A.1 有单位行、`tab:period_validation` label、`Aper` photometry label 和 `<0.0001` 极小 `\Delta P` 格式
 - v8 Fig. 9 已改为 detection-count histogram，legend 显示 median = 2、84th = 6、max = 317
 - v8 原 4.4/4.5 已合并为 `Temporal Sampling and Pilot Light-Curve Results`；PDF 文本抽取未发现独立 `Pilot Rotation-Period Results`

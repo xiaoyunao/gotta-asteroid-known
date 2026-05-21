@@ -2,6 +2,23 @@
 
 ## 2026-05-21
 
+- task: 初始化本次会话并确认 v8 当前进度
+- files_changed: `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `sed -n '1,220p' WORKLOG.md`; `sed -n '1,220p' PLAN.md`; `git rev-list --left-right --count HEAD...origin/main`; `rg -n "known_object_processing|method_flowchart|workflow" paper_draft/v8.tex PLAN.md WORKLOG.md`; `ls -lh paper_draft/figures_v8/known_object_processing_minimal_edit_final_2x.png paper_draft/v8.pdf`
+- key_findings:
+  - 当前分支为 `main`，工作区初始化检查时干净
+  - `HEAD` 为 `eb998a5 Use final v8 workflow figure asset`
+  - 本地 `main` 相对 `origin/main` 为 ahead 5 / behind 0，远端仍停在 `f00ba36 Preserve v8 workflow yes arrow head`
+  - `paper_draft/v8.tex` 当前引用 `figures_v8/known_object_processing_minimal_edit_final_2x.png`
+  - `paper_draft/v8.pdf` 已存在，mtime 为 2026-05-21 11:57，大小约 9.7M
+- validation:
+  - 已完成 git 状态、远端同步检查、最近历史和项目记忆读取
+- remaining_issues:
+  - 仍需人工检查 `paper_draft/v8.pdf` 中 Fig. 2 和后续图表/附录排版
+  - 本地 5 个 v8 workflow 相关提交尚未推送到 `origin/main`
+- next_step:
+  - 根据人工审阅结果继续小修 v8，或推送当前 5 个本地提交到远端
+
 - task: 整理 v8 workflow 图文件并切换到最终 2x PNG
 - files_changed: `paper_draft/v8.tex`, `paper_draft/v8.pdf`, `paper_draft/figures_v8/known_object_processing_minimal_edit_final_2x.png`, removed old unused v8 workflow files, `WORKLOG.md`, `PLAN.md`
 - commands_run: `cp /Users/yunaoxiao/Downloads/known_object_processing_minimal_edit_final_2x.png paper_draft/figures_v8/known_object_processing_minimal_edit_final_2x.png`; `sips -s dpiWidth 504 -s dpiHeight 504 ...`; `git rm -f paper_draft/outputs/known_object_processing_updated_v7.png paper_draft/figures_v8/known_object_processing.png paper_draft/figures_v8/method_flowchart_styled.*`; `rg` path checks; cleanup of temporary Downloads zoom/check PNGs; `tectonic v8.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v8.pdf`
