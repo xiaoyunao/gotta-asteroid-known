@@ -4,8 +4,8 @@
 
 继续审阅并小修 `paper_draft/v8.tex` 和 `paper_draft/v8.pdf`。保持科学定位为
 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
-当前重点是人工检查 v8 的新 workflow 图自然尺寸、Results 重构后的叙事、
-Fig. 5/7/8/9、Appendix Table A.1 和最终 PDF 排版。
+当前 workflow 图已按用户最后意见更新到论文中；后续重点是人工检查 v8 的
+Fig. 2、Results 重构后的叙事、Fig. 5/7/8/9、Appendix Table A.1 和最终 PDF 排版。
 
 ## Milestones
 
@@ -49,6 +49,7 @@ Fig. 5/7/8/9、Appendix Table A.1 和最终 PDF 排版。
 38. 已恢复 v7 astrometric residual 图右下角为 v6 的 `viridis` 局部密度散点底图，同时保留 running median 和 16--84 percentile 阴影
 39. 已按 GPT Pro 意见生成 v8：摘要结果导向压缩，光变方法移入 Section 3.4，光变结果移入 Section 4.5，Discussion 改为 Section 5，主文 reliable period table 删除，新 workflow PNG 插入 Fig. 2，Fig. 5 增加 median 图例，Fig. 7/8 改为 binned median，Fig. 9 改为 detection-count histogram，Table 1 和 Appendix Table A.1 排版更新
 40. 已按用户小修 v8：Fig. 2 LaTeX 去掉显式宽度并通过 PNG DPI 元数据控制自然打印尺寸，原 4.4/4.5 合并为 `Temporal Sampling and Pilot Light-Curve Results`，Fig. 9 改为前文 histogram 风格，并在光变结果段补充可靠周期的物理解释
+41. 已按用户最后意见更新 v8 workflow 图：上游链条右移、Gaia label 改为 `within 1 arcsec`、四个分支 label 固定在箭头右侧，并将 no/yes 分支箭头延伸到下方框边缘后重新编译 `paper_draft/v8.pdf`
 
 ## Outstanding issues
 
@@ -57,7 +58,7 @@ Fig. 5/7/8/9、Appendix Table A.1 和最终 PDF 排版。
 - v8 后续小修应直接覆盖 `paper_draft/figures_v8/`、`paper_draft/tables_v8/` 和 `paper_draft/v8.pdf`，不要再新建 v9，除非用户明确要求
 - `paper_draft/v8.tex` 中 Received/accepted 日期、最终 grant list、完整 co-author list 仍需共同作者最终确认
 - 光变分析方法已整合入 v8 Section 3.4，结果移入 Section 4.5，主文 reliable period table 已删除；Appendix Table A.1 保留 24 个 validation-sample objects；仍建议人工检查表格含义和 tentative 标记
-- Fig. 5/6/7/8/9 已重画或调整，两张光变 mosaic 和验证表保留在 Appendix；仍建议人工确认打印版中的柱状图透明度、密度点大小、colorbar、Fig. 6 右下角局部密度散点和 median band、Fig. 9 histogram、workflow 图自然尺寸、Appendix figure panel 字号和 Appendix Table A.1 可读性
+- Fig. 5/6/7/8/9 已重画或调整，两张光变 mosaic 和验证表保留在 Appendix；仍建议人工确认打印版中的柱状图透明度、密度点大小、colorbar、Fig. 6 右下角局部密度散点和 median band、Fig. 9 histogram、更新后的 workflow 图、Appendix figure panel 字号和 Appendix Table A.1 可读性
 - 需要确认外部周期数据库来源是否为 MPC、LCDB、ALCDEF 或其他数据库，正文目前保守写作 external/literature period database
 - 当前本机可用 `tectonic`；未发现 `/Library/TeX/texbin/xelatex` 或 `latexmk`
 

@@ -1,5 +1,23 @@
 # WORKLOG
 
+## 2026-05-21
+
+- task: 修正 v8 workflow 图 no/yes 分支箭头端点并更新论文
+- files_changed: `paper_draft/outputs/known_object_processing_updated_v7.png`, `paper_draft/v8.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `python3 /Users/yunaoxiao/Downloads/known_object_processing_minimal_edit_source.py`; `sips -g pixelWidth -g pixelHeight -g dpiWidth -g dpiHeight ...`; `cp .../known_object_processing_minimal_edit_final.png paper_draft/outputs/known_object_processing_updated_v7.png`; `sips -s dpiWidth 252 -s dpiHeight 252 paper_draft/outputs/known_object_processing_updated_v7.png`; `tectonic v8.tex --keep-logs --keep-intermediates`; `rg` log checks; `mdls -name kMDItemNumberOfPages -name kMDItemPageWidth -name kMDItemPageHeight paper_draft/v8.pdf`; `view_image` checks on full figure and zoomed no/yes arrow endpoints
+- key_findings:
+  - 最终 workflow PNG 保持原图框体、字体、颜色、线宽和下半部分布局不变
+  - no 分支箭头已延伸到 `No MPC report...` 框上边缘；yes 分支箭头已延伸到 `Generate ADES PSV...` 框上斜边
+  - `Gaia match within 1.5 arcsec` 已改为 `within 1 arcsec`，四个分支 label 均固定在对应箭头右侧
+- validation:
+  - 已放大检查 no/yes 箭头端点，无残留双箭头或明显线头
+  - `paper_draft/v8.pdf` 编译成功，共 26 页，A4 页面尺寸 `595.28 x 841.89 pts`
+  - `v8.log` 未发现 undefined references、undefined citations、overfull、float-too-large 或 LaTeX errors
+- remaining_issues:
+  - 建议人工打开 PDF 再看一遍 Fig. 2 在正文中的实际缩放观感
+- next_step:
+  - 继续人工审阅 `paper_draft/v8.pdf` 的整体图表和附录排版
+
 ## 2026-05-20
 
 - task: 小修 v8 workflow 尺寸、4.4/4.5 合并和 Fig. 9 风格
