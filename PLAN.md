@@ -4,12 +4,12 @@
 
 进入 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf` 的终稿前准备阶段。保持科学定位为
 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
-当前 v9 已完成投稿前一致性修订和后续小修：matching/Gaia mask 统一为 1 arcsec，
+当前 v9 已完成投稿前一致性修订、终稿通读报告清理和后续小修：matching/Gaia mask 统一为 1 arcsec，
 删除 predicted magnitude filtering 表述，周期验证表已移到正文，Appendix 只保留
-light-curve figures，Table 5 浮动和 Appendix A 图页已调整，Discussion 中机器学习和光变科学价值表述已小修。workflow 图不重画，v9 继续使用最终 2x PNG：
+light-curve figures，Table 5 已通过 `\FloatBarrier` 保持在 Discussion 前，Appendix A 图页已调整，Discussion 中机器学习和光变科学价值表述已小修。workflow 图只做节点文字 raster 小修，v9 继续使用最终 2x PNG：
 `paper_draft/figures_v9/known_object_processing_minimal_edit_final_2x.png`。
 后续重点不是新建 v10，而是人工确认 v9 的首页元信息、作者单位、致谢/grant、
-外部周期数据库来源、正文 Table 5、Fig. 2 caption、Fig. 5/7/8/9、Appendix figures、
+外部周期数据库来源、正文 Table 5、Fig. 2、Fig. 5/7/8/9、Appendix figures、
 References/Appendix 顺序和最终 PDF 排版。
 
 ## Milestones
@@ -61,6 +61,7 @@ References/Appendix 顺序和最终 PDF 排版。
 45. 已修正 v9 Appendix A 两张 folded light-curve figure 插入顺序，使 Fig. A.1/Fig. A.2 与 caption 逻辑对应
 46. 已修正 v9 Discussion 中机器学习 cutout-recognition 模块范围：未来同时接入 known-object recovery 和 unknown-moving-object search；Section 4.4 光变结果改为强调 retained candidates 无公开周期测量、reliable solutions 具有科学价值
 47. 已完成 v9 终稿前基线检查：本地 `main` 与 `origin/main` 同步，`paper_draft/v9.pdf` 可重编，共 25 页，日志无严重 LaTeX 问题；确认 Appendix A 两张图虽文件名与 caption 对调，但内容与 Fig. A.1/Fig. A.2 caption 对应正确
+48. 已按 v9 终稿通读报告清理：Fig. 2 节点改为 `Sky-coordinate association`，Appendix 两张光变 PNG 文件名/内容/caption/label 统一，Table 5 通过 `\FloatBarrier` 保持在 Discussion 前，光变 `new period measurements` 表述改为更保守的 period estimates，Abstract/Discussion 等 AI 感句子已压实，正式 bibliography DOI 已补齐；`Larson2003` BAAS 引用改为 DOI-bearing `Drake2009`
 
 ## Outstanding issues
 
@@ -71,6 +72,7 @@ References/Appendix 顺序和最终 PDF 排版。
 - 光变分析方法已整合入 v9 Section 3.4，结果移入 Section 4.4，周期验证表已移到正文 Table 5；仍建议人工检查表格含义、MP 定义和 tentative 标记
 - Fig. 5/6/7/8/9 已重画或调整，两张光变 mosaic 保留在 Appendix，周期验证表已移到正文 Table 5；仍建议人工确认打印版中的柱状图透明度、密度点大小、colorbar、Fig. 6 右下角局部密度散点和 median band、Fig. 9 histogram、更新后的 workflow 图、Appendix figure panel 字号和正文 Table 5 可读性
 - 需要确认外部周期数据库来源是否为 MPC、LCDB、ALCDEF 或其他数据库，正文目前保守写作 external/literature period database
+- `Morrison1992` 为 NASA technical memorandum，未找到 DOI，已补 NASA NTRS record URL；两条 Li et al. in preparation 无 DOI
 - 当前本机可用 `tectonic`；未发现 `/Library/TeX/texbin/xelatex` 或 `latexmk`
 
 ## Validation criteria
@@ -135,10 +137,11 @@ References/Appendix 顺序和最终 PDF 排版。
 - v9 周期验证表为正文 Table 5，删除 Type 列，并用表下注释解释 `N_{\rm total}`、`N_{\rm eff}`、Phot、MP、Search、Final
 - v9 小修后 `paper_draft/v9.pdf` 编译成功，共 25 页；PDF 文本抽取确认 Section 5 开始于 Table 5 前一页，Appendix A 标题和 Fig. A.1 同页
 - v9 终稿前重编成功，共 25 页，A4 页面尺寸 `595.28 x 841.89 pts`；`v9.log` 未发现 undefined references、undefined citations、overfull、float-too-large、missing files 或 LaTeX errors；PDF 文本抽取未发现旧问题文本残留
+- v9 通读报告清理后 `paper_draft/v9.pdf` 编译成功，共 25 页，A4 页面尺寸 `595.28 x 841.89 pts`；`v9.log` 未发现 undefined references、undefined citations、overfull、float-too-large、missing files 或 LaTeX errors；PDF 文本抽取确认 Table 5 在 pages 18--19 且先于 page 19 的 Discussion 标题，Fig. A.1/Fig. A.2 分别在 pages 22/23
 
 ## Next recommended steps
 
-1. 人工检查更新后的 `paper_draft/v9.pdf` 中 pages 18--23、正文 Table 5、Fig. 2 caption、Fig. 5/7/8/9、Appendix Figures A.1/A.2、引用跳转和 References/Appendix 顺序
+1. 人工检查更新后的 `paper_draft/v9.pdf` 中 pages 18--23、正文 Table 5 与 Discussion 衔接、Fig. 2、Fig. 5/7/8/9、Appendix Figures A.1/A.2、引用跳转和 References/Appendix 顺序
 2. 人工检查首页作者顺序、Hu Zou 通讯作者标记、邮箱和第二单位邮编
 3. 确认外部周期数据库来源；若实际为 LCDB/ALCDEF，正文和表头应改为 LCDB/ALCDEF literature period
 4. 确认 `Received/accepted` 占位、作者、单位、致谢、grant list 和硬件参数

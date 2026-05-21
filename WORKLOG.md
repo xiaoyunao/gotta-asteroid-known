@@ -2,6 +2,29 @@
 
 ## 2026-05-21
 
+- task: 按 v9 终稿通读报告做投稿前清理
+- files_changed: `paper_draft/v9.tex`, `paper_draft/v9.pdf`, `paper_draft/figures_v9/known_object_processing_minimal_edit_final_2x.png`, `paper_draft/figures_v9/lightcurve_reliable.png`, `paper_draft/figures_v9/lightcurve_questionable.png`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `git fetch --all --prune`; `rg` target text/source checks; `git mv` swap Appendix light-curve PNG contents; Python/Pillow raster edit for Fig. 2 node text; `sips -s dpiWidth 504 -s dpiHeight 504`; Crossref/web DOI checks; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` PDF text/page checks; `mdls` page-size/page-count check
+- key_findings:
+  - Fig. 2 workflow node still said `Sky + magnitude association`; updated the PNG node to `Sky-coordinate association` while restoring 504 dpi metadata
+  - Appendix light-curve image contents are now stored under matching filenames: `lightcurve_reliable.png` contains the reliable subset and `lightcurve_questionable.png` contains the tentative subset; `v9.tex` paths/captions/labels now match
+  - Table 5 still spans pages 18--19, but `\FloatBarrier` now keeps it before Section 5; page 19 shows Table 5 before `5 DISCUSSION AND CONCLUSIONS`
+  - Light-curve period-result wording now avoids `new period measurements` and uses matched-period/database-counterpart language
+  - Abstract, Introduction, Data, Method, Results, Discussion, future-array, and summary phrasing were tightened per review
+  - `Larson2003` BAAS citation was replaced with DOI-bearing `Drake2009`; formal bibliography entries now include DOI where available
+  - `Morrison1992` is a NASA technical memorandum with no DOI found; retained with NASA NTRS record URL. Two Li et al. in-prep entries remain without DOI by definition
+- validation:
+  - `paper_draft/v9.pdf` compiled successfully, 25 pages, A4 page size `595.28 x 841.89 pts`
+  - `v9.log` has no undefined references, undefined citations, overfull boxes, float-too-large warnings, missing files, or LaTeX errors
+  - PDF text extraction confirms old risk strings are absent: `Sky + magnitude association`, `new period measurements`, `public rotation-period measurement`, `closure of the known-object association workflow`, `For the future GOTTA array`, `Larson et al.`, `1.5 arcsec`, `scikit-learn`, and `TODO`
+  - PDF text extraction confirms Fig. A.1 on page 22 and Fig. A.2 on page 23
+  - DOI audit found no missing DOI among bibliography entries except the two in-prep items and the NASA NTRS technical memorandum
+- remaining_issues:
+  - Need human final check of page 19 Table 5 + Discussion transition after the new `\FloatBarrier`
+  - Need final co-author confirmation for `Received/accepted` placeholder, author list, grant list, hardware parameters, and actual external period database source
+- next_step:
+  - Open `paper_draft/v9.pdf` and visually inspect Fig. 2, pages 18--23, references, and Appendix figure readability
+
 - task: 初始化本次会话并做 v9 终稿前基线检查
 - files_changed: `paper_draft/v9.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `sed -n '1,220p' WORKLOG.md`; `sed -n '1,220p' PLAN.md`; `git rev-list --left-right --count HEAD...origin/main`; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` v9 log checks; `pypdf` PDF text extraction; `mdls` page-size/page-count check; `view_image` checks for two Appendix light-curve PNGs
