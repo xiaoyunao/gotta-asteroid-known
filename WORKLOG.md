@@ -2,6 +2,25 @@
 
 ## 2026-06-02
 
+- task: 调整 v9 Table 2 局部列距
+- files_changed: `scripts/generate_paper_products.py`, `paper_draft/tables_v9/orbit_class_statistics.tex`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `git fetch --all --prune`; `sed` table/script inspections; `python3 -m py_compile scripts/generate_paper_products.py`; targeted Python import/call of `make_tables`; temporary-directory `tectonic v9.tex --keep-logs --keep-intermediates`; `pypdf` page-size/page-count check; `rg` log checks
+- key_findings:
+  - 用户反馈 Table 2 的第 2--3 列间距过大，而其他列不应太紧
+  - 已将 Table 2 改为 `tabular*{1.10\textwidth}` 并通过 `\makebox[\textwidth][c]{...}` 居中略伸出版心
+  - 第 2--3 列使用固定 `\hspace{10pt}` 小间距
+  - 第 3 列之后使用 `\extracolsep{\fill}` 自动分配剩余空间，使后续列更松
+  - `Orbit class` 改回自然宽度列，避免固定 `p{...}` 造成 2--3 列之间空白过大
+- validation:
+  - `scripts/generate_paper_products.py` 语法检查通过
+  - 临时目录编译 v9 成功，不覆盖正式 `paper_draft/v9.pdf`
+  - 临时编译 PDF 为 25 页、A4 页面尺寸 `595.28 x 841.89 pts`
+  - 临时编译日志未发现 LaTeX errors、missing files、undefined references/citations、overfull boxes 或 emergency stops
+- remaining_issues:
+  - 无
+- next_step:
+  - 用户在 Overleaf 中替换更新后的 `tables_v9/orbit_class_statistics.tex` 并视觉确认
+
 - task: 放宽 v9 Table 2 版式
 - files_changed: `scripts/generate_paper_products.py`, `paper_draft/tables_v9/orbit_class_statistics.tex`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `git status --short --branch`; `sed` table/script inspections; `python3 -m py_compile scripts/generate_paper_products.py`; targeted Python import/call of `make_tables`; temporary-directory `tectonic v9.tex --keep-logs --keep-intermediates`; `pypdf` page-size/page-count check; `rg` log checks

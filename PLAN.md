@@ -15,6 +15,7 @@ Discussion 中机器学习和光变科学价值表述已小修。workflow 图只
 后续又按用户要求将 Fig. 6 右下 y 轴改为 `\Delta m [mag]`，并给 orbit-class 饼图加上 non-MBA 指向细分饼图的箭头。
 Table 2 fraction 表头已修正为 `Detection fraction`/`Object fraction` 第一行、`(%)` 第二行。
 Table 2 已进一步放宽：用 `\makebox[\textwidth][c]{...}` 居中伸出版心，增加 `Orbit class` 列宽和列间距。
+Table 2 最新调整为 `tabular*{1.10\textwidth}`：第 2--3 列固定小间距，其余数值列用 `\extracolsep{\fill}` 放开。
 后续重点是接收用户在 Overleaf 修改后的 tex/zip 或继续按需提供单独图表资产；不要新建 v10，除非用户明确要求。
 
 ## Milestones
@@ -73,6 +74,7 @@ Table 2 已进一步放宽：用 `\makebox[\textwidth][c]{...}` 居中伸出版�
 52. 已小修两个 v9 图：Fig. 6 右下 y 轴改为 `\Delta m [mag]`，新增饼图加 non-MBA 关联箭头
 53. 已修正 Table 2 fraction 表头换行位置，并通过临时 v9 编译确认无 overfull
 54. 已放宽 Table 2 版式：表格居中略伸出版心，`Orbit class` 列和列间距加宽，临时 v9 编译无 overfull
+55. 已针对 Table 2 局部列距再调：第 2--3 列缩小为固定 `10pt`，第 3 列后自动分配剩余空间，临时 v9 编译无 overfull
 
 ## Outstanding issues
 

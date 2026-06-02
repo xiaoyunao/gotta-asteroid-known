@@ -393,6 +393,7 @@ def write_csv_and_latex(
     tabcolsep_pt: float = 6,
     latex_columns: list[str] | None = None,
     center_over_textwidth: bool = False,
+    tabular_width: str | None = None,
 ) -> None:
     csv_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(csv_path, index=False)
@@ -408,7 +409,10 @@ def write_csv_and_latex(
         handle.write("\\renewcommand{\\arraystretch}{1.12}\n")
         if center_over_textwidth:
             handle.write("\\makebox[\\textwidth][c]{%\n")
-        handle.write(f"\\begin{{tabular}}{{{column_format}}}\n")
+        if tabular_width is None:
+            handle.write(f"\\begin{{tabular}}{{{column_format}}}\n")
+        else:
+            handle.write(f"\\begin{{tabular*}}{{{tabular_width}}}{{{column_format}}}\n")
         handle.write("\\toprule\n")
         header = latex_columns if latex_columns is not None else list(df.columns)
         if latex_columns is None:
@@ -418,7 +422,10 @@ def write_csv_and_latex(
         handle.write("\\midrule\n")
         for _, row in df.iterrows():
             handle.write(" & ".join(latex_escape(x) for x in row.to_list()) + " \\\\\n")
-        handle.write("\\bottomrule\n\\end{tabular}")
+        if tabular_width is None:
+            handle.write("\\bottomrule\n\\end{tabular}")
+        else:
+            handle.write("\\bottomrule\n\\end{tabular*}")
         if center_over_textwidth:
             handle.write("%\n}\n")
         else:
@@ -605,10 +612,11 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
         outdir / "orbit_class_statistics.csv",
         "Orbit-class composition of the recovered known-asteroid sample. Separations are in arcsec. Classes with only a few detections are grouped into ``Other/unclassified''; this group includes objects without a more specific dynamical class in the adopted small-body metadata.",
         "tab:orbit_class",
-        r"@{}l>{\raggedright\arraybackslash}p{0.20\textwidth}rrrrrr@{}",
+        r"@{}ll@{\hspace{10pt}}r@{\extracolsep{\fill}}rrrrr@{}",
         font_size=r"\scriptsize",
-        tabcolsep_pt=2.4,
+        tabcolsep_pt=3.0,
         center_over_textwidth=True,
+        tabular_width=r"1.10\textwidth",
         latex_columns=[
             "Code",
             "Orbit class",
