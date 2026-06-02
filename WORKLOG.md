@@ -2,6 +2,24 @@
 
 ## 2026-06-02
 
+- task: 放宽 v9 Table 2 版式
+- files_changed: `scripts/generate_paper_products.py`, `paper_draft/tables_v9/orbit_class_statistics.tex`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `sed` table/script inspections; `python3 -m py_compile scripts/generate_paper_products.py`; targeted Python import/call of `make_tables`; temporary-directory `tectonic v9.tex --keep-logs --keep-intermediates`; `pypdf` page-size/page-count check; `rg` log checks
+- key_findings:
+  - 用户认为上版 Table 2 太挤，需要表格整体更宽、左右边距更小
+  - 已给 Table 2 增加 `\makebox[\textwidth][c]{...}`，让表格居中并可向左右略伸出版心
+  - `Orbit class` 列宽从 `0.16\textwidth` 放宽到 `0.20\textwidth`
+  - `tabcolsep` 从 `1.3pt` 放宽到 `2.4pt`
+- validation:
+  - `scripts/generate_paper_products.py` 语法检查通过
+  - 临时目录编译 v9 成功，不覆盖正式 `paper_draft/v9.pdf`
+  - 临时编译 PDF 为 25 页、A4 页面尺寸 `595.28 x 841.89 pts`
+  - 临时编译日志未发现 LaTeX errors、missing files、undefined references/citations、overfull boxes 或 emergency stops
+- remaining_issues:
+  - 未渲染指定 PDF 页面截图；本机缺少 `pdftoppm`/ImageMagick/PyMuPDF/pypdfium2
+- next_step:
+  - 用户在 Overleaf 中替换更新后的 `tables_v9/orbit_class_statistics.tex` 并视觉确认
+
 - task: 修正 v9 Table 2 fraction 表头换行位置
 - files_changed: `scripts/generate_paper_products.py`, `paper_draft/tables_v9/orbit_class_statistics.tex`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `git status --short --branch`; `rg` target checks; `python3 -m py_compile scripts/generate_paper_products.py`; targeted Python import/call of `make_tables`; temporary-directory `tectonic v9.tex --keep-logs --keep-intermediates`; `pypdf` page-size/page-count check; `rg` log checks

@@ -14,6 +14,7 @@ Discussion 中机器学习和光变科学价值表述已小修。workflow 图只
 已更新 v9 的 Fig. 6 photometric statistics、Table 2、Table 3，并新增 orbit-class composition pie figure。
 后续又按用户要求将 Fig. 6 右下 y 轴改为 `\Delta m [mag]`，并给 orbit-class 饼图加上 non-MBA 指向细分饼图的箭头。
 Table 2 fraction 表头已修正为 `Detection fraction`/`Object fraction` 第一行、`(%)` 第二行。
+Table 2 已进一步放宽：用 `\makebox[\textwidth][c]{...}` 居中伸出版心，增加 `Orbit class` 列宽和列间距。
 后续重点是接收用户在 Overleaf 修改后的 tex/zip 或继续按需提供单独图表资产；不要新建 v10，除非用户明确要求。
 
 ## Milestones
@@ -71,6 +72,7 @@ Table 2 fraction 表头已修正为 `Detection fraction`/`Object fraction` 第�
 51. 已按用户要求只重画 v9 图表、不改文章正文：更新 Fig. 6、Table 2、Table 3，并新增 `figures_v9/orbit_class_composition_pies.{png,pdf}`
 52. 已小修两个 v9 图：Fig. 6 右下 y 轴改为 `\Delta m [mag]`，新增饼图加 non-MBA 关联箭头
 53. 已修正 Table 2 fraction 表头换行位置，并通过临时 v9 编译确认无 overfull
+54. 已放宽 Table 2 版式：表格居中略伸出版心，`Orbit class` 列和列间距加宽，临时 v9 编译无 overfull
 
 ## Outstanding issues
 
