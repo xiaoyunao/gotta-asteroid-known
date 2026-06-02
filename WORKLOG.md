@@ -2,6 +2,23 @@
 
 ## 2026-06-02
 
+- task: 打包 v9 Overleaf 修改包
+- files_changed: `paper_draft/v9_overleaf_package_20260602.zip`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `rg -n "(includegraphics|input|bibliography|bibliographystyle|documentclass|usepackage)" paper_draft/v9.tex`; `find paper_draft -maxdepth 2 -type f | sort`; `zip -r -X v9_overleaf_package_20260602.zip v9.tex v9.pdf raa.cls raa.bst figures_v9 tables_v9`; `unzip -l v9_overleaf_package_20260602.zip`; extract package to temporary directory; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` page-size/page-count check
+- key_findings:
+  - `v9.tex` uses inline `thebibliography`, so no `.bib` file is required
+  - Overleaf package includes `v9.tex`, reference `v9.pdf`, `raa.cls`, `raa.bst`, full `figures_v9/`, and full `tables_v9/`
+  - Package path: `paper_draft/v9_overleaf_package_20260602.zip`
+  - Zip contains 42 files and is about 26 MB
+- validation:
+  - Extracted package compiles successfully with `tectonic v9.tex --keep-logs --keep-intermediates`
+  - Compiled PDF has 25 pages and A4 page size `595.28 x 841.89 pts`
+  - Log scan found no LaTeX errors, missing input files, undefined references/citations, overfull boxes, or emergency stops; only existing underfull/font-info warnings remain
+- remaining_issues:
+  - User will upload package to Overleaf and make manual advisor-revision edits there
+- next_step:
+  - If Overleaf edits are exported later, compare against local `paper_draft/v9.tex` and reconcile into git
+
 - task: 初始化导师返回意见修订会话
 - files_changed: `WORKLOG.md`, `PLAN.md`
 - commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `sed -n '1,220p' WORKLOG.md`; `sed -n '1,220p' PLAN.md`; `sed -n '1,180p' README.md`; `git rev-list --left-right --count HEAD...origin/main`

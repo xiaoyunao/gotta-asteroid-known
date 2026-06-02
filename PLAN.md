@@ -9,7 +9,8 @@
 light-curve figures，Table 5 已通过 `\FloatBarrier` 保持在 Discussion 前，Appendix A 图页已调整，
 Discussion 中机器学习和光变科学价值表述已小修。workflow 图只做节点文字 raster 小修，v9 继续使用最终 2x PNG：
 `paper_draft/figures_v9/known_object_processing_minimal_edit_final_2x.png`。
-后续重点是等待用户提供 GPT 提取后的导师精确修改意见，并逐条覆盖修订 v9；不要新建 v10，除非用户明确要求。
+已生成 Overleaf 修改包 `paper_draft/v9_overleaf_package_20260602.zip`，供用户上传后手动修改。
+后续重点是接收用户在 Overleaf 修改后的 tex/zip 或导师精确修改意见，并把最终修订同步回本地 v9；不要新建 v10，除非用户明确要求。
 
 ## Milestones
 
@@ -62,10 +63,12 @@ Discussion 中机器学习和光变科学价值表述已小修。workflow 图只
 47. 已完成 v9 终稿前基线检查：本地 `main` 与 `origin/main` 同步，`paper_draft/v9.pdf` 可重编，共 25 页，日志无严重 LaTeX 问题；确认 Appendix A 两张图虽文件名与 caption 对调，但内容与 Fig. A.1/Fig. A.2 caption 对应正确
 48. 已按 v9 终稿通读报告清理：Fig. 2 节点改为 `Sky-coordinate association`，Appendix 两张光变 PNG 文件名/内容/caption/label 统一，Table 5 通过 `\FloatBarrier` 保持在 Discussion 前，光变 `new period measurements` 表述改为更保守的 period estimates，Abstract/Discussion 等 AI 感句子已压实，正式 bibliography DOI 已补齐；`Larson2003` BAAS 引用改为 DOI-bearing `Drake2009`
 49. 已初始化导师返回意见修订会话：本地 `main` 与 `origin/main` 同步，当前等待用户提供精确意见后继续直接修订 v9
+50. 已生成 Overleaf 修改包 `paper_draft/v9_overleaf_package_20260602.zip`：包含 `v9.tex`、`v9.pdf`、`raa.cls`、`raa.bst`、`figures_v9/`、`tables_v9/`，解压后可直接编译
 
 ## Outstanding issues
 
 - 尚未收到导师返回意见的精确条目；收到后需要逐条映射到 `paper_draft/v9.tex` 并记录处理状态
+- 如果用户在 Overleaf 手动修改，应后续下载最新版 `.tex` 或完整 project zip 并同步回本地 git
 - 后续新增统计和图时必须默认使用 `gotta_asteroids.fits`
 - 轨道图 `outputs/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
 - v9 后续小修应直接覆盖 `paper_draft/figures_v9/`、`paper_draft/tables_v9/` 和 `paper_draft/v9.pdf`，不要再新建 v10，除非用户明确要求
@@ -142,8 +145,9 @@ Discussion 中机器学习和光变科学价值表述已小修。workflow 图只
 
 ## Next recommended steps
 
-1. 等用户提供 GPT 提取后的导师精确修改意见
-2. 将每条意见映射到 `paper_draft/v9.tex`、相关 figure/table 脚本或手工 PNG 资产
-3. 修改后运行 `cd paper_draft && tectonic v9.tex --keep-logs --keep-intermediates`
-4. 检查 `v9.log`、PDF 页数/页面尺寸、关键旧文本残留和受影响页面排版
-5. 更新 `WORKLOG.md` 和 `PLAN.md`，完成后视修改规模提交 git
+1. 用户上传 `paper_draft/v9_overleaf_package_20260602.zip` 到 Overleaf，并将主文件设为 `v9.tex`
+2. 用户在 Overleaf 完成导师意见修改后，下载新版 `.tex` 或完整 project zip
+3. 将 Overleaf 修改同步回本地 `paper_draft/v9.tex`、相关 figure/table 资产
+4. 修改后运行 `cd paper_draft && tectonic v9.tex --keep-logs --keep-intermediates`
+5. 检查 `v9.log`、PDF 页数/页面尺寸、关键旧文本残留和受影响页面排版
+6. 更新 `WORKLOG.md` 和 `PLAN.md`，完成后视修改规模提交 git
