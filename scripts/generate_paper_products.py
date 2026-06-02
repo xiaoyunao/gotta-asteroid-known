@@ -664,7 +664,7 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
         df[ADOPTED_MAG],
         df["dmag_obs_minus_pred"],
         f"{ADOPTED_MAG_LABEL} [mag]",
-        r"$\Delta g$ [mag]",
+        r"$\Delta m$ [mag]",
         xbins=260,
         ybins=190,
         xlim=(10, 21),
@@ -728,6 +728,21 @@ def plot_orbit_class_pies(df: pd.DataFrame, outdir: Path) -> None:
     for patch in main_wedges:
         patch.set_alpha(0.5)
     ax.set_aspect("equal")
+
+    fig.patches.append(
+        FancyArrowPatch(
+            (0.31, 0.80),
+            (0.59, 0.62),
+            transform=fig.transFigure,
+            arrowstyle="-|>",
+            connectionstyle="arc3,rad=-0.12",
+            mutation_scale=18,
+            linewidth=1.4,
+            color="#555555",
+            alpha=0.9,
+            clip_on=False,
+        )
+    )
 
     inset_wedges, _, inset_autotexts = inset.pie(
         detailed_counts.to_numpy(),

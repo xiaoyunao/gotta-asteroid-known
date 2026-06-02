@@ -2,6 +2,21 @@
 
 ## 2026-06-02
 
+- task: 小修 v9 photometric statistics 轴标和 orbit-class 饼图关联箭头
+- files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v9/photometric_statistics.png`, `paper_draft/figures_v9/photometric_statistics.pdf`, `paper_draft/figures_v9/orbit_class_composition_pies.png`, `paper_draft/figures_v9/orbit_class_composition_pies.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `git fetch --all --prune`; `rg` target checks; `sed` script inspection; `python3 -m py_compile scripts/generate_paper_products.py`; targeted Python import/call of `plot_photometry` and `plot_orbit_class_pies`; `view_image` visual checks; `ls -lh` output checks; `git diff --stat`
+- key_findings:
+  - 用户要求继续只改图，不改文章正文
+  - Fig. 6 右下图 y 轴从 `\Delta g [mag]` 改为 `\Delta m [mag]`
+  - Orbit-class composition pie figure 增加从主图 non-MBA 扇区指向右侧 non-MBA 细分饼图的箭头
+- validation:
+  - `scripts/generate_paper_products.py` 语法检查通过
+  - 视觉检查确认 Fig. 6 轴标正确，饼图箭头可见且未遮挡标签
+- remaining_issues:
+  - 无
+- next_step:
+  - 用户在 Overleaf 中替换更新后的两个图文件
+
 - task: 按用户要求重画 v9 图表输出但不改文章正文
 - files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v9/photometric_statistics.png`, `paper_draft/figures_v9/photometric_statistics.pdf`, `paper_draft/figures_v9/orbit_class_composition_pies.png`, `paper_draft/figures_v9/orbit_class_composition_pies.pdf`, `paper_draft/tables_v9/orbit_class_statistics.csv`, `paper_draft/tables_v9/orbit_class_statistics.tex`, `paper_draft/tables_v9/nightly_top5.csv`, `paper_draft/tables_v9/nightly_top5.tex`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `rg`/`sed` script and table inspections; `python3 -m py_compile scripts/generate_paper_products.py`; targeted Python import/call of `make_tables`, `plot_photometry`, and `plot_orbit_class_pies`; `sips` image-size checks; `view_image` visual checks; temporary-directory `tectonic v9.tex --keep-logs --keep-intermediates`; `pypdf` page-size/page-count check; `rg` log checks

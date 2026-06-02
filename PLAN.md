@@ -12,6 +12,7 @@ Discussion 中机器学习和光变科学价值表述已小修。workflow 图只
 已生成 Overleaf 修改包 `paper_draft/v9_overleaf_package_20260602.zip`，供用户上传后手动修改。
 用户已明确要求本地不要继续改文章正文；当前只辅助重画/重发表格和图片资产。
 已更新 v9 的 Fig. 6 photometric statistics、Table 2、Table 3，并新增 orbit-class composition pie figure。
+后续又按用户要求将 Fig. 6 右下 y 轴改为 `\Delta m [mag]`，并给 orbit-class 饼图加上 non-MBA 指向细分饼图的箭头。
 后续重点是接收用户在 Overleaf 修改后的 tex/zip 或继续按需提供单独图表资产；不要新建 v10，除非用户明确要求。
 
 ## Milestones
@@ -67,6 +68,7 @@ Discussion 中机器学习和光变科学价值表述已小修。workflow 图只
 49. 已初始化导师返回意见修订会话：本地 `main` 与 `origin/main` 同步，当前等待用户提供精确意见后继续直接修订 v9
 50. 已生成 Overleaf 修改包 `paper_draft/v9_overleaf_package_20260602.zip`：包含 `v9.tex`、`v9.pdf`、`raa.cls`、`raa.bst`、`figures_v9/`、`tables_v9/`，解压后可直接编译
 51. 已按用户要求只重画 v9 图表、不改文章正文：更新 Fig. 6、Table 2、Table 3，并新增 `figures_v9/orbit_class_composition_pies.{png,pdf}`
+52. 已小修两个 v9 图：Fig. 6 右下 y 轴改为 `\Delta m [mag]`，新增饼图加 non-MBA 关联箭头
 
 ## Outstanding issues
 
