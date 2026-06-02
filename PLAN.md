@@ -10,7 +10,9 @@ light-curve figures，Table 5 已通过 `\FloatBarrier` 保持在 Discussion 前
 Discussion 中机器学习和光变科学价值表述已小修。workflow 图只做节点文字 raster 小修，v9 继续使用最终 2x PNG：
 `paper_draft/figures_v9/known_object_processing_minimal_edit_final_2x.png`。
 已生成 Overleaf 修改包 `paper_draft/v9_overleaf_package_20260602.zip`，供用户上传后手动修改。
-后续重点是接收用户在 Overleaf 修改后的 tex/zip 或导师精确修改意见，并把最终修订同步回本地 v9；不要新建 v10，除非用户明确要求。
+用户已明确要求本地不要继续改文章正文；当前只辅助重画/重发表格和图片资产。
+已更新 v9 的 Fig. 6 photometric statistics、Table 2、Table 3，并新增 orbit-class composition pie figure。
+后续重点是接收用户在 Overleaf 修改后的 tex/zip 或继续按需提供单独图表资产；不要新建 v10，除非用户明确要求。
 
 ## Milestones
 
@@ -64,11 +66,13 @@ Discussion 中机器学习和光变科学价值表述已小修。workflow 图只
 48. 已按 v9 终稿通读报告清理：Fig. 2 节点改为 `Sky-coordinate association`，Appendix 两张光变 PNG 文件名/内容/caption/label 统一，Table 5 通过 `\FloatBarrier` 保持在 Discussion 前，光变 `new period measurements` 表述改为更保守的 period estimates，Abstract/Discussion 等 AI 感句子已压实，正式 bibliography DOI 已补齐；`Larson2003` BAAS 引用改为 DOI-bearing `Drake2009`
 49. 已初始化导师返回意见修订会话：本地 `main` 与 `origin/main` 同步，当前等待用户提供精确意见后继续直接修订 v9
 50. 已生成 Overleaf 修改包 `paper_draft/v9_overleaf_package_20260602.zip`：包含 `v9.tex`、`v9.pdf`、`raa.cls`、`raa.bst`、`figures_v9/`、`tables_v9/`，解压后可直接编译
+51. 已按用户要求只重画 v9 图表、不改文章正文：更新 Fig. 6、Table 2、Table 3，并新增 `figures_v9/orbit_class_composition_pies.{png,pdf}`
 
 ## Outstanding issues
 
 - 尚未收到导师返回意见的精确条目；收到后需要逐条映射到 `paper_draft/v9.tex` 并记录处理状态
 - 如果用户在 Overleaf 手动修改，应后续下载最新版 `.tex` 或完整 project zip 并同步回本地 git
+- 用户当前要求本地不要改文章正文；后续除非明确要求，只提供图表资产或同步 Overleaf 已完成修改
 - 后续新增统计和图时必须默认使用 `gotta_asteroids.fits`
 - 轨道图 `outputs/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
 - v9 后续小修应直接覆盖 `paper_draft/figures_v9/`、`paper_draft/tables_v9/` 和 `paper_draft/v9.pdf`，不要再新建 v10，除非用户明确要求
@@ -145,9 +149,9 @@ Discussion 中机器学习和光变科学价值表述已小修。workflow 图只
 
 ## Next recommended steps
 
-1. 用户上传 `paper_draft/v9_overleaf_package_20260602.zip` 到 Overleaf，并将主文件设为 `v9.tex`
-2. 用户在 Overleaf 完成导师意见修改后，下载新版 `.tex` 或完整 project zip
-3. 将 Overleaf 修改同步回本地 `paper_draft/v9.tex`、相关 figure/table 资产
-4. 修改后运行 `cd paper_draft && tectonic v9.tex --keep-logs --keep-intermediates`
-5. 检查 `v9.log`、PDF 页数/页面尺寸、关键旧文本残留和受影响页面排版
+1. 用户在 Overleaf 中手动替换 Fig. 6、Table 2、Table 3 输出，并按需插入新增饼图
+2. 如继续需要图表小修，只改 `scripts/generate_paper_products.py` 和 `paper_draft/figures_v9`/`tables_v9` 资产，不改 `v9.tex`
+3. 用户在 Overleaf 完成导师意见修改后，下载新版 `.tex` 或完整 project zip
+4. 如用户要求同步，将 Overleaf 修改同步回本地 `paper_draft/v9.tex`、相关 figure/table 资产
+5. 验证时优先使用临时目录编译，避免覆盖用户正在手动修改的正式稿
 6. 更新 `WORKLOG.md` 和 `PLAN.md`，完成后视修改规模提交 git

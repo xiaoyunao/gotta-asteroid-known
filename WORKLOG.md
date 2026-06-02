@@ -2,6 +2,27 @@
 
 ## 2026-06-02
 
+- task: 按用户要求重画 v9 图表输出但不改文章正文
+- files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v9/photometric_statistics.png`, `paper_draft/figures_v9/photometric_statistics.pdf`, `paper_draft/figures_v9/orbit_class_composition_pies.png`, `paper_draft/figures_v9/orbit_class_composition_pies.pdf`, `paper_draft/tables_v9/orbit_class_statistics.csv`, `paper_draft/tables_v9/orbit_class_statistics.tex`, `paper_draft/tables_v9/nightly_top5.csv`, `paper_draft/tables_v9/nightly_top5.tex`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `rg`/`sed` script and table inspections; `python3 -m py_compile scripts/generate_paper_products.py`; targeted Python import/call of `make_tables`, `plot_photometry`, and `plot_orbit_class_pies`; `sips` image-size checks; `view_image` visual checks; temporary-directory `tectonic v9.tex --keep-logs --keep-intermediates`; `pypdf` page-size/page-count check; `rg` log checks
+- key_findings:
+  - 未修改 `paper_draft/v9.tex` 或正文内容；只更新图表生成脚本和 v9 图表资产
+  - Fig. 6 `photometric_statistics` 重新排布：左上保留 `g_{\rm aper}` histogram，右上为原 S/N histogram，左下为原 `g_{\rm aper}`--photometric-error local-density scatter，右下新增 `g_{\rm aper}`--`\Delta g` local-density scatter
+  - 新增 `\Delta g` 面板使用 `g_{\rm aper}` 为 x，`g_{\rm aper}-mag` 为 y，x 轴范围 `10--21`，y 轴范围 `-1.5--1.5`
+  - Table 2 新增 `Detection fraction (%)` 和 `Object fraction (%)`，并在 LaTeX 表头中换行显示百分号；CSV 表头也带单位
+  - Table 2 和 Table 3 的 `Median $g_{\rm aper}$` 表头加 `(mag)`，`Median separation` 按物理单位加 `(arcsec)` 并在 LaTeX 表头中换行
+  - 新增 `orbit_class_composition_pies` 饼图：主图为 unique-object 口径 MBA vs non-MBA，右侧子饼图为 non-MBA 中 OMB/TJN/IMB/MCA/NEO-PHA-Other 比例，配色透明度仿照现有柱状图
+- validation:
+  - `scripts/generate_paper_products.py` 语法检查通过
+  - 视觉检查确认 Fig. 6 四联图和新增饼图无明显标签/面板重叠
+  - 临时目录编译 v9 成功，不覆盖正式 `paper_draft/v9.pdf`
+  - 临时编译 PDF 为 25 页、A4 页面尺寸 `595.28 x 841.89 pts`
+  - 临时编译日志未发现 LaTeX errors、missing files、undefined references/citations、overfull boxes 或 emergency stops
+- remaining_issues:
+  - 新增饼图尚未被 `v9.tex` 引用；用户后续可在 Overleaf 中决定插入位置和 caption
+- next_step:
+  - 用户在 Overleaf 中手动替换/插入这些 PNG/PDF/CSV/TEX 输出
+
 - task: 打包 v9 Overleaf 修改包
 - files_changed: `paper_draft/v9_overleaf_package_20260602.zip`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `rg -n "(includegraphics|input|bibliography|bibliographystyle|documentclass|usepackage)" paper_draft/v9.tex`; `find paper_draft -maxdepth 2 -type f | sort`; `zip -r -X v9_overleaf_package_20260602.zip v9.tex v9.pdf raa.cls raa.bst figures_v9 tables_v9`; `unzip -l v9_overleaf_package_20260602.zip`; extract package to temporary directory; `tectonic v9.tex --keep-logs --keep-intermediates`; `rg` log checks; `pypdf` page-size/page-count check

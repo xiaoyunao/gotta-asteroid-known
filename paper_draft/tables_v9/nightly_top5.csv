@@ -1,4 +1,4 @@
-UTC date,Detections,Unique objects,Exposure catalogs,Median $g_{\rm aper}$,Median separation
+UTC date,Detections,Unique objects,Exposure catalogs,Median $g_{\rm aper}$ (mag),Median separation (arcsec)
 2025-02-05,"3,385","3,362",353,18.739,0.187
 2025-01-19,"3,119","3,065",576,18.354,0.189
 2025-03-05,"2,657","2,639",372,18.439,0.220

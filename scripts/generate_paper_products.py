@@ -391,6 +391,7 @@ def write_csv_and_latex(
     column_format: str | None = None,
     font_size: str = r"\footnotesize",
     tabcolsep_pt: float = 6,
+    latex_columns: list[str] | None = None,
 ) -> None:
     csv_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(csv_path, index=False)
@@ -406,7 +407,11 @@ def write_csv_and_latex(
         handle.write("\\renewcommand{\\arraystretch}{1.12}\n")
         handle.write(f"\\begin{{tabular}}{{{column_format}}}\n")
         handle.write("\\toprule\n")
-        handle.write(" & ".join(latex_escape(col) for col in df.columns) + " \\\\\n")
+        header = latex_columns if latex_columns is not None else list(df.columns)
+        if latex_columns is None:
+            handle.write(" & ".join(latex_escape(col) for col in header) + " \\\\\n")
+        else:
+            handle.write(" & ".join(header) + " \\\\\n")
         handle.write("\\midrule\n")
         for _, row in df.iterrows():
             handle.write(" & ".join(latex_escape(x) for x in row.to_list()) + " \\\\\n")
@@ -482,10 +487,17 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
         .sort_values("Detections", ascending=False)
     )
     orbit.columns = ["Code", "Orbit class", "Detections", "Unique objects", r"Median $g_{\rm aper}$", "Median separation"]
+    total_detections = orbit["Detections"].sum()
+    total_objects = orbit["Unique objects"].sum()
+    orbit.insert(3, "Detection fraction (%)", orbit["Detections"] / total_detections * 100.0)
+    orbit.insert(5, "Object fraction (%)", orbit["Unique objects"] / total_objects * 100.0)
     orbit["Detections"] = orbit["Detections"].map(lambda x: f"{x:,}")
     orbit["Unique objects"] = orbit["Unique objects"].map(lambda x: f"{x:,}")
+    orbit["Detection fraction (%)"] = orbit["Detection fraction (%)"].map(lambda x: fmt(x, 2))
+    orbit["Object fraction (%)"] = orbit["Object fraction (%)"].map(lambda x: fmt(x, 2))
     orbit[r"Median $g_{\rm aper}$"] = orbit[r"Median $g_{\rm aper}$"].map(lambda x: fmt(x, 3))
     orbit["Median separation"] = orbit["Median separation"].map(lambda x: fmt(x, 3))
+    orbit = orbit.rename(columns={r"Median $g_{\rm aper}$": r"Median $g_{\rm aper}$ (mag)", "Median separation": "Median separation (arcsec)"})
 
     work = df.copy()
     mag_bins = pd.IntervalIndex.from_tuples([(12, 13), (13, 14), (14, 15), (15, 16), (16, 17), (17, 18), (18, 19), (19, 20)], closed="left")
@@ -548,6 +560,7 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
         nightly[col] = nightly[col].map(lambda x: f"{x:,}")
     for col in [r"Median $g_{\rm aper}$", "Median separation"]:
         nightly[col] = nightly[col].map(lambda x: fmt(x, 3))
+    nightly = nightly.rename(columns={r"Median $g_{\rm aper}$": r"Median $g_{\rm aper}$ (mag)", "Median separation": "Median separation (arcsec)"})
 
     obj = (
         df.groupby("query_id")
@@ -584,11 +597,37 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
         outdir / "orbit_class_statistics.csv",
         "Orbit-class composition of the recovered known-asteroid sample. Separations are in arcsec. Classes with only a few detections are grouped into ``Other/unclassified''; this group includes objects without a more specific dynamical class in the adopted small-body metadata.",
         "tab:orbit_class",
-        r"llrrrr",
+        r"@{}l>{\raggedright\arraybackslash}p{0.19\textwidth}rrrrrr@{}",
+        font_size=r"\scriptsize",
+        tabcolsep_pt=2.2,
+        latex_columns=[
+            "Code",
+            "Orbit class",
+            "Detections",
+            r"\begin{tabular}[c]{@{}r@{}}Detection\\fraction (\%)\end{tabular}",
+            "Unique objects",
+            r"\begin{tabular}[c]{@{}r@{}}Object\\fraction (\%)\end{tabular}",
+            r"\begin{tabular}[c]{@{}r@{}}Median $g_{\rm aper}$\\(mag)\end{tabular}",
+            r"\begin{tabular}[c]{@{}r@{}}Median separation\\(arcsec)\end{tabular}",
+        ],
     )
     write_csv_and_latex(mag_ast, outdir / "astrometry_by_magnitude.csv", r"Astrometric residuals as a function of adopted aperture magnitude $g_{\rm aper}$. Separations are in arcsec.", "tab:mag_astrometry", r"lrrrr")
     write_csv_and_latex(rate_ast, outdir / "astrometry_by_rate.csv", r"Astrometric residuals as a function of sky-plane angular rate. Rate bins are in arcsec h$^{-1}$ and separations are in arcsec.", "tab:rate_astrometry", r"lrrrr")
-    write_csv_and_latex(nightly, outdir / "nightly_top5.csv", "Five UTC nights with the largest numbers of recovered known-asteroid detections.", "tab:nightly_top5", r"lrrrrr")
+    write_csv_and_latex(
+        nightly,
+        outdir / "nightly_top5.csv",
+        "Five UTC nights with the largest numbers of recovered known-asteroid detections.",
+        "tab:nightly_top5",
+        r"lrrrrr",
+        latex_columns=[
+            "UTC date",
+            "Detections",
+            "Unique objects",
+            "Exposure catalogs",
+            r"\begin{tabular}[c]{@{}r@{}}Median $g_{\rm aper}$\\(mag)\end{tabular}",
+            r"\begin{tabular}[c]{@{}r@{}}Median separation\\(arcsec)\end{tabular}",
+        ],
+    )
     write_csv_and_latex(
         obj,
         outdir / "most_observed_objects.csv",
@@ -605,11 +644,10 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
     fig, axes = plt.subplots(2, 2, figsize=FOUR_PANEL_FIGSIZE)
     histogram(axes[0, 0], finite(df[ADOPTED_MAG]), np.linspace(10, 21, 45), f"{ADOPTED_MAG_LABEL} [mag]", color="#4c78a8")
     axes[0, 0].set_xlim(10, 21)
-    histogram(axes[0, 1], finite(df[ADOPTED_MAGERR]), np.linspace(0, 1.05, 54), f"{ADOPTED_MAGERR_LABEL} [mag]", logy=True, color="#59a14f")
-    histogram(axes[1, 0], finite(df["snr_aper_proxy"]), np.logspace(-0.2, 3.2, 58), "Aperture S/N proxy", logy=True, color="#f28e2b")
-    axes[1, 0].set_xscale("log")
+    histogram(axes[0, 1], finite(df["snr_aper_proxy"]), np.logspace(-0.2, 3.2, 58), "Aperture S/N proxy", logy=True, color="#f28e2b")
+    axes[0, 1].set_xscale("log")
     density_colored_scatter(
-        axes[1, 1],
+        axes[1, 0],
         df[ADOPTED_MAG],
         df[ADOPTED_MAGERR],
         f"{ADOPTED_MAG_LABEL} [mag]",
@@ -620,9 +658,102 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
         ylim=(0.0, 0.6),
         point_size=3.0,
     )
+    axes[1, 0].set_aspect("auto")
+    density_colored_scatter(
+        axes[1, 1],
+        df[ADOPTED_MAG],
+        df["dmag_obs_minus_pred"],
+        f"{ADOPTED_MAG_LABEL} [mag]",
+        r"$\Delta g$ [mag]",
+        xbins=260,
+        ybins=190,
+        xlim=(10, 21),
+        ylim=(-1.5, 1.5),
+        point_size=3.0,
+    )
     axes[1, 1].set_aspect("auto")
     fig.tight_layout()
     save_figure(fig, outdir / "photometric_statistics")
+
+
+def plot_orbit_class_pies(df: pd.DataFrame, outdir: Path) -> None:
+    objects = (
+        df.sort_values("epoch")
+        .groupby("query_id")
+        .agg(
+            orbit_class=("object_orbit_class_code", "first"),
+            neo=("object_neo_bool", "max"),
+            pha=("object_pha_bool", "max"),
+        )
+    )
+    main_counts = pd.Series(
+        {
+            "MBA": int((objects["orbit_class"] == "MBA").sum()),
+            "non-MBA": int((objects["orbit_class"] != "MBA").sum()),
+        }
+    )
+    non_mba = objects[objects["orbit_class"] != "MBA"].copy()
+    detailed_counts = pd.Series(
+        {
+            "OMB": int((non_mba["orbit_class"] == "OMB").sum()),
+            "TJN": int((non_mba["orbit_class"] == "TJN").sum()),
+            "IMB": int((non_mba["orbit_class"] == "IMB").sum()),
+            "MCA": int((non_mba["orbit_class"] == "MCA").sum()),
+            "NEO/PHA/Other": int(
+                (~non_mba["orbit_class"].isin(["OMB", "TJN", "IMB", "MCA"])).sum()
+            ),
+        }
+    )
+    main_colors = ["#4c78a8", "#f28e2b"]
+    inset_colors = ["#59a14f", "#e15759", "#76b7b2", "#edc948", "#b07aa1"]
+
+    fig = plt.figure(figsize=(10.2, 6.2))
+    ax = fig.add_axes([0.04, 0.12, 0.56, 0.78])
+    inset = fig.add_axes([0.58, 0.18, 0.36, 0.64])
+    wedgeprops = {"edgecolor": "#2b2b2b", "linewidth": 0.65}
+    main_wedges, main_texts, main_autotexts = ax.pie(
+        main_counts.to_numpy(),
+        labels=main_counts.index,
+        autopct="%1.1f%%",
+        startangle=90,
+        counterclock=False,
+        colors=main_colors,
+        wedgeprops=wedgeprops,
+        textprops={"fontsize": 17, "fontfamily": "Times New Roman"},
+        pctdistance=0.62,
+        labeldistance=1.06,
+    )
+    for text in main_autotexts:
+        text.set_fontsize(15)
+    for patch in main_wedges:
+        patch.set_alpha(0.5)
+    ax.set_aspect("equal")
+
+    inset_wedges, _, inset_autotexts = inset.pie(
+        detailed_counts.to_numpy(),
+        labels=None,
+        autopct="%1.1f%%",
+        startangle=90,
+        counterclock=False,
+        colors=inset_colors,
+        wedgeprops=wedgeprops,
+        textprops={"fontsize": 10.5, "fontfamily": "Times New Roman"},
+        pctdistance=0.68,
+    )
+    for patch in inset_wedges:
+        patch.set_alpha(0.5)
+    inset.set_aspect("equal")
+    inset.legend(
+        inset_wedges,
+        detailed_counts.index,
+        frameon=False,
+        fontsize=11,
+        loc="center left",
+        bbox_to_anchor=(0.92, 0.5),
+        handlelength=1.0,
+        handletextpad=0.45,
+    )
+    save_figure(fig, outdir / "orbit_class_composition_pies")
 
 
 def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
@@ -950,6 +1081,7 @@ def main() -> None:
             if src.exists():
                 shutil.copy2(src, figdir / src.name)
     plot_photometry(df, figdir)
+    plot_orbit_class_pies(df, figdir)
     plot_astrometry(df, figdir)
     plot_geometry(df, figdir)
     plot_temporal(df, figdir)
