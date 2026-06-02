@@ -2,6 +2,23 @@
 
 ## 2026-06-02
 
+- task: 修正 v9 Table 2 fraction 表头换行位置
+- files_changed: `scripts/generate_paper_products.py`, `paper_draft/tables_v9/orbit_class_statistics.tex`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `rg` target checks; `python3 -m py_compile scripts/generate_paper_products.py`; targeted Python import/call of `make_tables`; temporary-directory `tectonic v9.tex --keep-logs --keep-intermediates`; `pypdf` page-size/page-count check; `rg` log checks
+- key_findings:
+  - 原 Table 2 表头把 `Detection` 与 `fraction (%)` 分成两行，不符合用户要求
+  - 已改为 `Detection fraction` 第一行、`(%)` 第二行；`Object fraction` 同理
+  - 为避免表格过宽，将 Table 2 的 `Orbit class` 列宽和 `tabcolsep` 略收紧
+- validation:
+  - `scripts/generate_paper_products.py` 语法检查通过
+  - 临时目录编译 v9 成功，不覆盖正式 `paper_draft/v9.pdf`
+  - 临时编译 PDF 为 25 页、A4 页面尺寸 `595.28 x 841.89 pts`
+  - 临时编译日志未发现 LaTeX errors、missing files、undefined references/citations、overfull boxes 或 emergency stops
+- remaining_issues:
+  - 无
+- next_step:
+  - 用户在 Overleaf 中替换更新后的 `tables_v9/orbit_class_statistics.tex`
+
 - task: 小修 v9 photometric statistics 轴标和 orbit-class 饼图关联箭头
 - files_changed: `scripts/generate_paper_products.py`, `paper_draft/figures_v9/photometric_statistics.png`, `paper_draft/figures_v9/photometric_statistics.pdf`, `paper_draft/figures_v9/orbit_class_composition_pies.png`, `paper_draft/figures_v9/orbit_class_composition_pies.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `git status --short --branch`; `git fetch --all --prune`; `rg` target checks; `sed` script inspection; `python3 -m py_compile scripts/generate_paper_products.py`; targeted Python import/call of `plot_photometry` and `plot_orbit_class_pies`; `view_image` visual checks; `ls -lh` output checks; `git diff --stat`
