@@ -2,6 +2,21 @@
 
 ## 2026-06-02
 
+- task: 截取两个指定 light-curve 子图
+- files_changed: `paper_draft/figures_v9/lightcurve_25745_reliable_crop.png`, `paper_draft/figures_v9/lightcurve_51965_questionable_crop.png`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `sips -g pixelWidth -g pixelHeight`; `view_image` visual checks for `lightcurve_reliable.png` and `lightcurve_questionable.png`; Python/Pillow crop; `view_image` crop checks
+- key_findings:
+  - `25745` 位于 `lightcurve_reliable.png` 第 2 行第 2 列
+  - `51965` 位于 `lightcurve_questionable.png` 第 3 行第 1 列
+  - 两张原始 mosaic 均为 `4500 x 4800 px`，可按统一网格裁剪
+- validation:
+  - 两个裁图均为 `1500 x 1200 px`
+  - 视觉检查确认标题、坐标轴、数据点和拟合曲线完整
+- remaining_issues:
+  - 无
+- next_step:
+  - 用户在 Overleaf 或本地文件中使用两个裁图
+
 - task: 调整 v9 Table 2 局部列距
 - files_changed: `scripts/generate_paper_products.py`, `paper_draft/tables_v9/orbit_class_statistics.tex`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `git status --short --branch`; `git fetch --all --prune`; `sed` table/script inspections; `python3 -m py_compile scripts/generate_paper_products.py`; targeted Python import/call of `make_tables`; temporary-directory `tectonic v9.tex --keep-logs --keep-intermediates`; `pypdf` page-size/page-count check; `rg` log checks
