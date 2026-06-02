@@ -2,15 +2,14 @@
 
 ## Current objective
 
-进入 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf` 的终稿前准备阶段。保持科学定位为
-GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
+准备按导师返回意见继续修订 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf`。
+保持科学定位为 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
 当前 v9 已完成投稿前一致性修订、终稿通读报告清理和后续小修：matching/Gaia mask 统一为 1 arcsec，
 删除 predicted magnitude filtering 表述，周期验证表已移到正文，Appendix 只保留
-light-curve figures，Table 5 已通过 `\FloatBarrier` 保持在 Discussion 前，Appendix A 图页已调整，Discussion 中机器学习和光变科学价值表述已小修。workflow 图只做节点文字 raster 小修，v9 继续使用最终 2x PNG：
+light-curve figures，Table 5 已通过 `\FloatBarrier` 保持在 Discussion 前，Appendix A 图页已调整，
+Discussion 中机器学习和光变科学价值表述已小修。workflow 图只做节点文字 raster 小修，v9 继续使用最终 2x PNG：
 `paper_draft/figures_v9/known_object_processing_minimal_edit_final_2x.png`。
-后续重点不是新建 v10，而是人工确认 v9 的首页元信息、作者单位、致谢/grant、
-外部周期数据库来源、正文 Table 5、Fig. 2、Fig. 5/7/8/9、Appendix figures、
-References/Appendix 顺序和最终 PDF 排版。
+后续重点是等待用户提供 GPT 提取后的导师精确修改意见，并逐条覆盖修订 v9；不要新建 v10，除非用户明确要求。
 
 ## Milestones
 
@@ -62,9 +61,11 @@ References/Appendix 顺序和最终 PDF 排版。
 46. 已修正 v9 Discussion 中机器学习 cutout-recognition 模块范围：未来同时接入 known-object recovery 和 unknown-moving-object search；Section 4.4 光变结果改为强调 retained candidates 无公开周期测量、reliable solutions 具有科学价值
 47. 已完成 v9 终稿前基线检查：本地 `main` 与 `origin/main` 同步，`paper_draft/v9.pdf` 可重编，共 25 页，日志无严重 LaTeX 问题；确认 Appendix A 两张图虽文件名与 caption 对调，但内容与 Fig. A.1/Fig. A.2 caption 对应正确
 48. 已按 v9 终稿通读报告清理：Fig. 2 节点改为 `Sky-coordinate association`，Appendix 两张光变 PNG 文件名/内容/caption/label 统一，Table 5 通过 `\FloatBarrier` 保持在 Discussion 前，光变 `new period measurements` 表述改为更保守的 period estimates，Abstract/Discussion 等 AI 感句子已压实，正式 bibliography DOI 已补齐；`Larson2003` BAAS 引用改为 DOI-bearing `Drake2009`
+49. 已初始化导师返回意见修订会话：本地 `main` 与 `origin/main` 同步，当前等待用户提供精确意见后继续直接修订 v9
 
 ## Outstanding issues
 
+- 尚未收到导师返回意见的精确条目；收到后需要逐条映射到 `paper_draft/v9.tex` 并记录处理状态
 - 后续新增统计和图时必须默认使用 `gotta_asteroids.fits`
 - 轨道图 `outputs/asteroid_orbits.png` 必须保持当前 notebook 格式，不随意改样式
 - v9 后续小修应直接覆盖 `paper_draft/figures_v9/`、`paper_draft/tables_v9/` 和 `paper_draft/v9.pdf`，不要再新建 v10，除非用户明确要求
@@ -141,10 +142,8 @@ References/Appendix 顺序和最终 PDF 排版。
 
 ## Next recommended steps
 
-1. 人工检查更新后的 `paper_draft/v9.pdf` 中 pages 18--23、正文 Table 5 与 Discussion 衔接、Fig. 2、Fig. 5/7/8/9、Appendix Figures A.1/A.2、引用跳转和 References/Appendix 顺序
-2. 人工检查首页作者顺序、Hu Zou 通讯作者标记、邮箱和第二单位邮编
-3. 确认外部周期数据库来源；若实际为 LCDB/ALCDEF，正文和表头应改为 LCDB/ALCDEF literature period
-4. 确认 `Received/accepted` 占位、作者、单位、致谢、grant list 和硬件参数
-5. 如需重画 v9 统计图表，运行 `python3 scripts/generate_paper_products.py gotta_asteroids.fits --outdir paper_draft --paper-version v9`
-6. 如需重做 v9 周期表，运行 `python3 scripts/generate_period_tables.py --period-tsv /Users/yunaoxiao/Downloads/final_period_table_merged_updated.tsv --fits-path gotta_asteroids.fits --outdir paper_draft/tables_v9 --class-csv paper_draft/tables_v7/period_object_classes.csv`
-7. 如需重编 PDF，本机可运行 `cd paper_draft && tectonic v9.tex --keep-logs --keep-intermediates`
+1. 等用户提供 GPT 提取后的导师精确修改意见
+2. 将每条意见映射到 `paper_draft/v9.tex`、相关 figure/table 脚本或手工 PNG 资产
+3. 修改后运行 `cd paper_draft && tectonic v9.tex --keep-logs --keep-intermediates`
+4. 检查 `v9.log`、PDF 页数/页面尺寸、关键旧文本残留和受影响页面排版
+5. 更新 `WORKLOG.md` 和 `PLAN.md`，完成后视修改规模提交 git

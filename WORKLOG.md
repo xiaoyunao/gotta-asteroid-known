@@ -1,5 +1,23 @@
 # WORKLOG
 
+## 2026-06-02
+
+- task: 初始化导师返回意见修订会话
+- files_changed: `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `sed -n '1,220p' WORKLOG.md`; `sed -n '1,220p' PLAN.md`; `sed -n '1,180p' README.md`; `git rev-list --left-right --count HEAD...origin/main`
+- key_findings:
+  - 当前分支为 `main`，本地工作区干净
+  - `HEAD` 为 `fbf25a5 Apply v9 final manuscript cleanup`
+  - 本地 `main` 与 `origin/main` 同步，ahead/behind 为 `0/0`
+  - 当前项目主线仍为 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf` 的终稿前修订，不应新建 v10，除非用户明确要求
+  - 用户说明导师已返回修改意见，后续将提供 GPT 提取后的精确意见
+- validation:
+  - 已完成 git 状态、远端同步检查、最近历史和项目记忆读取
+- remaining_issues:
+  - 尚未收到导师精确修改意见，论文正文本轮尚未修改
+- next_step:
+  - 收到精确意见后，逐条映射到 `paper_draft/v9.tex`，修改并重编 `paper_draft/v9.pdf`
+
 ## 2026-05-21
 
 - task: 按 v9 终稿通读报告做投稿前清理
