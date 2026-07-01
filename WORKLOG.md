@@ -2,6 +2,29 @@
 
 ## 2026-07-01
 
+- task: 修正 Fig. 1 输入曝光并生成全源 cutout 选择图
+- files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `reviewer_figures_20260701/fig1_all_cutouts_selection.png`, `reviewer_figures_20260701/fig1_all_cutouts_selection.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `sshpass ssh` inspect `/data/proc/xiaoyunao/sitian_asteroids/20250204_matched_asteroids.fits`; `sshpass ssh` locate `/data/proc/liniu/stpipeline_output_v2/stp1_20250204_test/L1/stpxl-0592_20250204_0001_3.fits.gz`; `sshpass scp` cache 20250204 matched/all tables and L1 image; Python/Astropy table checks; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size checks; `view_image` visual QA
+- key_findings:
+  - Previous Fig. 1 attempt used the wrong exposure date; correct source is `stpxl-0592_20250204_0001_3_cat.fits.gz`
+  - Correct L1 image is `/data/proc/liniu/stpipeline_output_v2/stp1_20250204_test/L1/stpxl-0592_20250204_0001_3.fits.gz`
+  - Correct matched table is `/data/proc/xiaoyunao/sitian_asteroids/20250204_matched_asteroids.fits`
+  - This exposure has 31 matched sources, not 4
+  - Revised styling uses log stretch, removes axes/spine borders, and uses hollow cross markers instead of circle-plus markers
+  - Generated `fig1_all_cutouts_selection` with all 31 matched-source cutouts for final target selection
+  - Generated a temporary `fig1_review_cutouts` 4-target draft using `Nanon`, `Naantali`, `Arai`, and `1998 YS5`; final four should be chosen by user from the selection sheet
+  - Angular rates matched from local `gotta_asteroids.fits` for 27/31 sources; 4 sources show `mu=--`
+- validation:
+  - `make_fig1_review.py` passed Python syntax check
+  - `fig1_review_cutouts.png` size is `3243 x 1613 px`
+  - `fig1_all_cutouts_selection.png` size is `3023 x 5582 px`
+  - Visual QA confirmed no plot borders, hollow cross markers, aligned top/bottom edges in the 4-panel draft, and a 31-cutout selection sheet
+- remaining_issues:
+  - User needs to select final four objects from `fig1_all_cutouts_selection.png`
+  - Four angular rates are unavailable from current local total table: `2006 FT8`, `2004 JC30`, `2003 BL70`, `2009 QE23`
+- next_step:
+  - After user names the final four indices/object IDs, update `DRAFT_TARGET_NAMES` and regenerate `fig1_review_cutouts.png/.pdf`
+
 - task: 按审稿意见重画 Fig. 1 cutout 示例图
 - files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `find` existing figure/reference files; `sed` inspect `scripts/generate_paper_products.py` and `/Users/yunaoxiao/Desktop/fast_move_gotta/make_report_cutouts.py`; `sshpass ssh` inspect server FITS/table; `sshpass scp` cache server inputs; Python/Astropy table and FITS inspections; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size check; `view_image` visual QA

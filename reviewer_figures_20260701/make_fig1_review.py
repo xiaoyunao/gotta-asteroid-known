@@ -2,24 +2,27 @@
 from __future__ import annotations
 
 from pathlib import Path
+import math
 
 import numpy as np
 from astropy.io import fits
 from astropy.table import Table
 import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-from matplotlib.patches import Circle
+from matplotlib.markers import MarkerStyle
 
 
 HERE = Path(__file__).resolve().parent
 SOURCE_DIR = HERE / "source_data"
-IMAGE_PATH = SOURCE_DIR / "stpxl-0655_20250117_0001_1.fits.gz"
-MATCH_PATH = SOURCE_DIR / "20250117_matched_asteroids.fits"
+IMAGE_PATH = SOURCE_DIR / "stpxl-0592_20250204_0001_3.fits.gz"
+MATCH_PATH = SOURCE_DIR / "20250204_matched_asteroids.fits"
 LOCAL_TOTAL = HERE.parent / "gotta_asteroids.fits"
-SOURCE_FILE = "stpxl-0655_20250117_0001_1_cat.fits.gz"
-IMAGE_LABEL = "stpxl-0655_20250117_0001_1"
-TARGET_NAMES = ["Zvezdara", "Polakis", "1999 XG165", "1999 XY103"]
+SOURCE_FILE = "stpxl-0592_20250204_0001_3_cat.fits.gz"
+IMAGE_LABEL = "stpxl-0592_20250204_0001_3"
 ADOPTED_MAG = "Mag_Aper4"
+
+# Temporary four-target draft. The all-cutout sheet is the source of truth for
+# selecting the final four objects.
+DRAFT_TARGET_NAMES = ["Nanon", "Naantali", "Arai", "1998 YS5"]
 
 
 def as_str(value) -> str:
@@ -28,7 +31,7 @@ def as_str(value) -> str:
     return str(value)
 
 
-def robust_limits(data: np.ndarray, lo: float = 0.5, hi: float = 99.6) -> tuple[float, float]:
+def robust_limits(data: np.ndarray, lo: float = 0.5, hi: float = 99.7) -> tuple[float, float]:
     finite = np.asarray(data, dtype=float)
     finite = finite[np.isfinite(finite)]
     if finite.size == 0:
@@ -41,10 +44,11 @@ def robust_limits(data: np.ndarray, lo: float = 0.5, hi: float = 99.6) -> tuple[
     return float(vmin), float(vmax)
 
 
-def stretch(data: np.ndarray, vmin: float, vmax: float) -> np.ndarray:
-    arr = np.clip((np.asarray(data, dtype=float) - vmin) / (vmax - vmin), 0.0, 1.0)
-    arr[~np.isfinite(arr)] = 0.0
-    return np.sqrt(arr)
+def log_stretch(data: np.ndarray, vmin: float, vmax: float, scale: float = 1200.0) -> np.ndarray:
+    arr = np.asarray(data, dtype=float)
+    norm = np.clip((arr - vmin) / (vmax - vmin), 0.0, 1.0)
+    norm[~np.isfinite(norm)] = 0.0
+    return np.log1p(scale * norm) / np.log1p(scale)
 
 
 def oc_separation_arcsec(row) -> float:
@@ -53,36 +57,42 @@ def oc_separation_arcsec(row) -> float:
     return float(np.hypot(dra, ddec))
 
 
+def object_id(row) -> str:
+    number = row["number"]
+    if np.ma.is_masked(number):
+        return as_str(row["name"])
+    try:
+        value = float(number)
+    except Exception:
+        return as_str(row["name"])
+    if not np.isfinite(value):
+        return as_str(row["name"])
+    return f"({int(round(value))}) {as_str(row['name'])}"
+
+
 def source_rows() -> list[dict]:
     matched = Table.read(MATCH_PATH)
     total = Table.read(LOCAL_TOTAL, memmap=True)
     sub = matched[matched["source_file"] == SOURCE_FILE]
-    rows = []
+    sub.sort(ADOPTED_MAG)
+
     local_names = np.array([as_str(x) for x in total["name"]])
     local_epoch = np.asarray(total["epoch"], dtype=float)
-
-    for target in TARGET_NAMES:
-        candidates = sub[[as_str(x) == target for x in sub["name"]]]
-        if len(candidates) != 1:
-            raise RuntimeError(f"Expected one match for {target}, found {len(candidates)}")
-        row = candidates[0]
-        local_mask = (local_names == target) & (np.abs(local_epoch - float(row["epoch"])) < 0.01)
+    rows = []
+    for idx, row in enumerate(sub, 1):
+        name = as_str(row["name"])
+        local_mask = (local_names == name) & (np.abs(local_epoch - float(row["epoch"])) < 0.01)
         local = total[local_mask]
-        if len(local) < 1:
-            raise RuntimeError(f"Could not find local angular rate for {target}")
-        number = row["number"]
-        if np.ma.is_masked(number) or not np.isfinite(float(number)):
-            object_id = target
-        else:
-            object_id = f"({int(round(float(number)))}) {target}"
+        rate = float(local[0]["ang_rate_arcsec_hour"]) if len(local) else np.nan
         rows.append(
             {
-                "name": target,
-                "object_id": object_id,
+                "idx": idx,
+                "name": name,
+                "object_id": object_id(row),
                 "x": float(row["X_Win"]),
                 "y": float(row["Y_Win"]),
                 "g_aper": float(row[ADOPTED_MAG]),
-                "rate": float(local[0]["ang_rate_arcsec_hour"]),
+                "rate": rate,
                 "sep": oc_separation_arcsec(row),
             }
         )
@@ -105,7 +115,7 @@ def cutout(data: np.ndarray, x: float, y: float, size: int = 180) -> np.ndarray:
     return out
 
 
-def draw_label(ax, x: float, y: float, text: str, size: int = 12, ha: str = "left", va: str = "top") -> None:
+def draw_label(ax, x: float, y: float, text: str, size: float = 10.0, ha: str = "left", va: str = "top") -> None:
     ax.text(
         x,
         y,
@@ -115,70 +125,154 @@ def draw_label(ax, x: float, y: float, text: str, size: int = 12, ha: str = "lef
         color="white",
         fontsize=size,
         fontweight="bold",
-        linespacing=1.18,
-        bbox={"boxstyle": "round,pad=0.25", "facecolor": "black", "edgecolor": "none", "alpha": 0.68},
+        linespacing=1.15,
+        bbox={"boxstyle": "round,pad=0.22", "facecolor": "black", "edgecolor": "none", "alpha": 0.64},
     )
 
 
-def plot() -> None:
-    rows = source_rows()
+def clear_frame(ax) -> None:
+    ax.set_xticks([])
+    ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+
+def draw_open_cross(ax, x: float, y: float, color: str, size: float = 16.0, edge_width: float = 2.5) -> None:
+    marker = MarkerStyle("P")
+    ax.plot(
+        x,
+        y,
+        marker=marker,
+        markersize=size,
+        markerfacecolor="none",
+        markeredgecolor=color,
+        markeredgewidth=edge_width,
+        linestyle="None",
+    )
+
+
+def rate_text(rate: float) -> str:
+    return "--" if not np.isfinite(rate) else f"{rate:.1f}"
+
+
+def load_image() -> tuple[np.ndarray, float]:
     with fits.open(IMAGE_PATH, memmap=True) as hdul:
         data = np.asarray(hdul["IMG"].data, dtype=float)
-        hdr = hdul["IMG"].header
-    mjd = float(hdr["MJD"])
+        mjd = float(hdul["IMG"].header["MJD"])
+    return data, mjd
+
+
+def full_frame_view(data: np.ndarray, factor: int = 6) -> tuple[np.ndarray, tuple[int, int]]:
     ny, nx = data.shape
-
-    # Downsample the full frame for a light-weight overview while keeping
-    # marker positions in the native CCD pixel coordinate system.
-    factor = 6
     view = data[: ny - ny % factor, : nx - nx % factor].reshape(ny // factor, factor, nx // factor, factor).mean(axis=(1, 3))
-    full_vmin, full_vmax = robust_limits(view, 0.5, 99.7)
+    return view, (nx, ny)
 
-    fig = plt.figure(figsize=(15.5, 8.8), dpi=220)
-    gs = GridSpec(2, 3, width_ratios=[2.35, 1, 1], height_ratios=[1, 1], wspace=0.055, hspace=0.07)
 
-    ax_full = fig.add_subplot(gs[:, 0])
-    ax_full.imshow(stretch(view, full_vmin, full_vmax), cmap="gray", origin="lower", extent=[0, nx, 0, ny], interpolation="nearest")
-    ax_full.set_xticks([])
-    ax_full.set_yticks([])
-    for spine in ax_full.spines.values():
-        spine.set_color("0.15")
-        spine.set_linewidth(1.2)
+def plot_four_target_draft(data: np.ndarray, mjd: float, rows: list[dict]) -> None:
+    selected = [row for name in DRAFT_TARGET_NAMES for row in rows if row["name"] == name]
+    if len(selected) != 4:
+        raise RuntimeError(f"Draft target selection returned {len(selected)} rows")
 
-    draw_label(ax_full, 130, ny - 170, f"{IMAGE_LABEL}\nMJD = {mjd:.8f}", size=12, va="top")
+    view, (nx, ny) = full_frame_view(data)
+    full_vmin, full_vmax = robust_limits(view, 0.4, 99.75)
     colors = ["#ffcc33", "#00b4d8", "#fb5607", "#80ed99"]
-    for idx, (row, color) in enumerate(zip(rows, colors), 1):
-        ax_full.add_patch(Circle((row["x"], row["y"]), 155, fill=False, edgecolor=color, linewidth=3.0))
-        ax_full.plot(row["x"], row["y"], marker="+", ms=15, mew=2.4, color=color)
-        label_x = min(max(row["x"] + 185, 120), nx - 1500)
-        label_y = min(max(row["y"] + 110, 220), ny - 170)
-        draw_label(ax_full, label_x, label_y, f"{idx}  {row['name']}", size=10.5, va="center")
 
-    for idx, row in enumerate(rows, 1):
-        ax = fig.add_subplot(gs[(idx - 1) // 2, 1 + (idx - 1) % 2])
+    fig = plt.figure(figsize=(15.2, 8.0), dpi=220)
+    left = 0.015
+    bottom = 0.035
+    height = 0.93
+    gap = 0.018
+    cut_gap = 0.018
+    left_width = 0.475
+    cut_size = (1.0 - left - left_width - gap - 0.015 - cut_gap) / 2.0
+    row_gap = cut_gap
+    cut_height = (height - row_gap) / 2.0
+    right_left = left + left_width + gap
+
+    ax_full = fig.add_axes([left, bottom, left_width, height])
+    ax_full.imshow(
+        log_stretch(view, full_vmin, full_vmax),
+        cmap="gray",
+        origin="lower",
+        extent=[0, nx, 0, ny],
+        interpolation="nearest",
+    )
+    clear_frame(ax_full)
+    draw_label(ax_full, 130, ny - 150, f"{IMAGE_LABEL}\nMJD = {mjd:.8f}", size=11.5, va="top")
+    for idx, (row, color) in enumerate(zip(selected, colors), 1):
+        draw_open_cross(ax_full, row["x"], row["y"], color=color, size=18, edge_width=2.8)
+        label_x = min(max(row["x"] + 155, 90), nx - 1450)
+        label_y = min(max(row["y"] + 95, 170), ny - 160)
+        draw_label(ax_full, label_x, label_y, f"{idx}  {row['name']}", size=9.8, va="center")
+
+    for idx, (row, color) in enumerate(zip(selected, colors), 1):
+        col = (idx - 1) % 2
+        r = (idx - 1) // 2
+        x0 = right_left + col * (cut_size + cut_gap)
+        y0 = bottom + (1 - r) * (cut_height + row_gap)
+        ax = fig.add_axes([x0, y0, cut_size, cut_height])
         cut = cutout(data, row["x"], row["y"])
-        vmin, vmax = robust_limits(cut, 1.0, 99.8)
-        ax.imshow(stretch(cut, vmin, vmax), cmap="gray", origin="lower", interpolation="nearest")
-        ax.set_xticks([])
-        ax.set_yticks([])
-        for spine in ax.spines.values():
-            spine.set_color(colors[idx - 1])
-            spine.set_linewidth(2.3)
+        vmin, vmax = robust_limits(cut, 0.8, 99.8)
+        ax.imshow(log_stretch(cut, vmin, vmax, scale=900.0), cmap="gray", origin="lower", interpolation="nearest")
+        clear_frame(ax)
         cy = cx = cut.shape[0] / 2.0 - 0.5
-        ax.add_patch(Circle((cx, cy), 17, fill=False, edgecolor=colors[idx - 1], linewidth=2.0))
-        ax.plot(cx, cy, marker="+", ms=12, mew=1.8, color=colors[idx - 1])
+        draw_open_cross(ax, cx, cy, color=color, size=16, edge_width=2.3)
         label = (
             f"{idx}. {row['object_id']}\n"
             f"$g_{{\\rm aper}}$ = {row['g_aper']:.2f} mag\n"
-            f"$\\mu$ = {row['rate']:.1f} arcsec hr$^{{-1}}$\n"
+            f"$\\mu$ = {rate_text(row['rate'])} arcsec hr$^{{-1}}$\n"
             f"O-C = {row['sep']:.2f} arcsec"
         )
-        draw_label(ax, 7, cut.shape[0] - 8, label, size=9.5, va="top")
+        draw_label(ax, 7, cut.shape[0] - 7, label, size=9.0, va="top")
 
-    fig.savefig(HERE / "fig1_review_cutouts.png", bbox_inches="tight", pad_inches=0.03)
-    fig.savefig(HERE / "fig1_review_cutouts.pdf", bbox_inches="tight", pad_inches=0.03)
+    fig.savefig(HERE / "fig1_review_cutouts.png", bbox_inches="tight", pad_inches=0.0)
+    fig.savefig(HERE / "fig1_review_cutouts.pdf", bbox_inches="tight", pad_inches=0.0)
     plt.close(fig)
 
 
+def plot_all_cutouts(data: np.ndarray, rows: list[dict]) -> None:
+    ncols = 4
+    nrows = math.ceil(len(rows) / ncols)
+    fig = plt.figure(figsize=(14.6, 3.25 * nrows), dpi=220)
+    margin_x = 0.012
+    margin_y = 0.012
+    gap = 0.010
+    cell_w = (1.0 - 2 * margin_x - (ncols - 1) * gap) / ncols
+    cell_h = (1.0 - 2 * margin_y - (nrows - 1) * gap) / nrows
+    colors = ["#ffcc33", "#00b4d8", "#fb5607", "#80ed99", "#f15bb5", "#9b5de5", "#00f5d4", "#fee440"]
+
+    for i, row in enumerate(rows):
+        col = i % ncols
+        r = i // ncols
+        x0 = margin_x + col * (cell_w + gap)
+        y0 = 1.0 - margin_y - (r + 1) * cell_h - r * gap
+        ax = fig.add_axes([x0, y0, cell_w, cell_h])
+        cut = cutout(data, row["x"], row["y"])
+        vmin, vmax = robust_limits(cut, 0.8, 99.8)
+        ax.imshow(log_stretch(cut, vmin, vmax, scale=900.0), cmap="gray", origin="lower", interpolation="nearest")
+        clear_frame(ax)
+        color = colors[i % len(colors)]
+        cy = cx = cut.shape[0] / 2.0 - 0.5
+        draw_open_cross(ax, cx, cy, color=color, size=13, edge_width=2.0)
+        label = (
+            f"{row['idx']}. {row['object_id']}\n"
+            f"$g_{{\\rm aper}}$={row['g_aper']:.2f}  "
+            f"$\\mu$={rate_text(row['rate'])} arcsec hr$^{{-1}}$\n"
+            f"O-C={row['sep']:.2f} arcsec"
+        )
+        draw_label(ax, 6, cut.shape[0] - 6, label, size=7.8, va="top")
+
+    fig.savefig(HERE / "fig1_all_cutouts_selection.png", bbox_inches="tight", pad_inches=0.0)
+    fig.savefig(HERE / "fig1_all_cutouts_selection.pdf", bbox_inches="tight", pad_inches=0.0)
+    plt.close(fig)
+
+
+def main() -> None:
+    rows = source_rows()
+    data, mjd = load_image()
+    plot_four_target_draft(data, mjd, rows)
+    plot_all_cutouts(data, rows)
+
+
 if __name__ == "__main__":
-    plot()
+    main()
