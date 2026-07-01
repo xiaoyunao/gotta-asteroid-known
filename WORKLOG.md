@@ -2,6 +2,28 @@
 
 ## 2026-07-01
 
+- task: 按审稿意见重画 Fig. 1 cutout 示例图
+- files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `find` existing figure/reference files; `sed` inspect `scripts/generate_paper_products.py` and `/Users/yunaoxiao/Desktop/fast_move_gotta/make_report_cutouts.py`; `sshpass ssh` inspect server FITS/table; `sshpass scp` cache server inputs; Python/Astropy table and FITS inspections; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size check; `view_image` visual QA
+- key_findings:
+  - Server inputs were read from `xiaoya@10.3.10.217:/data/proc/liniu/stpipeline_output_v2/stp1_20250117_test/L1/stpxl-0655_20250117_0001_1.fits.gz` and `/data/proc/xiaoyunao/sitian_asteroids/20250117_matched_asteroids.fits`
+  - L1 image data are in FITS extension `IMG`, shape `9120 x 8976`, with `MJD=60692.82151634`
+  - Target exposure has 8 matched asteroids; selected 4 normal numbered targets for the revised example: `(1700) Zvezdara`, `(4078) Polakis`, `(26427) 1999 XG165`, `(47388) 1999 XY103`
+  - Angular rates were matched from local `gotta_asteroids.fits` by object name and epoch
+  - New layout uses one full-frame single-exposure panel on the left and a `2 x 2` grid of enlarged cutouts on the right
+  - Full-frame panel uses colored marker circles/crosses rather than relying on small green labels
+  - Each cutout annotates object ID, `g_{\rm aper}`, angular rate, and O-C separation
+- validation:
+  - `make_fig1_review.py` passed Python syntax check
+  - Generated `fig1_review_cutouts.png` and `fig1_review_cutouts.pdf`
+  - PNG size is `2655 x 1369 px`
+  - Visual QA confirmed labels are readable and cutouts are enlarged; corrected initial 0-based cutout numbering and replaced edge-adjacent `2000 SA279` with `1999 XY103`
+- remaining_issues:
+  - Source FITS files are cached locally under `reviewer_figures_20260701/source_data/` but ignored by git due `*.fits`/`*.fits.gz`
+  - Final target choice can still be adjusted if the user prefers a different set of four asteroids
+- next_step:
+  - User reviews `reviewer_figures_20260701/fig1_review_cutouts.png`; if acceptable, use this as the revised Fig. 1 asset or adapt styling into the manuscript figure directory
+
 - task: 初始化审稿意见重画图会话
 - files_changed: `WORKLOG.md`, `PLAN.md`
 - commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `sed -n '1,220p' WORKLOG.md`; `sed -n '1,220p' PLAN.md`; `sed -n '1,180p' README.md`; `git rev-list --left-right --count HEAD...origin/main`; `find paper_draft -maxdepth 2 -type d`; `find paper_draft/figures_v9 paper_draft/tables_v9 -maxdepth 1 -type f`; `rg` figure/table generator entry points
