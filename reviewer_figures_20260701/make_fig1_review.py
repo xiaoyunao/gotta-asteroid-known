@@ -151,6 +151,18 @@ def clear_frame(ax) -> None:
         spine.set_visible(False)
 
 
+def draw_solid_crosshair(
+    ax,
+    x: float,
+    y: float,
+    color: str,
+    half_length: float = 17.0,
+    linewidth: float = 2.0,
+) -> None:
+    ax.plot([x - half_length, x + half_length], [y, y], color=color, linewidth=linewidth, solid_capstyle="butt")
+    ax.plot([x, x], [y - half_length, y + half_length], color=color, linewidth=linewidth, solid_capstyle="butt")
+
+
 def draw_gapped_crosshair(
     ax,
     x: float,
@@ -167,6 +179,10 @@ def draw_gapped_crosshair(
         (x, x, y + gap, y + gap + length),
     ):
         ax.plot([x0, x1], [y0, y1], color=color, linewidth=linewidth, solid_capstyle="butt")
+
+
+def marker_inside_frame(row: dict, nx: int, ny: int, half_length: float) -> bool:
+    return half_length <= row["x"] <= nx - half_length and half_length <= row["y"] <= ny - half_length
 
 
 def rate_text(rate: float) -> str:
@@ -231,8 +247,15 @@ def plot_four_target_draft(data: np.ndarray, mjd: float, rows: list[dict]) -> No
     )
     clear_frame(ax_full)
     draw_label(ax_full, 130, ny - 150, f"{IMAGE_LABEL}\nMJD = {mjd:.8f}", size=11.5, va="top")
-    for idx, (row, color) in enumerate(zip(selected, colors), 1):
-        draw_gapped_crosshair(ax_full, row["x"], row["y"], color=color, gap=72, length=160, linewidth=3.0)
+
+    selected_indices = {row["idx"] for row in selected}
+    other_marker_half = 58.0
+    for row in rows:
+        if row["idx"] not in selected_indices and marker_inside_frame(row, nx, ny, other_marker_half):
+            draw_solid_crosshair(ax_full, row["x"], row["y"], color="#2dd4bf", half_length=other_marker_half, linewidth=1.2)
+
+    for row, color in zip(selected, colors):
+        draw_gapped_crosshair(ax_full, row["x"], row["y"], color=color, gap=72, length=160, linewidth=1.5)
         label_x = min(max(row["x"] + 155, 90), nx - 1450)
         label_y = min(max(row["y"] + 95, 170), ny - 160)
         draw_label(ax_full, label_x, label_y, row["name"], size=9.8, va="center")
@@ -285,7 +308,7 @@ def plot_all_cutouts(data: np.ndarray, rows: list[dict]) -> None:
         clear_frame(ax)
         color = colors[i % len(colors)]
         cy = cx = cut.shape[0] / 2.0 - 0.5
-        draw_gapped_crosshair(ax, cx, cy, color=color, gap=10, length=15, linewidth=2.0)
+        draw_solid_crosshair(ax, cx, cy, color=color, half_length=12.5, linewidth=1.8)
         label = (
             f"{row['idx']}. {row['object_id']}\n"
             f"$g_{{\\rm aper}}$={row['g_aper']:.2f}  "

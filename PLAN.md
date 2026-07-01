@@ -20,6 +20,10 @@ Fig. 1 的正确输入曝光已改为 `stpxl-0592_20250204_0001_3_cat.fits.gz`�
 图像显示已按用户反馈改为 full-frame zscale、cutouts 统一 scale、无 axes/spine 边框、四段式中心留空 marker。
 最新小修：左侧 marker 加长且更靠近中心；正式 4-panel 图左右两侧的 `1,2,3,4` 编号已删除；
 右侧 cutout 标注中的 `g_{\rm aper}`、`\mu` 和 `hr^{-1}` 已改为 bold mathtext。
+左侧 full-frame panel 现在用细线 marker 标出该曝光全部 31 个 matched asteroids；最终四目标为彩色 marker
+并保留名称标签，其余小行星为白色 marker 且不加编号/文字标签。
+最新修正：最终四目标和右侧 cutout marker 保持中心留空四段式；仅左图其他小行星改为青绿色小实心十字，
+并跳过会被 CCD 边缘截断的其他目标 marker。
 
 历史目标：按导师返回意见继续修订 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf`。
 保持科学定位为 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
@@ -101,6 +105,8 @@ Table 2 最新调整为 `tabular*{1.10\textwidth}`：第 2--3 列固定小间距
 59. 已修正 Fig. 1 输入曝光为 `stpxl-0592_20250204_0001_3_cat.fits.gz`，并生成包含全部 31 个 matched sources 的 `fig1_all_cutouts_selection`；4-target draft 已改为 log stretch、无边框、空心十字 marker
 60. 已按用户选择将 Fig. 1 四个目标改为 selection-sheet `2, 9, 12, 21`；full-frame 改为 zscale，cutouts 改为统一 scale，marker 改为中心留空的四段短线
 61. 已微调 Fig. 1：左侧 marker 加长并缩小中心留空距离，删除正式图左右两侧 `1,2,3,4` 编号，右侧数学标注改为粗体
+62. 已在 Fig. 1 左侧 full-frame panel 中标出全部 31 个 matched asteroids：非最终目标用白色细 marker，最终四目标用彩色细 marker 加名称标签
+63. 已按用户澄清只调整左图其他小行星 marker：非最终目标改为青绿色小实心十字并跳过边缘截断 marker，最终四目标和右侧 cutout 恢复中心留空四段式 marker
 
 ## Outstanding issues
 

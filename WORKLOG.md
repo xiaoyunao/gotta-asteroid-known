@@ -2,6 +2,40 @@
 
 ## 2026-07-01
 
+- task: 调整 Fig. 1 左图其他小行星 marker
+- files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `reviewer_figures_20260701/fig1_all_cutouts_selection.png`, `reviewer_figures_20260701/fig1_all_cutouts_selection.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `sed` inspect marker plotting block; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size check; `view_image` visual QA
+- key_findings:
+  - 用户澄清只需改左图中其他小行星的 marker，不应改最终四目标和右侧 cutout marker
+  - 已将最终四目标和右侧 cutout marker 恢复为中心留空四段式
+  - 左图中非最终目标 marker 改为青绿色实心十字，尺寸约为上一版一半
+  - 对非最终目标增加边缘检查，marker 会超出 CCD 边界时不绘制
+- validation:
+  - `make_fig1_review.py` passed Python syntax check
+  - Regenerated Fig. 1 PNG/PDF and all-cutout selection PNG/PDF
+  - Visual QA confirmed final four targets retain gapped markers, other asteroids use smaller cyan-green solid crosses, and no numbering is shown
+- remaining_issues:
+  - 无
+- next_step:
+  - 用户做最终视觉确认或继续给下一张图的审稿修改要求
+
+- task: 在 Fig. 1 左图标出全部小行星
+- files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `reviewer_figures_20260701/fig1_all_cutouts_selection.png`, `reviewer_figures_20260701/fig1_all_cutouts_selection.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `sed` inspect Fig. 1 full-frame plotting block; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size check; `view_image` visual QA
+- key_findings:
+  - 左侧 full-frame panel 现在标出该曝光全部 31 个 matched asteroids
+  - 非最终四目标用白色细四段式 marker，仅作位置标记，不加文字编号
+  - 最终四目标使用彩色细 marker，并保留 object name 标签，不加编号
+  - 左侧 marker 线宽从 `3.0` 减为 `1.5`
+- validation:
+  - `make_fig1_review.py` passed Python syntax check
+  - Regenerated Fig. 1 PNG/PDF and all-cutout selection PNG/PDF
+  - Visual QA confirmed left panel includes all asteroid markers, selected targets remain identifiable, and no `1,2,3,4` numbering appears
+- remaining_issues:
+  - 无
+- next_step:
+  - 用户做最终视觉确认或继续给下一张图的审稿修改要求
+
 - task: 微调 Fig. 1 marker 和标注粗体
 - files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `reviewer_figures_20260701/fig1_all_cutouts_selection.png`, `reviewer_figures_20260701/fig1_all_cutouts_selection.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `rg` script target lines; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size check; `view_image` visual QA
