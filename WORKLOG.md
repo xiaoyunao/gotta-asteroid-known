@@ -2,6 +2,24 @@
 
 ## 2026-07-01
 
+- task: 按用户选择更新 Fig. 1 四目标和显示 scale
+- files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `reviewer_figures_20260701/fig1_all_cutouts_selection.png`, `reviewer_figures_20260701/fig1_all_cutouts_selection.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: Python/Astropy target-index check; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size checks; `view_image` visual QA
+- key_findings:
+  - User selected cutout indices `2, 9, 12, 21`
+  - These correspond to `(559) Nanon`, `(18234) 4262 T-1`, `(27028) 1998 QS98`, and `(194920) 2002 AB124`
+  - Full-frame panel now uses Astropy `ZScaleInterval`
+  - Cutouts now use a shared display scale rather than per-cutout scaling
+  - Marker changed from hollow plus symbol to four separated solid line segments, leaving the center source unobscured
+- validation:
+  - `make_fig1_review.py` passed Python syntax check
+  - Regenerated `fig1_review_cutouts.png/.pdf` and `fig1_all_cutouts_selection.png/.pdf`
+  - Visual QA confirmed selected four targets, zscale full-frame rendering, shared cutout scale, and gapped crosshair markers
+- remaining_issues:
+  - Cutouts still show real large-scale background variation from the image; display scaling is now unified
+- next_step:
+  - User reviews updated `fig1_review_cutouts.png`; make final visual tweaks if needed
+
 - task: 修正 Fig. 1 输入曝光并生成全源 cutout 选择图
 - files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `reviewer_figures_20260701/fig1_all_cutouts_selection.png`, `reviewer_figures_20260701/fig1_all_cutouts_selection.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `sshpass ssh` inspect `/data/proc/xiaoyunao/sitian_asteroids/20250204_matched_asteroids.fits`; `sshpass ssh` locate `/data/proc/liniu/stpipeline_output_v2/stp1_20250204_test/L1/stpxl-0592_20250204_0001_3.fits.gz`; `sshpass scp` cache 20250204 matched/all tables and L1 image; Python/Astropy table checks; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size checks; `view_image` visual QA

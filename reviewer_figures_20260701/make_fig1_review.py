@@ -7,8 +7,8 @@ import math
 import numpy as np
 from astropy.io import fits
 from astropy.table import Table
+from astropy.visualization import ZScaleInterval
 import matplotlib.pyplot as plt
-from matplotlib.markers import MarkerStyle
 
 
 HERE = Path(__file__).resolve().parent
@@ -20,9 +20,7 @@ SOURCE_FILE = "stpxl-0592_20250204_0001_3_cat.fits.gz"
 IMAGE_LABEL = "stpxl-0592_20250204_0001_3"
 ADOPTED_MAG = "Mag_Aper4"
 
-# Temporary four-target draft. The all-cutout sheet is the source of truth for
-# selecting the final four objects.
-DRAFT_TARGET_NAMES = ["Nanon", "Naantali", "Arai", "1998 YS5"]
+DRAFT_TARGET_INDICES = [2, 9, 12, 21]
 
 
 def as_str(value) -> str:
@@ -49,6 +47,22 @@ def log_stretch(data: np.ndarray, vmin: float, vmax: float, scale: float = 1200.
     norm = np.clip((arr - vmin) / (vmax - vmin), 0.0, 1.0)
     norm[~np.isfinite(norm)] = 0.0
     return np.log1p(scale * norm) / np.log1p(scale)
+
+
+def linear_stretch(data: np.ndarray, vmin: float, vmax: float) -> np.ndarray:
+    arr = np.asarray(data, dtype=float)
+    norm = np.clip((arr - vmin) / (vmax - vmin), 0.0, 1.0)
+    norm[~np.isfinite(norm)] = 0.0
+    return norm
+
+
+def zscale_limits(data: np.ndarray) -> tuple[float, float]:
+    finite = np.asarray(data, dtype=float)
+    finite = finite[np.isfinite(finite)]
+    if finite.size == 0:
+        return 0.0, 1.0
+    interval = ZScaleInterval(contrast=0.25, krej=2.5)
+    return tuple(float(x) for x in interval.get_limits(finite))
 
 
 def oc_separation_arcsec(row) -> float:
@@ -137,18 +151,22 @@ def clear_frame(ax) -> None:
         spine.set_visible(False)
 
 
-def draw_open_cross(ax, x: float, y: float, color: str, size: float = 16.0, edge_width: float = 2.5) -> None:
-    marker = MarkerStyle("P")
-    ax.plot(
-        x,
-        y,
-        marker=marker,
-        markersize=size,
-        markerfacecolor="none",
-        markeredgecolor=color,
-        markeredgewidth=edge_width,
-        linestyle="None",
-    )
+def draw_gapped_crosshair(
+    ax,
+    x: float,
+    y: float,
+    color: str,
+    gap: float = 11.0,
+    length: float = 17.0,
+    linewidth: float = 2.4,
+) -> None:
+    for x0, x1, y0, y1 in (
+        (x - gap - length, x - gap, y, y),
+        (x + gap, x + gap + length, y, y),
+        (x, x, y - gap - length, y - gap),
+        (x, x, y + gap, y + gap + length),
+    ):
+        ax.plot([x0, x1], [y0, y1], color=color, linewidth=linewidth, solid_capstyle="butt")
 
 
 def rate_text(rate: float) -> str:
@@ -168,13 +186,27 @@ def full_frame_view(data: np.ndarray, factor: int = 6) -> tuple[np.ndarray, tupl
     return view, (nx, ny)
 
 
+def shared_cutout_limits(cuts: list[np.ndarray]) -> tuple[float, float]:
+    vals = np.concatenate([np.asarray(cut, dtype=float).ravel() for cut in cuts])
+    vals = vals[np.isfinite(vals)]
+    if vals.size == 0:
+        return 0.0, 1.0
+    vmin, vmax = np.nanpercentile(vals, [0.8, 99.6])
+    if not np.isfinite(vmin) or not np.isfinite(vmax) or vmax <= vmin:
+        return robust_limits(vals)
+    return float(vmin), float(vmax)
+
+
 def plot_four_target_draft(data: np.ndarray, mjd: float, rows: list[dict]) -> None:
-    selected = [row for name in DRAFT_TARGET_NAMES for row in rows if row["name"] == name]
+    by_idx = {row["idx"]: row for row in rows}
+    selected = [by_idx[idx] for idx in DRAFT_TARGET_INDICES]
     if len(selected) != 4:
         raise RuntimeError(f"Draft target selection returned {len(selected)} rows")
 
     view, (nx, ny) = full_frame_view(data)
-    full_vmin, full_vmax = robust_limits(view, 0.4, 99.75)
+    full_vmin, full_vmax = zscale_limits(view)
+    selected_cuts = [cutout(data, row["x"], row["y"]) for row in selected]
+    cut_vmin, cut_vmax = shared_cutout_limits(selected_cuts)
     colors = ["#ffcc33", "#00b4d8", "#fb5607", "#80ed99"]
 
     fig = plt.figure(figsize=(15.2, 8.0), dpi=220)
@@ -191,7 +223,7 @@ def plot_four_target_draft(data: np.ndarray, mjd: float, rows: list[dict]) -> No
 
     ax_full = fig.add_axes([left, bottom, left_width, height])
     ax_full.imshow(
-        log_stretch(view, full_vmin, full_vmax),
+        linear_stretch(view, full_vmin, full_vmax),
         cmap="gray",
         origin="lower",
         extent=[0, nx, 0, ny],
@@ -200,7 +232,7 @@ def plot_four_target_draft(data: np.ndarray, mjd: float, rows: list[dict]) -> No
     clear_frame(ax_full)
     draw_label(ax_full, 130, ny - 150, f"{IMAGE_LABEL}\nMJD = {mjd:.8f}", size=11.5, va="top")
     for idx, (row, color) in enumerate(zip(selected, colors), 1):
-        draw_open_cross(ax_full, row["x"], row["y"], color=color, size=18, edge_width=2.8)
+        draw_gapped_crosshair(ax_full, row["x"], row["y"], color=color, gap=95, length=125, linewidth=3.0)
         label_x = min(max(row["x"] + 155, 90), nx - 1450)
         label_y = min(max(row["y"] + 95, 170), ny - 160)
         draw_label(ax_full, label_x, label_y, f"{idx}  {row['name']}", size=9.8, va="center")
@@ -211,12 +243,11 @@ def plot_four_target_draft(data: np.ndarray, mjd: float, rows: list[dict]) -> No
         x0 = right_left + col * (cut_size + cut_gap)
         y0 = bottom + (1 - r) * (cut_height + row_gap)
         ax = fig.add_axes([x0, y0, cut_size, cut_height])
-        cut = cutout(data, row["x"], row["y"])
-        vmin, vmax = robust_limits(cut, 0.8, 99.8)
-        ax.imshow(log_stretch(cut, vmin, vmax, scale=900.0), cmap="gray", origin="lower", interpolation="nearest")
+        cut = selected_cuts[idx - 1]
+        ax.imshow(log_stretch(cut, cut_vmin, cut_vmax, scale=900.0), cmap="gray", origin="lower", interpolation="nearest")
         clear_frame(ax)
         cy = cx = cut.shape[0] / 2.0 - 0.5
-        draw_open_cross(ax, cx, cy, color=color, size=16, edge_width=2.3)
+        draw_gapped_crosshair(ax, cx, cy, color=color, gap=10, length=16, linewidth=2.4)
         label = (
             f"{idx}. {row['object_id']}\n"
             f"$g_{{\\rm aper}}$ = {row['g_aper']:.2f} mag\n"
@@ -240,6 +271,8 @@ def plot_all_cutouts(data: np.ndarray, rows: list[dict]) -> None:
     cell_w = (1.0 - 2 * margin_x - (ncols - 1) * gap) / ncols
     cell_h = (1.0 - 2 * margin_y - (nrows - 1) * gap) / nrows
     colors = ["#ffcc33", "#00b4d8", "#fb5607", "#80ed99", "#f15bb5", "#9b5de5", "#00f5d4", "#fee440"]
+    all_cuts = [cutout(data, row["x"], row["y"]) for row in rows]
+    cut_vmin, cut_vmax = shared_cutout_limits(all_cuts)
 
     for i, row in enumerate(rows):
         col = i % ncols
@@ -247,13 +280,12 @@ def plot_all_cutouts(data: np.ndarray, rows: list[dict]) -> None:
         x0 = margin_x + col * (cell_w + gap)
         y0 = 1.0 - margin_y - (r + 1) * cell_h - r * gap
         ax = fig.add_axes([x0, y0, cell_w, cell_h])
-        cut = cutout(data, row["x"], row["y"])
-        vmin, vmax = robust_limits(cut, 0.8, 99.8)
-        ax.imshow(log_stretch(cut, vmin, vmax, scale=900.0), cmap="gray", origin="lower", interpolation="nearest")
+        cut = all_cuts[i]
+        ax.imshow(log_stretch(cut, cut_vmin, cut_vmax, scale=900.0), cmap="gray", origin="lower", interpolation="nearest")
         clear_frame(ax)
         color = colors[i % len(colors)]
         cy = cx = cut.shape[0] / 2.0 - 0.5
-        draw_open_cross(ax, cx, cy, color=color, size=13, edge_width=2.0)
+        draw_gapped_crosshair(ax, cx, cy, color=color, gap=10, length=15, linewidth=2.0)
         label = (
             f"{row['idx']}. {row['object_id']}\n"
             f"$g_{{\\rm aper}}$={row['g_aper']:.2f}  "

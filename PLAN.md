@@ -14,9 +14,10 @@ Fig. 1 的正确输入曝光已改为 `stpxl-0592_20250204_0001_3_cat.fits.gz`�
 包含该曝光全部 31 个 matched-source cutouts，供用户选择最终 4 个目标。
 当前 4-target draft 已生成：
 `reviewer_figures_20260701/fig1_review_cutouts.png` 和 `reviewer_figures_20260701/fig1_review_cutouts.pdf`。
-该图使用左侧单次曝光全幅 panel + 右侧 `2 x 2` enlarged cutouts，当前临时目标为
-`(559) Nanon`、`(1758) Naantali`、`(5070) Arai`、`(15054) 1998 YS5`。
-图像显示已按用户反馈改为 log stretch、无 axes/spine 边框、空心十字 marker。
+该图使用左侧单次曝光全幅 panel + 右侧 `2 x 2` enlarged cutouts，用户已选择 selection-sheet 编号
+`2, 9, 12, 21`，对应 `(559) Nanon`、`(18234) 4262 T-1`、`(27028) 1998 QS98`、
+`(194920) 2002 AB124`。
+图像显示已按用户反馈改为 full-frame zscale、cutouts 统一 scale、无 axes/spine 边框、四段式中心留空 marker。
 
 历史目标：按导师返回意见继续修订 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf`。
 保持科学定位为 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
@@ -96,11 +97,11 @@ Table 2 最新调整为 `tabular*{1.10\textwidth}`：第 2--3 列固定小间距
 57. 已初始化审稿意见重画图会话：本地 `main` 与 `origin/main` 同步，确认当前图表主线为 `figures_v9`/`tables_v9` 和 `scripts/generate_paper_products.py`
 58. 已新建 `reviewer_figures_20260701/` 并生成 revised Fig. 1 candidate：左侧全幅单次曝光标记 4 个目标，右侧 `2 x 2` 放大 cutouts 标注 object ID、`g_{\rm aper}`、angular rate 和 O-C separation
 59. 已修正 Fig. 1 输入曝光为 `stpxl-0592_20250204_0001_3_cat.fits.gz`，并生成包含全部 31 个 matched sources 的 `fig1_all_cutouts_selection`；4-target draft 已改为 log stretch、无边框、空心十字 marker
+60. 已按用户选择将 Fig. 1 四个目标改为 selection-sheet `2, 9, 12, 21`；full-frame 改为 zscale，cutouts 改为统一 scale，marker 改为中心留空的四段短线
 
 ## Outstanding issues
 
-- Fig. 1 selection sheet 已生成，等待用户从 31 个 cutouts 中选择最终 4 个目标
-- 4-target draft 当前只是临时选择：`Nanon`、`Naantali`、`Arai`、`1998 YS5`
+- Fig. 1 四目标已按用户选择更新，等待最终视觉确认
 - 4 个 selection-sheet 目标缺少本地 angular-rate 匹配：`2006 FT8`、`2004 JC30`、`2003 BL70`、`2009 QE23`
 - 其余审稿意见中需要重画的具体图号、修改要求或示例风格尚未收到；收到后需要逐条映射到具体输出文件和生成函数
 - 如果用户在 Overleaf 手动修改，应后续下载最新版 `.tex` 或完整 project zip 并同步回本地 git
@@ -181,8 +182,8 @@ Table 2 最新调整为 `tabular*{1.10\textwidth}`：第 2--3 列固定小间距
 
 ## Next recommended steps
 
-1. 用户检查 `reviewer_figures_20260701/fig1_all_cutouts_selection.png`，给出最终 4 个目标的编号或 object ID
-2. 将最终 4 个目标写入 `reviewer_figures_20260701/make_fig1_review.py` 的 `DRAFT_TARGET_NAMES` 并重新生成 PNG/PDF
+1. 用户检查 `reviewer_figures_20260701/fig1_review_cutouts.png`，确认是否还需要调整 full-frame stretch、cutout scale、marker 长度或标签位置
+2. 如需继续微调，只改 `reviewer_figures_20260701/make_fig1_review.py` 并重新生成 PNG/PDF
 3. 用户继续提供其余审稿意见原文、截图或整理后的逐条修改要求
 4. 将每条意见映射到 v9 图号/表号、输出路径和对应生成函数
 5. 对 Python 改动先跑语法检查；对生成图做尺寸检查和视觉检查
