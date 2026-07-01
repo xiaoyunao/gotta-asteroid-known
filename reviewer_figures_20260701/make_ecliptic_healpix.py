@@ -75,6 +75,16 @@ def icrs_to_ecliptic(ra_deg: np.ndarray, dec_deg: np.ndarray) -> tuple[np.ndarra
     return ecl.lon.to_value(u.deg), ecl.lat.to_value(u.deg)
 
 
+def plot_celestial_equator(ax) -> None:
+    ra = np.linspace(0.0, 360.0, 2000)
+    dec = np.zeros_like(ra)
+    lon_ecl, lat_ecl = icrs_to_ecliptic(ra, dec)
+    x = lon_to_mollweide_rad(lon_ecl, center_deg=180.0)
+    y = np.deg2rad(lat_ecl)
+    order = np.argsort(x)
+    ax.plot(x[order], y[order], color="#ff8c00", linewidth=3.0, alpha=0.95, zorder=9)
+
+
 def plot_ecliptic_healpix(columns: dict[str, np.ndarray], out_png: Path, out_pdf: Path, nside: int = 64) -> None:
     ra = np.asarray(columns["ra"], dtype=float)
     dec = np.asarray(columns["dec"], dtype=float)
@@ -119,6 +129,7 @@ def plot_ecliptic_healpix(columns: dict[str, np.ndarray], out_png: Path, out_pdf
     ax.grid(True, alpha=0.3)
     set_mollweide_lon_ticks_0_360(ax, center_deg=180.0, step=60)
     ax.tick_params(axis="y", labelsize=24)
+    plot_celestial_equator(ax)
 
     cax = ax.inset_axes([0.30, 0.09, 0.40, 0.045])
     cb = fig.colorbar(im, cax=cax, orientation="horizontal")

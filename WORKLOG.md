@@ -2,6 +2,22 @@
 
 ## 2026-07-01
 
+- task: 在黄道坐标 HEALPix 图中标出赤道面
+- files_changed: `reviewer_figures_20260701/make_ecliptic_healpix.py`, `reviewer_figures_20260701/gotta_ecliptic_healpix_nside64.png`, `reviewer_figures_20260701/gotta_ecliptic_healpix_nside64.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `find` reference image; `view_image` reference image; `python3 -m py_compile reviewer_figures_20260701/make_ecliptic_healpix.py`; `python3 reviewer_figures_20260701/make_ecliptic_healpix.py`; `sips` image-size check; `view_image` visual QA
+- key_findings:
+  - 参考图用橙色曲线标出坐标平面，不需要 legend
+  - 已在黄道坐标图中计算 ICRS `Dec=0` 的大圆，并转换到黄道经纬后叠加
+  - 曲线表示天球赤道/赤道面在黄道坐标系中的位置
+- validation:
+  - `make_ecliptic_healpix.py` passed Python syntax check
+  - Regenerated `gotta_ecliptic_healpix_nside64.png/.pdf`
+  - Visual QA confirmed orange equatorial-plane curve is visible and no legend is added
+- remaining_issues:
+  - 无
+- next_step:
+  - 用户确认黄道坐标 sky-density 图和更新后的 caption
+
 - task: 将 GOTTA sky-density HEALPix 图从赤道坐标改为黄道坐标
 - files_changed: `reviewer_figures_20260701/make_ecliptic_healpix.py`, `reviewer_figures_20260701/gotta_ecliptic_healpix_nside64.png`, `reviewer_figures_20260701/gotta_ecliptic_healpix_nside64.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `rg` locate `gotta_radec_healpix_nside64` source; `sed` inspect `scripts/plot_gotta_asteroids.py`; Python dependency/version check; `python3 -m py_compile reviewer_figures_20260701/make_ecliptic_healpix.py`; `python3 reviewer_figures_20260701/make_ecliptic_healpix.py`; `sips` image-size checks; Python/Astropy coordinate range check; `view_image` visual QA
