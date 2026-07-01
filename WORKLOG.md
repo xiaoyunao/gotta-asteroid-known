@@ -2,6 +2,25 @@
 
 ## 2026-07-01
 
+- task: 将 GOTTA sky-density HEALPix 图从赤道坐标改为黄道坐标
+- files_changed: `reviewer_figures_20260701/make_ecliptic_healpix.py`, `reviewer_figures_20260701/gotta_ecliptic_healpix_nside64.png`, `reviewer_figures_20260701/gotta_ecliptic_healpix_nside64.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `rg` locate `gotta_radec_healpix_nside64` source; `sed` inspect `scripts/plot_gotta_asteroids.py`; Python dependency/version check; `python3 -m py_compile reviewer_figures_20260701/make_ecliptic_healpix.py`; `python3 reviewer_figures_20260701/make_ecliptic_healpix.py`; `sips` image-size checks; Python/Astropy coordinate range check; `view_image` visual QA
+- key_findings:
+  - 原图逻辑在 `scripts/plot_gotta_asteroids.py::plot_radec`
+  - 新脚本复用原 HEALPix binning、Mollweide projection、rainbow colormap、LogNorm 和 colorbar 样式
+  - 坐标从 ICRS `ra/dec` 用 `SkyCoord(...).barycentrictrueecliptic` 转为黄道经纬后再做 HEALPix binning
+  - 输入有效检测数为 `56,230`
+  - 黄经范围 `0.071--359.900 deg`，黄纬范围 `-33.172--76.694 deg`
+- validation:
+  - `make_ecliptic_healpix.py` passed Python syntax check
+  - Generated `gotta_ecliptic_healpix_nside64.png/.pdf`
+  - PNG size is `3968 x 2027 px`, matching the original RA/Dec figure size
+  - Visual QA confirmed sky-density distribution is shown in ecliptic coordinates with original styling retained
+- remaining_issues:
+  - Matplotlib emitted a harmless masked-value warning while plotting masked HEALPix counts
+- next_step:
+  - User reviews `reviewer_figures_20260701/gotta_ecliptic_healpix_nside64.png`; if accepted, use it as the revised sky-density figure
+
 - task: 改善 Fig. 1 cutout 背景均匀性和亮度
 - files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `reviewer_figures_20260701/fig1_all_cutouts_selection.png`, `reviewer_figures_20260701/fig1_all_cutouts_selection.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `sed` inspect script; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size check; `view_image` visual QA
