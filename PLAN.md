@@ -18,6 +18,8 @@ Fig. 1 的正确输入曝光已改为 `stpxl-0592_20250204_0001_3_cat.fits.gz`�
 `2, 9, 12, 21`，对应 `(559) Nanon`、`(18234) 4262 T-1`、`(27028) 1998 QS98`、
 `(194920) 2002 AB124`。
 图像显示已按用户反馈改为 full-frame zscale、cutouts 统一 scale、无 axes/spine 边框、四段式中心留空 marker。
+最新小修：左侧 marker 加长且更靠近中心；正式 4-panel 图左右两侧的 `1,2,3,4` 编号已删除；
+右侧 cutout 标注中的 `g_{\rm aper}`、`\mu` 和 `hr^{-1}` 已改为 bold mathtext。
 
 历史目标：按导师返回意见继续修订 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf`。
 保持科学定位为 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
@@ -98,10 +100,11 @@ Table 2 最新调整为 `tabular*{1.10\textwidth}`：第 2--3 列固定小间距
 58. 已新建 `reviewer_figures_20260701/` 并生成 revised Fig. 1 candidate：左侧全幅单次曝光标记 4 个目标，右侧 `2 x 2` 放大 cutouts 标注 object ID、`g_{\rm aper}`、angular rate 和 O-C separation
 59. 已修正 Fig. 1 输入曝光为 `stpxl-0592_20250204_0001_3_cat.fits.gz`，并生成包含全部 31 个 matched sources 的 `fig1_all_cutouts_selection`；4-target draft 已改为 log stretch、无边框、空心十字 marker
 60. 已按用户选择将 Fig. 1 四个目标改为 selection-sheet `2, 9, 12, 21`；full-frame 改为 zscale，cutouts 改为统一 scale，marker 改为中心留空的四段短线
+61. 已微调 Fig. 1：左侧 marker 加长并缩小中心留空距离，删除正式图左右两侧 `1,2,3,4` 编号，右侧数学标注改为粗体
 
 ## Outstanding issues
 
-- Fig. 1 四目标已按用户选择更新，等待最终视觉确认
+- Fig. 1 已按用户最近反馈微调，等待最终视觉确认
 - 4 个 selection-sheet 目标缺少本地 angular-rate 匹配：`2006 FT8`、`2004 JC30`、`2003 BL70`、`2009 QE23`
 - 其余审稿意见中需要重画的具体图号、修改要求或示例风格尚未收到；收到后需要逐条映射到具体输出文件和生成函数
 - 如果用户在 Overleaf 手动修改，应后续下载最新版 `.tex` 或完整 project zip 并同步回本地 git

@@ -2,6 +2,22 @@
 
 ## 2026-07-01
 
+- task: 微调 Fig. 1 marker 和标注粗体
+- files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `reviewer_figures_20260701/fig1_all_cutouts_selection.png`, `reviewer_figures_20260701/fig1_all_cutouts_selection.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `rg` script target lines; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size check; `view_image` visual QA
+- key_findings:
+  - 左侧 full-frame marker 已加长并缩小中心留空距离
+  - 正式 4-panel 图中左右两侧的 `1,2,3,4` 编号已删除
+  - 右侧 cutout 标注中的 `g_{\rm aper}`、`\mu` 和 `hr^{-1}` 改为 bold mathtext
+- validation:
+  - `make_fig1_review.py` passed Python syntax check
+  - Regenerated Fig. 1 PNG/PDF and all-cutout selection PNG/PDF
+  - Visual QA confirmed marker length/gap, removed numbering, and bolded math labels
+- remaining_issues:
+  - 无
+- next_step:
+  - 用户做最终视觉确认或继续给下一张图的审稿修改要求
+
 - task: 按用户选择更新 Fig. 1 四目标和显示 scale
 - files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `reviewer_figures_20260701/fig1_all_cutouts_selection.png`, `reviewer_figures_20260701/fig1_all_cutouts_selection.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: Python/Astropy target-index check; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size checks; `view_image` visual QA

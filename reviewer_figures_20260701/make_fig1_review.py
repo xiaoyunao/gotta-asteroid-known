@@ -232,10 +232,10 @@ def plot_four_target_draft(data: np.ndarray, mjd: float, rows: list[dict]) -> No
     clear_frame(ax_full)
     draw_label(ax_full, 130, ny - 150, f"{IMAGE_LABEL}\nMJD = {mjd:.8f}", size=11.5, va="top")
     for idx, (row, color) in enumerate(zip(selected, colors), 1):
-        draw_gapped_crosshair(ax_full, row["x"], row["y"], color=color, gap=95, length=125, linewidth=3.0)
+        draw_gapped_crosshair(ax_full, row["x"], row["y"], color=color, gap=72, length=160, linewidth=3.0)
         label_x = min(max(row["x"] + 155, 90), nx - 1450)
         label_y = min(max(row["y"] + 95, 170), ny - 160)
-        draw_label(ax_full, label_x, label_y, f"{idx}  {row['name']}", size=9.8, va="center")
+        draw_label(ax_full, label_x, label_y, row["name"], size=9.8, va="center")
 
     for idx, (row, color) in enumerate(zip(selected, colors), 1):
         col = (idx - 1) % 2
@@ -249,9 +249,9 @@ def plot_four_target_draft(data: np.ndarray, mjd: float, rows: list[dict]) -> No
         cy = cx = cut.shape[0] / 2.0 - 0.5
         draw_gapped_crosshair(ax, cx, cy, color=color, gap=10, length=16, linewidth=2.4)
         label = (
-            f"{idx}. {row['object_id']}\n"
-            f"$g_{{\\rm aper}}$ = {row['g_aper']:.2f} mag\n"
-            f"$\\mu$ = {rate_text(row['rate'])} arcsec hr$^{{-1}}$\n"
+            f"{row['object_id']}\n"
+            f"$\\mathbf{{g}}_{{\\mathbf{{aper}}}}$ = {row['g_aper']:.2f} mag\n"
+            f"$\\boldsymbol{{\\mu}}$ = {rate_text(row['rate'])} arcsec $\\mathbf{{hr}}^{{\\mathbf{{-1}}}}$\n"
             f"O-C = {row['sep']:.2f} arcsec"
         )
         draw_label(ax, 7, cut.shape[0] - 7, label, size=9.0, va="top")
