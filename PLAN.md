@@ -2,7 +2,13 @@
 
 ## Current objective
 
-准备按导师返回意见继续修订 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf`。
+准备根据审稿意见重新绘制或微调 v9 图表资产。
+默认只修改 `scripts/generate_paper_products.py`、`paper_draft/figures_v9/`、`paper_draft/tables_v9/`
+以及必要的项目记忆文件；不改 `paper_draft/v9.tex` 或正文，除非用户明确要求。
+优先复用现有 `gotta_asteroids.fits`、现有 v9 图表目录和现有生成函数。
+收到审稿意见后，先逐条映射到具体图号/表号、生成函数、输入数据和输出文件，再做最小范围修改。
+
+历史目标：按导师返回意见继续修订 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf`。
 保持科学定位为 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
 当前 v9 已完成投稿前一致性修订、终稿通读报告清理和后续小修：matching/Gaia mask 统一为 1 arcsec，
 删除 predicted magnitude filtering 表述，周期验证表已移到正文，Appendix 只保留
@@ -77,10 +83,11 @@ Table 2 最新调整为 `tabular*{1.10\textwidth}`：第 2--3 列固定小间距
 54. 已放宽 Table 2 版式：表格居中略伸出版心，`Orbit class` 列和列间距加宽，临时 v9 编译无 overfull
 55. 已针对 Table 2 局部列距再调：第 2--3 列缩小为固定 `10pt`，第 3 列后自动分配剩余空间，临时 v9 编译无 overfull
 56. 已从 v9 light-curve mosaics 截取两个同尺寸子图：reliable 中 `25745` 和 questionable 中 `51965`
+57. 已初始化审稿意见重画图会话：本地 `main` 与 `origin/main` 同步，确认当前图表主线为 `figures_v9`/`tables_v9` 和 `scripts/generate_paper_products.py`
 
 ## Outstanding issues
 
-- 尚未收到导师返回意见的精确条目；收到后需要逐条映射到 `paper_draft/v9.tex` 并记录处理状态
+- 尚未收到审稿意见中需要重画的具体图号、修改要求或示例风格；收到后需要逐条映射到具体输出文件和生成函数
 - 如果用户在 Overleaf 手动修改，应后续下载最新版 `.tex` 或完整 project zip 并同步回本地 git
 - 用户当前要求本地不要改文章正文；后续除非明确要求，只提供图表资产或同步 Overleaf 已完成修改
 - 后续新增统计和图时必须默认使用 `gotta_asteroids.fits`
@@ -159,9 +166,9 @@ Table 2 最新调整为 `tabular*{1.10\textwidth}`：第 2--3 列固定小间距
 
 ## Next recommended steps
 
-1. 用户在 Overleaf 中手动替换 Fig. 6、Table 2、Table 3 输出，并按需插入新增饼图
-2. 如继续需要图表小修，只改 `scripts/generate_paper_products.py` 和 `paper_draft/figures_v9`/`tables_v9` 资产，不改 `v9.tex`
-3. 用户在 Overleaf 完成导师意见修改后，下载新版 `.tex` 或完整 project zip
-4. 如用户要求同步，将 Overleaf 修改同步回本地 `paper_draft/v9.tex`、相关 figure/table 资产
-5. 验证时优先使用临时目录编译，避免覆盖用户正在手动修改的正式稿
+1. 用户提供审稿意见原文、截图或整理后的逐条修改要求
+2. 将每条意见映射到 v9 图号/表号、输出路径和 `scripts/generate_paper_products.py` 中的函数
+3. 只改必要的图表生成逻辑和 `paper_draft/figures_v9`/`tables_v9` 资产，不改 `v9.tex`
+4. 对 Python 改动先跑 `python3 -m py_compile scripts/generate_paper_products.py`
+5. 对生成图做尺寸检查和视觉检查；如涉及 LaTeX 表格，优先临时目录编译，避免覆盖用户正在手动修改的正式稿
 6. 更新 `WORKLOG.md` 和 `PLAN.md`，完成后视修改规模提交 git

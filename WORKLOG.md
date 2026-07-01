@@ -1,5 +1,24 @@
 # WORKLOG
 
+## 2026-07-01
+
+- task: 初始化审稿意见重画图会话
+- files_changed: `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `sed -n '1,220p' WORKLOG.md`; `sed -n '1,220p' PLAN.md`; `sed -n '1,180p' README.md`; `git rev-list --left-right --count HEAD...origin/main`; `find paper_draft -maxdepth 2 -type d`; `find paper_draft/figures_v9 paper_draft/tables_v9 -maxdepth 1 -type f`; `rg` figure/table generator entry points
+- key_findings:
+  - 当前分支为 `main`，本地工作区初始状态干净
+  - `main` 与 `origin/main` 同步，ahead/behind 为 `0/0`
+  - 最新提交为 `3310a73 Add selected v9 lightcurve crops`
+  - 当前图表主线仍为 `paper_draft/figures_v9/`、`paper_draft/tables_v9/` 和 `scripts/generate_paper_products.py`
+  - 已有可复用图表入口包括 `make_tables`、`plot_photometry`、`plot_orbit_class_pies`、`plot_astrometry`、`plot_geometry`、`plot_temporal`、`plot_example` 和 `plot_flowchart`
+- validation:
+  - 已完成 git 状态、远端同步、近期历史、项目记忆和 v9 图表资产清单检查
+- remaining_issues:
+  - 尚未收到审稿意见中需要重画的具体图号、修改要求或示例风格
+  - 本轮尚未修改任何图表、脚本或论文正文
+- next_step:
+  - 用户提供审稿意见后，逐条映射到对应 v9 figure/table 生成函数，只更新必要资产并做最小验证
+
 ## 2026-06-02
 
 - task: 截取两个指定 light-curve 子图
