@@ -2,6 +2,28 @@
 
 ## 2026-07-01
 
+- task: 按审稿意见重画 orbit element 图并提交无用 outputs 删除
+- files_changed: `reviewer_figures_20260701/make_orbit_revision.py`, `reviewer_figures_20260701/asteroid_orbits_revised.png`, `reviewer_figures_20260701/asteroid_orbits_revised.pdf`, `outputs/asteroid_orbits.png`, `outputs/gotta_radec_healpix_nside64.png`, `outputs/gotta_stats.json`, `outputs/known_object_processing.png`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `git status --short --branch`; `sed` inspect original orbit plotting code; Python/Astropy class-count checks; `python3 -m py_compile reviewer_figures_20260701/make_orbit_revision.py`; `python3 reviewer_figures_20260701/make_orbit_revision.py`; `sips` image-size checks; `view_image` visual QA
+- key_findings:
+  - Original orbit classes include `Amor`, `Apollo`, `Aten`, `Asteroid`, and `Centaur`
+  - New legend uses abbreviations: `MBA`, `OMB`, `TJN`, `IMB`, `MCA`, `NEA`, `TNO`, `Other`
+  - `NEA` merges Amor/Apollo/Aten and uses one marker style
+  - `Other` includes `Asteroid`, `Centaur`, and any unclassified class
+  - User preferred the earlier revised color scheme with MBA changed to cyan
+  - Left-panel perihelion line label now uses math text: `$q=1.3\,\mathrm{AU}$`
+  - User confirmed deleted `outputs/` files are obsolete and can be committed
+- validation:
+  - `make_orbit_revision.py` passed Python syntax check
+  - Generated `asteroid_orbits_revised.png/.pdf`
+  - PNG size is `5400 x 2700 px`, matching original orbit figure dimensions
+  - Group counts: `MBA=51058`, `OMB=1970`, `TJN=1362`, `IMB=897`, `MCA=656`, `NEA=259`, `TNO=20`, `Other=8`
+  - Visual QA confirmed abbreviated larger legend, cyan MBA points, NEA merged marker, and italic math `q`
+- remaining_issues:
+  - 无
+- next_step:
+  - User reviews `reviewer_figures_20260701/asteroid_orbits_revised.png`
+
 - task: 在黄道坐标 HEALPix 图中标出赤道面
 - files_changed: `reviewer_figures_20260701/make_ecliptic_healpix.py`, `reviewer_figures_20260701/gotta_ecliptic_healpix_nside64.png`, `reviewer_figures_20260701/gotta_ecliptic_healpix_nside64.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `find` reference image; `view_image` reference image; `python3 -m py_compile reviewer_figures_20260701/make_ecliptic_healpix.py`; `python3 reviewer_figures_20260701/make_ecliptic_healpix.py`; `sips` image-size check; `view_image` visual QA
