@@ -2,6 +2,23 @@
 
 ## 2026-07-01
 
+- task: 改善 Fig. 1 cutout 背景均匀性和亮度
+- files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `reviewer_figures_20260701/fig1_all_cutouts_selection.png`, `reviewer_figures_20260701/fig1_all_cutouts_selection.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `sed` inspect script; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size check; `view_image` visual QA
+- key_findings:
+  - Cutout 背景不均匀来自 L1 图像的大尺度背景/散射光结构；统一 scale 不会自动消除该结构
+  - 已对 cutout display 增加大尺度 median-filter 背景扣除
+  - 扣背景后的 cutouts 使用统一线性 scale，不再使用 log stretch 抬亮背景
+  - 该处理只影响图像显示，不修改 `g_{\rm aper}`、angular rate 或 O-C 标注数值
+- validation:
+  - `make_fig1_review.py` passed Python syntax check
+  - Regenerated Fig. 1 PNG/PDF and all-cutout selection PNG/PDF
+  - Visual QA confirmed cutout background is darker and more uniform, with final target markers/labels retained
+- remaining_issues:
+  - 当前 cutout 观感偏暗、偏 residual display；如用户希望更接近原始图，可调 shared scale 上下限
+- next_step:
+  - 用户确认 cutout 亮度；必要时调整 `shared_cutout_limits` 中的 sigma range
+
 - task: 调整 Fig. 1 左图其他小行星 marker
 - files_changed: `reviewer_figures_20260701/make_fig1_review.py`, `reviewer_figures_20260701/fig1_review_cutouts.png`, `reviewer_figures_20260701/fig1_review_cutouts.pdf`, `reviewer_figures_20260701/fig1_all_cutouts_selection.png`, `reviewer_figures_20260701/fig1_all_cutouts_selection.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `sed` inspect marker plotting block; `python3 -m py_compile reviewer_figures_20260701/make_fig1_review.py`; `python3 reviewer_figures_20260701/make_fig1_review.py`; `sips` image-size check; `view_image` visual QA

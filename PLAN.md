@@ -24,6 +24,7 @@ Fig. 1 的正确输入曝光已改为 `stpxl-0592_20250204_0001_3_cat.fits.gz`�
 并保留名称标签，其余小行星为白色 marker 且不加编号/文字标签。
 最新修正：最终四目标和右侧 cutout marker 保持中心留空四段式；仅左图其他小行星改为青绿色小实心十字，
 并跳过会被 CCD 边缘截断的其他目标 marker。
+Cutout 显示已加入大尺度 median-filter 背景扣除，并改为扣背景后的统一线性 scale，以降低背景不均匀和过亮问题。
 
 历史目标：按导师返回意见继续修订 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf`。
 保持科学定位为 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
@@ -107,10 +108,12 @@ Table 2 最新调整为 `tabular*{1.10\textwidth}`：第 2--3 列固定小间距
 61. 已微调 Fig. 1：左侧 marker 加长并缩小中心留空距离，删除正式图左右两侧 `1,2,3,4` 编号，右侧数学标注改为粗体
 62. 已在 Fig. 1 左侧 full-frame panel 中标出全部 31 个 matched asteroids：非最终目标用白色细 marker，最终四目标用彩色细 marker 加名称标签
 63. 已按用户澄清只调整左图其他小行星 marker：非最终目标改为青绿色小实心十字并跳过边缘截断 marker，最终四目标和右侧 cutout 恢复中心留空四段式 marker
+64. 已对 Fig. 1 cutouts 增加大尺度背景扣除并使用统一线性 display scale，降低背景不均匀和过亮
 
 ## Outstanding issues
 
 - Fig. 1 已按用户最近反馈微调，等待最终视觉确认
+- Cutout 背景扣除版观感偏 residual display；如需更接近原始图，可继续调亮度/contrast
 - 4 个 selection-sheet 目标缺少本地 angular-rate 匹配：`2006 FT8`、`2004 JC30`、`2003 BL70`、`2009 QE23`
 - 其余审稿意见中需要重画的具体图号、修改要求或示例风格尚未收到；收到后需要逐条映射到具体输出文件和生成函数
 - 如果用户在 Overleaf 手动修改，应后续下载最新版 `.tex` 或完整 project zip 并同步回本地 git

@@ -9,6 +9,7 @@ from astropy.io import fits
 from astropy.table import Table
 from astropy.visualization import ZScaleInterval
 import matplotlib.pyplot as plt
+from scipy.ndimage import median_filter
 
 
 HERE = Path(__file__).resolve().parent
@@ -202,15 +203,36 @@ def full_frame_view(data: np.ndarray, factor: int = 6) -> tuple[np.ndarray, tupl
     return view, (nx, ny)
 
 
+def flatten_cutout_background(cut: np.ndarray, filter_size: int = 61) -> np.ndarray:
+    arr = np.asarray(cut, dtype=float)
+    finite = np.isfinite(arr)
+    if not np.any(finite):
+        return arr
+    fill = float(np.nanmedian(arr[finite]))
+    filled = np.where(finite, arr, fill)
+    background = median_filter(filled, size=filter_size, mode="nearest")
+    residual = arr - background
+    residual[~finite] = np.nan
+    return residual
+
+
+def display_cutouts(cuts: list[np.ndarray]) -> list[np.ndarray]:
+    return [flatten_cutout_background(cut) for cut in cuts]
+
+
 def shared_cutout_limits(cuts: list[np.ndarray]) -> tuple[float, float]:
     vals = np.concatenate([np.asarray(cut, dtype=float).ravel() for cut in cuts])
     vals = vals[np.isfinite(vals)]
     if vals.size == 0:
         return 0.0, 1.0
-    vmin, vmax = np.nanpercentile(vals, [0.8, 99.6])
-    if not np.isfinite(vmin) or not np.isfinite(vmax) or vmax <= vmin:
+    center = float(np.nanmedian(vals))
+    mad = float(np.nanmedian(np.abs(vals - center)))
+    sigma = 1.4826 * mad
+    if not np.isfinite(sigma) or sigma <= 0:
+        sigma = float(np.nanstd(vals))
+    if not np.isfinite(sigma) or sigma <= 0:
         return robust_limits(vals)
-    return float(vmin), float(vmax)
+    return center - 1.0 * sigma, center + 7.0 * sigma
 
 
 def plot_four_target_draft(data: np.ndarray, mjd: float, rows: list[dict]) -> None:
@@ -222,7 +244,8 @@ def plot_four_target_draft(data: np.ndarray, mjd: float, rows: list[dict]) -> No
     view, (nx, ny) = full_frame_view(data)
     full_vmin, full_vmax = zscale_limits(view)
     selected_cuts = [cutout(data, row["x"], row["y"]) for row in selected]
-    cut_vmin, cut_vmax = shared_cutout_limits(selected_cuts)
+    selected_display_cuts = display_cutouts(selected_cuts)
+    cut_vmin, cut_vmax = shared_cutout_limits(selected_display_cuts)
     colors = ["#ffcc33", "#00b4d8", "#fb5607", "#80ed99"]
 
     fig = plt.figure(figsize=(15.2, 8.0), dpi=220)
@@ -266,8 +289,8 @@ def plot_four_target_draft(data: np.ndarray, mjd: float, rows: list[dict]) -> No
         x0 = right_left + col * (cut_size + cut_gap)
         y0 = bottom + (1 - r) * (cut_height + row_gap)
         ax = fig.add_axes([x0, y0, cut_size, cut_height])
-        cut = selected_cuts[idx - 1]
-        ax.imshow(log_stretch(cut, cut_vmin, cut_vmax, scale=900.0), cmap="gray", origin="lower", interpolation="nearest")
+        cut = selected_display_cuts[idx - 1]
+        ax.imshow(linear_stretch(cut, cut_vmin, cut_vmax), cmap="gray", origin="lower", interpolation="nearest")
         clear_frame(ax)
         cy = cx = cut.shape[0] / 2.0 - 0.5
         draw_gapped_crosshair(ax, cx, cy, color=color, gap=10, length=16, linewidth=2.4)
@@ -295,7 +318,8 @@ def plot_all_cutouts(data: np.ndarray, rows: list[dict]) -> None:
     cell_h = (1.0 - 2 * margin_y - (nrows - 1) * gap) / nrows
     colors = ["#ffcc33", "#00b4d8", "#fb5607", "#80ed99", "#f15bb5", "#9b5de5", "#00f5d4", "#fee440"]
     all_cuts = [cutout(data, row["x"], row["y"]) for row in rows]
-    cut_vmin, cut_vmax = shared_cutout_limits(all_cuts)
+    all_display_cuts = display_cutouts(all_cuts)
+    cut_vmin, cut_vmax = shared_cutout_limits(all_display_cuts)
 
     for i, row in enumerate(rows):
         col = i % ncols
@@ -303,8 +327,8 @@ def plot_all_cutouts(data: np.ndarray, rows: list[dict]) -> None:
         x0 = margin_x + col * (cell_w + gap)
         y0 = 1.0 - margin_y - (r + 1) * cell_h - r * gap
         ax = fig.add_axes([x0, y0, cell_w, cell_h])
-        cut = all_cuts[i]
-        ax.imshow(log_stretch(cut, cut_vmin, cut_vmax, scale=900.0), cmap="gray", origin="lower", interpolation="nearest")
+        cut = all_display_cuts[i]
+        ax.imshow(linear_stretch(cut, cut_vmin, cut_vmax), cmap="gray", origin="lower", interpolation="nearest")
         clear_frame(ax)
         color = colors[i % len(colors)]
         cy = cx = cut.shape[0] / 2.0 - 0.5
