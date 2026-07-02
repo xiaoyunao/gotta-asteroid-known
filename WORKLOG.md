@@ -2,6 +2,22 @@
 
 ## 2026-07-02
 
+- task: 定位 v9 workflow/流程图原始生成入口
+- files_changed: `WORKLOG.md`
+- commands_run: `git status --short --branch`; `git branch --show-current`; `git fetch --all --prune`; `git log --oneline --decorate --graph -n 15 --all`; `sed` inspect `WORKLOG.md`, `PLAN.md`, `scripts/generate_paper_products.py`, and workflow source files; `find` locate workflow assets; `sips` image metadata checks; Pillow pixel comparison
+- key_findings:
+  - 仓库内有早期自动生成流程图入口：`scripts/generate_paper_products.py::plot_flowchart` 和 `write_mermaid`
+  - v9 当前使用的最终图是 `paper_draft/figures_v9/known_object_processing_minimal_edit_final_2x.png`
+  - 最终图对应的像素级修改源码在 `/Users/yunaoxiao/Downloads/known_object_processing_minimal_edit_source.py`
+  - 该源码依赖 `/Users/yunaoxiao/Downloads/known_object_processing_updated.png` 作为底图，再局部移动、擦除、重画箭头和标签
+  - `paper_draft/figures_v9/known_object_processing_minimal_edit_final_2x.png` 与 `/Users/yunaoxiao/Downloads/known_object_processing_minimal_edit_final_2x.png` 像素一致；差异仅来自 PNG metadata/DPI
+- validation:
+  - 已用 Pillow 确认 v9 图与 Downloads 生成图 pixel diff 为空
+- remaining_issues:
+  - 最终图源码尚未纳入 git；如继续修改，建议先把源码和底图复制到仓库内的稳定位置
+- next_step:
+  - 用户提供流程图具体修改点后，基于最终图源码修改并重新生成 v9 PNG，保留 504 dpi metadata
+
 - task: 按审稿意见重画 motion/photometry/astrometry 统计图
 - files_changed: `scripts/generate_paper_products.py`, `reviewer_figures_20260701/make_statistics_revision.py`, `reviewer_figures_20260701/motion_geometry.png`, `reviewer_figures_20260701/motion_geometry.pdf`, `reviewer_figures_20260701/photometric_statistics.png`, `reviewer_figures_20260701/photometric_statistics.pdf`, `reviewer_figures_20260701/astrometric_residuals.png`, `reviewer_figures_20260701/astrometric_residuals.pdf`, `reviewer_figures_20260701/separation_vs_rate.png`, `reviewer_figures_20260701/separation_vs_rate.pdf`, `WORKLOG.md`, `PLAN.md`
 - commands_run: `sed` inspect plot functions; FITS column inspection with Astropy; `python3 -m py_compile scripts/generate_paper_products.py reviewer_figures_20260701/make_statistics_revision.py`; `python3 reviewer_figures_20260701/make_statistics_revision.py`; `sips` image-size checks; `view_image` visual QA
