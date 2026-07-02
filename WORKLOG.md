@@ -1,5 +1,30 @@
 # WORKLOG
 
+## 2026-07-02
+
+- task: 按审稿意见重画 motion/photometry/astrometry 统计图
+- files_changed: `scripts/generate_paper_products.py`, `reviewer_figures_20260701/make_statistics_revision.py`, `reviewer_figures_20260701/motion_geometry.png`, `reviewer_figures_20260701/motion_geometry.pdf`, `reviewer_figures_20260701/photometric_statistics.png`, `reviewer_figures_20260701/photometric_statistics.pdf`, `reviewer_figures_20260701/astrometric_residuals.png`, `reviewer_figures_20260701/astrometric_residuals.pdf`, `reviewer_figures_20260701/separation_vs_rate.png`, `reviewer_figures_20260701/separation_vs_rate.pdf`, `WORKLOG.md`, `PLAN.md`
+- commands_run: `sed` inspect plot functions; FITS column inspection with Astropy; `python3 -m py_compile scripts/generate_paper_products.py reviewer_figures_20260701/make_statistics_revision.py`; `python3 reviewer_figures_20260701/make_statistics_revision.py`; `sips` image-size checks; `view_image` visual QA
+- key_findings:
+  - `gotta_asteroids.fits` has `ra`, `dec`, and MJD `epoch`, but no stored elongation column
+  - Added `elongation_deg` by computing Sun-target angular separation with Astropy `get_sun(Time(epoch, format="mjd"))`
+  - `motion_geometry` replaces phase angle with solar elongation
+  - Three `2 x 2` figures use a shared larger median-legend font
+  - `photometric_statistics` bottom panels now use total y-median horizontal lines; `g_{\rm aper}`--`\Delta m` also shows total median ± 1 sigma in the legend
+  - `separation_vs_rate` density background now uses the same local-density scatter style as the other density panels
+  - `temporal_sampling` changed from detection-count histogram to a semimajor-axis/eccentricity scatter plot with one point per unique asteroid
+  - `temporal_sampling` point color and marker size now both encode detections per unique object, with `viridis`/log colorbar styling
+- validation:
+  - Python syntax check passed
+  - Generated four reviewer PNG/PDF figure pairs under `reviewer_figures_20260701/`
+  - Image sizes: `motion_geometry=5190 x 3989`, `photometric_statistics=5189 x 3984`, `astrometric_residuals=5187 x 3984`, `separation_vs_rate=2743 x 1368`
+  - Generated `temporal_sampling.png/.pdf`; valid unique-object orbit points: `16,053`, detection-count range: `1--317`
+  - Visual QA confirmed the `motion_geometry` angular-rate legend was moved left and no longer covers the histogram peak
+- remaining_issues:
+  - Awaiting user visual confirmation before committing this batch
+- next_step:
+  - User reviews the four regenerated reviewer figures; then commit if accepted
+
 ## 2026-07-01
 
 - task: 按审稿意见重画 orbit element 图并提交无用 outputs 删除

@@ -14,7 +14,10 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import astropy.units as u
 from astropy.io import fits
+from astropy.coordinates import SkyCoord, get_sun
+from astropy.time import Time
 from matplotlib.colors import LogNorm
 from matplotlib.patches import Ellipse, FancyArrowPatch, FancyBboxPatch, Polygon
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -29,6 +32,7 @@ ADOPTED_FLUXERR = f"FluxErr_Aper{ADOPTED_APERTURE_INDEX}"
 ADOPTED_MAG_LABEL = r"$g_{\rm aper}$"
 ADOPTED_MAGERR_LABEL = r"$\sigma(g_{\rm aper})$"
 FOUR_PANEL_FIGSIZE = (18, 14)
+MEDIAN_LEGEND_FONTSIZE = 21
 
 
 def as_text(values) -> pd.Series:
@@ -122,7 +126,22 @@ def add_derived(df: pd.DataFrame) -> pd.DataFrame:
     out["snr_aper_proxy"] = out[ADOPTED_FLUX] / out[ADOPTED_FLUXERR].replace(0, np.nan)
     out.loc[out["snr_aper_proxy"] <= 0, "snr_aper_proxy"] = np.nan
     out["dmag_obs_minus_pred"] = out[ADOPTED_MAG] - out["mag"]
+    out["elongation_deg"] = solar_elongation_degrees(out["ra"], out["dec"], out["epoch"])
     return out
+
+
+def solar_elongation_degrees(ra: pd.Series, dec: pd.Series, epoch_mjd: pd.Series) -> np.ndarray:
+    ra_values = pd.to_numeric(ra, errors="coerce").to_numpy(dtype=float)
+    dec_values = pd.to_numeric(dec, errors="coerce").to_numpy(dtype=float)
+    epoch_values = pd.to_numeric(epoch_mjd, errors="coerce").to_numpy(dtype=float)
+    elongation = np.full(ra_values.shape, np.nan, dtype=float)
+    mask = np.isfinite(ra_values) & np.isfinite(dec_values) & np.isfinite(epoch_values)
+    if not np.any(mask):
+        return elongation
+    targets = SkyCoord(ra=ra_values[mask] * u.deg, dec=dec_values[mask] * u.deg, frame="icrs")
+    sun = get_sun(Time(epoch_values[mask], format="mjd", scale="utc")).transform_to("icrs")
+    elongation[mask] = targets.separation(sun).deg
+    return elongation
 
 
 def finite(series: pd.Series) -> np.ndarray:
@@ -142,6 +161,11 @@ def rms(series: pd.Series) -> float:
     if values.size == 0:
         return np.nan
     return float(np.sqrt(np.nanmean(values**2)))
+
+
+def numeric_from_text(series: pd.Series) -> pd.Series:
+    text = series.astype(str).str.extract(r"([-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?)", expand=False)
+    return pd.to_numeric(text, errors="coerce")
 
 
 def fmt(value: float, ndigits: int = 3) -> str:
@@ -288,6 +312,8 @@ def density_colored_scatter(
     ybins=180,
     xlim=None,
     ylim=None,
+    xscale=None,
+    yscale=None,
     cmap="viridis",
     point_size=3.0,
     alpha=0.82,
@@ -296,14 +322,24 @@ def density_colored_scatter(
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
     mask = np.isfinite(x) & np.isfinite(y)
+    if xscale == "log":
+        mask &= x > 0
+    if yscale == "log":
+        mask &= y > 0
+    if xlim is not None:
+        mask &= (x >= xlim[0]) & (x <= xlim[1])
+    if ylim is not None:
+        mask &= (y >= ylim[0]) & (y <= ylim[1])
     x_plot = x[mask]
     y_plot = y[mask]
     if x_plot.size == 0:
         return
 
-    x_range = xlim if xlim is not None else (np.nanmin(x_plot), np.nanmax(x_plot))
-    y_range = ylim if ylim is not None else (np.nanmin(y_plot), np.nanmax(y_plot))
-    counts, x_edges, y_edges = np.histogram2d(x_plot, y_plot, bins=[xbins, ybins], range=[x_range, y_range])
+    x_work = np.log10(x_plot) if xscale == "log" else x_plot
+    y_work = np.log10(y_plot) if yscale == "log" else y_plot
+    x_range = np.log10(xlim) if xscale == "log" and xlim is not None else (np.nanmin(x_work), np.nanmax(x_work))
+    y_range = np.log10(ylim) if yscale == "log" and ylim is not None else (np.nanmin(y_work), np.nanmax(y_work))
+    counts, x_edges, y_edges = np.histogram2d(x_work, y_work, bins=[xbins, ybins], range=[x_range, y_range])
     smoothed = gaussian_filter(counts.astype(float), sigma=smooth_sigma, mode="nearest")
     x_centers = 0.5 * (x_edges[:-1] + x_edges[1:])
     y_centers = 0.5 * (y_edges[:-1] + y_edges[1:])
@@ -313,7 +349,7 @@ def density_colored_scatter(
         bounds_error=False,
         fill_value=1.0,
     )
-    density = interpolator(np.column_stack([x_plot, y_plot]))
+    density = interpolator(np.column_stack([x_work, y_work]))
     density = np.clip(density, 1.0, None)
     order = np.argsort(density)
     sc = ax.scatter(
@@ -330,6 +366,10 @@ def density_colored_scatter(
     )
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
+    if xscale:
+        ax.set_xscale(xscale)
+    if yscale:
+        ax.set_yscale(yscale)
     if xlim is not None:
         ax.set_xlim(*xlim)
     if ylim is not None:
@@ -357,6 +397,7 @@ def running_rate_statistics(rate: pd.Series, sep: pd.Series, nbins: int = 20) ->
                 "p16": np.nanpercentile(sub, 16),
                 "median": np.nanpercentile(sub, 50),
                 "p84": np.nanpercentile(sub, 84),
+                "std": np.nanstd(sub),
                 "count": len(sub),
             }
         )
@@ -377,10 +418,11 @@ def running_linear_statistics(x: pd.Series, y: pd.Series, edges: np.ndarray, min
                 "p16": np.nanpercentile(sub, 16),
                 "median": np.nanpercentile(sub, 50),
                 "p84": np.nanpercentile(sub, 84),
+                "std": np.nanstd(sub),
                 "count": len(sub),
             }
         )
-    return pd.DataFrame(rows)
+    return pd.DataFrame(rows, columns=["x", "p16", "median", "p84", "std", "count"])
 
 
 def write_csv_and_latex(
@@ -660,9 +702,15 @@ def make_tables(df: pd.DataFrame, outdir: Path) -> dict[str, pd.DataFrame]:
 def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
     fig, axes = plt.subplots(2, 2, figsize=FOUR_PANEL_FIGSIZE)
     histogram(axes[0, 0], finite(df[ADOPTED_MAG]), np.linspace(10, 21, 45), f"{ADOPTED_MAG_LABEL} [mag]", color="#4c78a8")
+    med = q(df[ADOPTED_MAG], 50)
+    axes[0, 0].axvline(med, color="black", linestyle="--", linewidth=1.6, label=f"median = {med:.2f}")
+    axes[0, 0].legend(frameon=False, fontsize=MEDIAN_LEGEND_FONTSIZE, loc="upper left")
     axes[0, 0].set_xlim(10, 21)
     histogram(axes[0, 1], finite(df["snr_aper_proxy"]), np.logspace(-0.2, 3.2, 58), "Aperture S/N proxy", logy=True, color="#f28e2b")
     axes[0, 1].set_xscale("log")
+    med = q(df["snr_aper_proxy"], 50)
+    axes[0, 1].axvline(med, color="black", linestyle="--", linewidth=1.6, label=f"median = {med:.1f}")
+    axes[0, 1].legend(frameon=False, fontsize=MEDIAN_LEGEND_FONTSIZE, loc="upper right")
     density_colored_scatter(
         axes[1, 0],
         df[ADOPTED_MAG],
@@ -675,6 +723,9 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
         ylim=(0.0, 0.6),
         point_size=3.0,
     )
+    med = q(df[ADOPTED_MAGERR], 50)
+    axes[1, 0].axhline(med, color="#d62728", linewidth=2.2, label=f"median = {med:.3f}")
+    axes[1, 0].legend(frameon=False, fontsize=MEDIAN_LEGEND_FONTSIZE, loc="upper left")
     axes[1, 0].set_aspect("auto")
     density_colored_scatter(
         axes[1, 1],
@@ -688,6 +739,20 @@ def plot_photometry(df: pd.DataFrame, outdir: Path) -> None:
         ylim=(-1.5, 1.5),
         point_size=3.0,
     )
+    dmag_values = finite(df["dmag_obs_minus_pred"])
+    med = float(np.nanmedian(dmag_values))
+    sigma = float(np.nanstd(dmag_values))
+    axes[1, 1].axhline(med, color="#d62728", linewidth=2.2, label=f"median = {med:.3f}")
+    axes[1, 1].axhline(
+        med + sigma,
+        color="#d62728",
+        linestyle="--",
+        linewidth=1.4,
+        alpha=0.85,
+        label=r"median $\pm 1\sigma$",
+    )
+    axes[1, 1].axhline(med - sigma, color="#d62728", linestyle="--", linewidth=1.4, alpha=0.85)
+    axes[1, 1].legend(frameon=False, fontsize=MEDIAN_LEGEND_FONTSIZE, loc="upper left")
     axes[1, 1].set_aspect("auto")
     fig.tight_layout()
     save_figure(fig, outdir / "photometric_statistics")
@@ -795,7 +860,7 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
     p84 = q(df["sep_arcsec"], 84)
     axes[0, 0].axvline(med, color="black", linestyle="--", linewidth=1.4, label=f"median={med:.3f}")
     axes[0, 0].axvline(p84, color="black", linestyle=":", linewidth=1.4, label=f"84%={p84:.3f}")
-    axes[0, 0].legend(fontsize=18)
+    axes[0, 0].legend(fontsize=MEDIAN_LEGEND_FONTSIZE)
     histogram(axes[0, 1], finite(df["dra_cosdec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\alpha\cos\delta$ [arcsec]", logy=True, color="#59a14f")
     histogram(axes[1, 0], finite(df["ddec_arcsec"]), np.linspace(-1.2, 1.2, 61), r"$\Delta\delta$ [arcsec]", logy=True, color="#f28e2b")
     density_colored_scatter(
@@ -821,25 +886,27 @@ def plot_astrometry(df: pd.DataFrame, outdir: Path) -> None:
             alpha=0.22,
             label="16--84 percentile",
         )
-        axes[1, 1].legend(fontsize=18, loc="upper left")
+        axes[1, 1].legend(fontsize=MEDIAN_LEGEND_FONTSIZE, loc="upper left")
     fig.tight_layout()
     save_figure(fig, outdir / "astrometric_residuals")
 
     fig, ax = plt.subplots(figsize=(10, 5.3))
     data = df[np.isfinite(df["ang_rate_arcsec_hour"]) & np.isfinite(df["sep_arcsec"]) & (df["ang_rate_arcsec_hour"] > 0)]
     main = data[(data["ang_rate_arcsec_hour"] >= 0.7) & (data["ang_rate_arcsec_hour"] <= 150) & (data["sep_arcsec"] <= 1.5)]
-    density_map(
+    density_colored_scatter(
         ax,
         main["ang_rate_arcsec_hour"],
         main["sep_arcsec"],
         r"Angular rate [arcsec h$^{-1}$]",
         "Separation [arcsec]",
+        xbins=260,
+        ybins=190,
         xscale="log",
-        xbins=58,
-        ybins=34,
-        cmap="Greys",
+        xlim=(0.7, 150),
+        ylim=(0, 1.5),
+        point_size=3.0,
     )
-    stats = running_rate_statistics(data["ang_rate_arcsec_hour"], data["sep_arcsec"])
+    stats = running_rate_statistics(main["ang_rate_arcsec_hour"], main["sep_arcsec"])
     if not stats.empty:
         ax.plot(stats["rate"], stats["median"], color="#d62728", linewidth=2.2, label="binned median")
         ax.fill_between(stats["rate"], stats["p16"], stats["p84"], color="#d62728", alpha=0.22, label="16--84 percentile")
@@ -858,56 +925,68 @@ def plot_geometry(df: pd.DataFrame, outdir: Path) -> None:
     axes[0, 0].set_xscale("log")
     med = q(df["ang_rate_arcsec_hour"], 50)
     axes[0, 0].axvline(med, color="black", linestyle="--", linewidth=1.6, label=rf"median = {med:.2f} arcsec h$^{{-1}}$")
-    axes[0, 0].legend(frameon=False, fontsize=15, loc="upper right")
-    histogram(axes[0, 1], finite(df["phase_deg"]), np.linspace(0, 40, 49), "Phase angle [deg]", color="#59a14f")
-    med = q(df["phase_deg"], 50)
+    axes[0, 0].legend(frameon=False, fontsize=MEDIAN_LEGEND_FONTSIZE, loc="upper left")
+    histogram(axes[0, 1], finite(df["elongation_deg"]), np.linspace(0, 180, 61), "Solar elongation [deg]", color="#59a14f")
+    med = q(df["elongation_deg"], 50)
     axes[0, 1].axvline(med, color="black", linestyle="--", linewidth=1.6, label=f"median = {med:.2f} deg")
-    axes[0, 1].legend(frameon=False, fontsize=15, loc="upper right")
+    axes[0, 1].legend(frameon=False, fontsize=MEDIAN_LEGEND_FONTSIZE, loc="upper left")
     histogram(axes[1, 0], finite(df["r_AU"]), np.linspace(0, 6, 61), "Heliocentric distance [AU]", color="#f28e2b")
     med = q(df["r_AU"], 50)
     axes[1, 0].axvline(med, color="black", linestyle="--", linewidth=1.6, label=f"median = {med:.2f} AU")
-    axes[1, 0].legend(frameon=False, fontsize=15, loc="upper right")
+    axes[1, 0].legend(frameon=False, fontsize=MEDIAN_LEGEND_FONTSIZE, loc="upper right")
     histogram(axes[1, 1], finite(df["delta_AU"]), np.linspace(0, 5, 61), "Topocentric distance [AU]", color="#e15759")
     med = q(df["delta_AU"], 50)
     axes[1, 1].axvline(med, color="black", linestyle="--", linewidth=1.6, label=f"median = {med:.2f} AU")
-    axes[1, 1].legend(frameon=False, fontsize=15, loc="upper right")
+    axes[1, 1].legend(frameon=False, fontsize=MEDIAN_LEGEND_FONTSIZE, loc="upper right")
     fig.tight_layout()
     save_figure(fig, outdir / "motion_geometry")
 
 
 def plot_temporal(df: pd.DataFrame, outdir: Path) -> None:
-    objects = df.groupby("query_id").agg(detections=("query_id", "size"), distinct_nights=("night", "nunique"), first_epoch=("epoch", "min"), last_epoch=("epoch", "max"))
-    values = objects["detections"].to_numpy()
-    hist = np.array([(values == count).sum() for count in range(1, 21)], dtype=int)
-    tail = int((values > 20).sum())
-    x = np.r_[np.arange(1, 21), 22]
-    median = np.nanmedian(values)
-    p84 = np.nanpercentile(values, 84)
-    maximum = np.nanmax(values)
-    fig, ax = plt.subplots(figsize=(8.8, 5.2))
-    ax.bar(
-        x,
-        np.r_[hist, tail],
-        color="#4c78a8",
-        alpha=0.5,
-        edgecolor="#2b2b2b",
-        linewidth=0.55,
+    work = df.copy()
+    work["orbit_a_AU_numeric"] = numeric_from_text(work["orbit_elements_a"])
+    work["orbit_e_numeric"] = numeric_from_text(work["orbit_elements_e"])
+    objects = (
+        work.groupby("query_id")
+        .agg(
+            detections=("query_id", "size"),
+            a_AU=("orbit_a_AU_numeric", "first"),
+            eccentricity=("orbit_e_numeric", "first"),
+        )
+        .reset_index()
     )
-    ax.axvline(median, color="black", linestyle="--", linewidth=1.4, label=f"median = {median:.0f}")
-    ax.axvline(p84, color="black", linestyle=":", linewidth=1.4, label=f"84th percentile = {p84:.0f}")
-    ax.plot([], [], color="none", label=f"max = {maximum:.0f}")
-    ax.set_xlabel("Detections per object")
-    ax.set_ylabel("Number of asteroids")
-    ax.set_yscale("log")
-    ax.set_xlim(0.4, 22.8)
-    ax.set_xticks([1, 2, 3, 4, 5, 10, 20, 22])
-    ax.set_xticklabels(["1", "2", "3", "4", "5", "10", "20", ">20"])
+    objects = objects[np.isfinite(objects["a_AU"]) & np.isfinite(objects["eccentricity"]) & (objects["a_AU"] > 0)]
+    objects = objects.sort_values("detections")
+    max_detections = max(1.0, float(objects["detections"].max()))
+    marker_sizes = np.interp(
+        np.log10(objects["detections"].to_numpy(dtype=float)),
+        [0.0, np.log10(max_detections)],
+        [4.0, 115.0],
+    )
+
+    fig, ax = plt.subplots(figsize=(9, 7.2))
+    sc = ax.scatter(
+        objects["a_AU"],
+        objects["eccentricity"],
+        c=objects["detections"],
+        s=marker_sizes,
+        cmap="viridis",
+        norm=LogNorm(vmin=1, vmax=max_detections),
+        alpha=0.86,
+        linewidths=0,
+        rasterized=True,
+    )
+    a_line = np.logspace(np.log10(1.3), 2, 100)
+    e_line = 1 - 1.3 / a_line
+    ax.plot(a_line, e_line, "k--", linewidth=2.0, label=r"$q=1.3\,\mathrm{AU}$")
+    ax.legend(fontsize=18, loc="lower right", frameon=False, handlelength=2.4)
+    ax.set_xscale("log")
+    ax.set_xlabel("Semimajor axis [AU]")
+    ax.set_ylabel("Eccentricity")
     ax.set_axisbelow(True)
-    ax.grid(alpha=0.16, linewidth=0.6)
-    ax.tick_params(labelsize=18)
-    ax.xaxis.label.set_size(22)
-    ax.yaxis.label.set_size(22)
-    ax.legend(frameon=False, fontsize=15, loc="upper right", handlelength=2.5)
+    ax.grid(alpha=0.12, linewidth=0.55)
+    ax.tick_params(labelsize=22)
+    add_colorbar(ax, sc, "Detections per object")
     fig.tight_layout()
     save_figure(fig, outdir / "temporal_sampling")
 

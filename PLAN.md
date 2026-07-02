@@ -35,6 +35,14 @@ Orbit-element 图已生成审稿修改版：
 `reviewer_figures_20260701/asteroid_orbits_revised.pdf`。
 该图将 legend 改为缩写，合并 Amor/Apollo/Aten 为 `NEA`，将 `Asteroid`/`Centaur` 并入 `Other`，
 左图 `q=1.3 AU` 使用数学公式斜体，MBA 使用 cyan 点。
+统计类图已生成审稿修改版：
+`reviewer_figures_20260701/motion_geometry.png`、`photometric_statistics.png`、
+`astrometric_residuals.png`、`separation_vs_rate.png`、`temporal_sampling.png` 及对应 PDF。
+`motion_geometry` 已用根据 `ra/dec/epoch` 计算的 solar elongation 替换 phase angle；
+三张 `2 x 2` 图的 median legend 字号已统一放大；
+`photometric_statistics` 下排两图改为全局 y-median 水平线，右下另加全局 ±1 sigma 水平线并写入 legend；
+`separation_vs_rate` 改为与其他密度图一致的 local-density scatter 风格；
+`temporal_sampling` 已改为 unique-object `a-e` 散点图，颜色和 marker 大小都表示每个 unique object 的检测次数。
 
 历史目标：按导师返回意见继续修订 `paper_draft/v9.tex` 和 `paper_draft/v9.pdf`。
 保持科学定位为 GOTTA Prototype known-asteroid extraction and statistical performance evaluation。
@@ -129,6 +137,7 @@ Table 2 最新调整为 `tabular*{1.10\textwidth}`：第 2--3 列固定小间距
 - Cutout 背景扣除版观感偏 residual display；如需更接近原始图，可继续调亮度/contrast
 - 黄道坐标 HEALPix 图已生成并叠加赤道面曲线，等待用户视觉确认
 - Orbit-element revised figure 已生成，等待用户视觉确认
+- Motion/photometry/astrometry/separation reviewer figures 已生成，等待用户视觉确认后提交
 - 4 个 selection-sheet 目标缺少本地 angular-rate 匹配：`2006 FT8`、`2004 JC30`、`2003 BL70`、`2009 QE23`
 - 其余审稿意见中需要重画的具体图号、修改要求或示例风格尚未收到；收到后需要逐条映射到具体输出文件和生成函数
 - 如果用户在 Overleaf 手动修改，应后续下载最新版 `.tex` 或完整 project zip 并同步回本地 git
